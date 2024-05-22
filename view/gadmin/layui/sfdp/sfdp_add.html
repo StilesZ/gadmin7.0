@@ -1,0 +1,256 @@
+{include file='common/head' /}
+<style>
+    #steps {
+        margin-left: 25%;
+    }
+    .step-item {
+        display: inline-block;
+        line-height: 26px;
+        position: relative;
+        background: #ffffff;
+    }
+
+    .step-item-tail {
+        width: 100%;
+        padding: 0 10px;
+        position: absolute;
+        left: 0;
+        top: 13px;
+    }
+    .step-item-tail i {
+        display: inline-block;
+        width: 100%;
+        height: 1px;
+        vertical-align: top;
+        background: #c2c2c2;
+        position: relative;
+    }
+    .step-item-head {
+        position: relative;
+        display: inline-block;
+        height: 26px;
+        width: 26px;
+        text-align: center;
+        vertical-align: top;
+        border: 1px solid #5e7ce0;
+        border-radius: 50%;
+    }
+
+    .step-item-head.step-item-head-active {
+        background: #5e7ce0;
+        color: #ffffff;
+    }
+
+    .step-item-main {
+        background: #ffffff;
+        display: block;
+        position: relative;
+    }
+
+    .step-item-main-title {
+        font-weight: bolder;
+        color: #555555;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+                <div id="steps">
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-tail"><i class=""></i></div>
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">1</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">创建业务</div>
+                        </div>
+                    </div>
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-tail"><i class=""></i></div>
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">2</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">设计业务布局</div>
+                        </div>
+                    </div>
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-tail"><i class=""></i></div>
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">3</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">业务测试</div>
+                        </div>
+                    </div>
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">4</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">上线业务</div>
+                        </div>
+                    </div>
+                </div>
+                <form method="post" name="form" id="form" class="layui-form" style="padding-top: 30px">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label g_tips" data-tips="不同的业务类型，可以创建不同的设计方式">业务类型：</label>
+                        <div class="layui-input-block">
+                            <select name="s_type">
+                                <option value="0" selected>创建普通表单——适配能力最强的设计器，90%业务可以选择此表单</option>
+                                <option value="1">创建编辑表单——布局更加自由，但是要求设计能力</option>
+                                <option value="2">创建数据表单——数据第三方接口，可用于数据收集调研</option>
+                                <option value="3">列表式表单——更加快速便捷的数据录入方式（测试上线）</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">项目名称：</label>
+                            <div class="layui-input-block">
+                                <input type="text" class="layui-input"  id="s_title"  name="s_title" placeholder="填写业务名称，如：合同管理" datatype="*" nullmsg="项目名称不能为空~">
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label g_tips" data-tips="数据库表名称，必须为英文，建议应用名_模块名，比如oa_news">数据表名：</label>
+                            <div class="layui-input-block">
+                                <input type="text"  class="layui-input" id="s_db" name="s_db" placeholder="填写数据表名，如：cnt" datatype="*" nullmsg="数据表名不能为空">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">列表控件：</label>
+                            <div class="layui-input-block">
+                                <input type="hidden"  value="add"  name="tpfd_btn[]">
+                                <input type="hidden"  value="View" name="tpfd_btn[]" >
+                                <input type="checkbox" title="添加" value="add" checked readonly>
+                                <input type="checkbox" title="修改" value="Edit" name="tpfd_btn[]" >
+                                <input type="checkbox" title="删除" value="Del" name="tpfd_btn[]" >
+                                <input type="checkbox" title="查看" value="View"  checked readonly>
+                                <input type="checkbox" title="简单审核" value="Status" name="tpfd_btn[]" >
+                                <input type="checkbox" title="流程引擎" value="WorkFlow" name="tpfd_btn[]" >
+                                <input type="checkbox" title="导入引擎" value="Import" name="tpfd_btn[]" >
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label  g_tips" data-tips="直接关联菜单权限目录">挂载目录：</label>
+                            <div class="layui-input-inline layui-input-wrap" style="width: 70%">
+                                <select name="mid" datatype="*" nullmsg="必须选择挂带节点"><option value="">请选择挂带节点</option>{$Node['html']|raw}</select>
+                            </div>
+                            <div class="layui-form-mid" style="padding: 0!important;">
+                                <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick=layer_show("目录设置","{:url('node/index')}")>增加节点</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label  g_tips" data-tips="软删除选项，系统数据不会被真实删除，只是隐藏">数据软删：</label>
+                            <div class="layui-input-block">
+                                <select name="s_del">
+                                    <option value="0" selected>开启数据软删除——数据会被标记为删除，但仍然保留在数据库中</option>
+                                    <option value="1">关闭数据软删除——数据会被直接删除</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label  g_tips" data-tips="分多个层级进行数据过滤，可以用于集团化数据设计">租户模式：</label>
+                            <div class="layui-input-block">
+                                <select name="s_saas">
+                                    <option value="0">开启——每个数据会增加对应租户字段【强制过滤】</option>
+                                    <option value="1" selected>关闭——不会增加租户字段</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">表单样式：</label>
+                            <div class="layui-input-block">
+                                <select name="s_form_style">
+                                    <option value="0" selected>边框表单</option>
+                                    <option value="1">无边框表单</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">弹窗设置：</label>
+                            <div class="layui-input-block">
+                                <input type="text"  class="layui-input"  name="s_open" placeholder="填写数据表名，如：cnt">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label  g_tips" data-tips="开启后，会自动关联相关的客户端信息">鉴别信息：</label>
+                            <div class="layui-input-block">
+                                <select name="s_sys_check">
+                                    <option value="0" selected>关闭鉴别</option>
+                                    <option value="1">开启鉴别——IP归属地，客户端信息会被同步记录</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">编辑条件：</label>
+                            <div class="layui-input-block">
+                                <select name="s_sys_edit">
+                                    <option value="0" selected>不限制——任何人均可以编辑表单</option>
+                                    <option value="1">禁止编辑——表单添加后禁用编辑</option>
+                                    <option value="2">本人编辑——只能自己编辑自己的表单</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">表单样式：</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" name="tpfd_class" placeholder="引入样式，如cnt.css 多个文件使用 @@ 连接符"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">脚本控件：</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" name="tpfd_script" placeholder="引入样式，如cnt.js 多个文件使用 @@ 连接符"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <a class="layui-btn savedata" is_post="0">保存</a>
+                            <button onclick="layer_close()" class="layui-btn layui-btn-primary">取消</button>
+                        </div>
+                    </div>
+                </form>
+                <blockquote class="layui-elem-quote layui-text" style="border-left: 5px solid #960000;">
+                    <p>特殊说明：</p>
+                    <p>【数据表名】只能以字母开头且只能包含字母，数字和下划线如：cnt_abc1</p>
+                    <p>【列表控件】添加和查看为必选项，edit status del workflow为可选组件</p>
+                    <p>【控&emsp;&emsp;件】控件用户可以自定义引入需要的控件信息；请注意多个文件需要用@@分割符号，且上传到/ststic/sfdp/user-class/`设置的数据表名`/控件名</p>
+                </blockquote>
+        </div>
+    </div>
+</div>
+
+{include file='common/footer' /}
+<script type="text/javascript" src="/static/sfdp/lib/pingyin.js"></script>
+<script type="text/javascript">
+    $(document).on("input propertychange", "#s_title", function (e) {
+        $("#s_db").val($("#s_title").toPinyin().toLowerCase());
+    });
+    $("#s_db").bind("input propertychange",function(event){
+        var s_db = $('#s_db').val();
+        var DbNameExp = /^[a-zA-Z]([_a-zA-Z0-9]{0,1000})$/; //数据库名称校验
+        if (!DbNameExp.test(s_db)) {
+            $('#s_db').val('');
+            g_toast('只能以字母开头且只能包含字母，数字和下划线如：cnt_abc1',{skin:'warning'})
+            return;
+        }
+    });
+    $(".savedata").click(function(){
+        if($(".savedata").attr('is_post')==0){
+            $(".savedata").attr('is_post',1);
+            $("#form").submit();
+        }else{
+            layer.msg(`重复提交`, {time: 800});
+        }
+    });
+    g_checkForm($("#form"));
+</script>
+
+
+
+

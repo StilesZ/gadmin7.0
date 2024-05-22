@@ -1,0 +1,139 @@
+/* -----------H-ui前端框架-------------
+* H-ui.login.css v2.2.2 后台登录页样式
+* http://www.h-ui.net/
+* Created & Modified by guojunhui
+* Date modified 2019.03.06
+*
+* Copyright 2013-2019 北京颖杰联创科技有限公司 All rights reserved.
+*
+*/
+
+@charset "utf-8";
+
+html,body {
+  height: 100%
+}
+
+.layui-input {
+  background-color: #ffffffba;
+  border-radius: 5px;
+  height: 38px;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+  color: #999;
+  font-size: 16px;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: #999;
+  font-size: 16px;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+  color: #999;
+  font-size: 16px;
+}
+body {
+  line-height: 1.6;
+}
+.box-shadow {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+}
+.pt-20 {
+  padding-top: 20px;
+}
+.cl, .clearfix {
+  zoom: 1;
+}
+* {
+  word-wrap: break-word;
+}
+.row {
+  box-sizing: border-box;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.btn-danger {
+  background-color: rgb(189,8,28);
+  border-color: rgb(189,8,28);
+}
+
+.btn-danger:hover,.btn-danger:focus,.btn-danger:active,.btn-danger.active {
+  background-color: #d50c22;
+  border-color: #d50c22
+}
+
+body {
+  font-size: 14px;
+  position: relative;
+  background-color: #efefef;
+}
+.iconpic {
+  display: inline-block;
+  vertical-align: sub;
+  _vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  background-position: center;
+  background-repeat: no-repeat
+}
+
+.login-form {
+  position: fixed;
+  width: 340px;
+  background-color: #ffffff61;
+  text-align: center;
+  border-radius: 8px;
+  left: 50%;
+  top: 15%;
+  margin-left: -200px;
+  padding: 30px;
+}
+@media (max-width: 768px) {
+  .login-form {
+    position: static;
+    width: 100%;
+    box-sizing: border-box;
+    height: 100%;
+    margin-left: 0;
+    border-radius: 0;
+  }
+}
+.login-form .form {
+  width: 240px;
+  margin: auto;
+}
+
+.login-form .form .row {
+  position: relative;
+  margin-top: 20px;
+}
+
+.login-form .form-title {
+  color: #555;
+  font-size: 30px;
+  margin-top: 10px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -1.2px;
+}
+
+.login-form .form .input-text {
+  border: 0;
+  padding-left: 13px;
+  padding-right: 13px;
+  background-color: #f0f0f0
+}
+
+.login-form .form .input-text.error {
+  background-color: rgb(250,255,189);
+}
+
+.login-form .form .row label.error {
+  color: #c00;
+  right: 5px;
+  top: 10px;
+  display: none;
+}

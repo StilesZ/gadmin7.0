@@ -1,0 +1,269 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6">
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-tab layui-tab-brief" lay-filter="wf_content">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="1">在办流程</li>
+                    <li lay-id="2">已办流程</li>
+                    <li lay-id="5">我的会签</li>
+                    <li lay-id="3">我的流程</li>
+                    <li lay-id="4">绩效指数</li>
+                </ul>
+                <div class="layui-tab-content ">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-row">
+                            <div class="layui-col-md8">
+                                <div class="layui-inline">
+                                    流程类型：
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="username" placeholder="流程类型" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-sm" id='reloadBtn'><i class="layui-icon layui-icon-search"></i></button>
+                                </div>
+                                <a  class=" layui-btn layui-btn-sm layui-btn-primary">刷新</a>
+                            </div>
+                            <div class="layui-col-md4 align-right">
+
+                            </div>
+                        </div>
+                        <div class="layui-row" style='margin:5px'>
+                            <table class="layui-table" id="myList"></table>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-row">
+                            <div class="layui-col-md8">
+                                <div class="layui-inline">
+                                    流程类型：
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="username2" placeholder="流程类型" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-sm" id='reloadBtn2'><i class="layui-icon layui-icon-search"></i></button>
+                                </div>
+                                <a  class=" layui-btn layui-btn-sm layui-btn-primary">刷新</a>
+                            </div>
+                            <div class="layui-col-md4 align-right">
+
+                            </div>
+                        </div>
+                        <div class="layui-row" style='margin:5px'>
+                            <table class="layui-table" id="myList2"></table>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-row">
+                            <div class="layui-col-md8">
+                                <div class="layui-inline">
+                                    流程类型：
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="username4" placeholder="流程类型" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-sm" id='reloadBtn4'><i class="layui-icon layui-icon-search"></i></button>
+                                </div>
+                                <a  class=" layui-btn layui-btn-sm layui-btn-primary">刷新</a>
+                            </div>
+                            <div class="layui-col-md4 align-right">
+
+                            </div>
+                        </div>
+                        <div class="layui-row" style='margin:5px'>
+                            <table class="layui-table" id="myList4"></table>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-row">
+                            <div class="layui-col-md8">
+                                <div class="layui-inline">
+                                    流程类型：
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" id="username3" placeholder="流程类型" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-sm" id='reloadBtn3'><i class="layui-icon layui-icon-search"></i></button>
+                                </div>
+                                <a  class=" layui-btn layui-btn-sm layui-btn-primary">刷新</a>
+                            </div>
+                            <div class="layui-col-md4 align-right">
+
+                            </div>
+                        </div>
+                        <div class="layui-row" style='margin:5px'>
+                        <table class="layui-table" id="myList3"></table>
+                        </div>
+                    </div>
+                    <!--审核排行榜-->
+                    <div class="layui-tab-item">
+                        <div class="layui-row" style="min-height: 800px;">
+                            <div class="layui-col-xs4">
+                                <div class="layui-card">
+                                    <div class="layui-card-header"><b>年审批排行榜</b></div>
+                                    <div class="layui-card-body">
+                                        <table class="layui-table layuiadmin-page-table" lay-skin="line">
+                                            <thead><tr><th>排名</th><th>姓名</th><th>Kpi</th></tr></thead>
+                                            <tbody>
+                                            {volist name='year' id='k'}
+                                            <tr>
+                                                <td>{$key+1}</td>
+                                                <td>{:get_common_val('soft_user',$k.k_uid,'realname')}</td>
+                                                <td>{:sprintf("%.2f",$k.px)*100}%</td>
+                                            </tr>
+                                            {/volist}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-xs4">
+                                <div class="layui-card">
+                                    <div class="layui-card-header"><b>月审批排行榜</b></div>
+                                    <div class="layui-card-body">
+                                        <table class="layui-table layuiadmin-page-table" lay-skin="line">
+                                            <thead><tr><th>排名</th><th>姓名</th><th>Kpi</th></tr></thead>
+                                            <tbody>
+                                            {volist name='month' id='k'}
+                                            <tr>
+                                                <td>{$key+1}</td>
+                                                <td>{:get_common_val('soft_user',$k.k_uid,'realname')}</td>
+                                                <td>{:sprintf("%.2f",$k.px)*100}%</td>
+                                            </tr>
+                                            {/volist}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="layui-col-xs4">
+                                <div class="layui-card">
+                                    <div class="layui-card-header"><b>年送审排行榜</b></div>
+                                    <div class="layui-card-body">
+                                        <table class="layui-table layuiadmin-page-table" lay-skin="line">
+                                            <thead><tr><th>排名</th><th>姓名</th><th>送审总数</th></tr></thead>
+                                            <tbody>
+                                            {volist name='ysend' id='k'}
+                                            <tr>
+                                                <td>{$key+1}</td>
+                                                <td>{:get_common_val('soft_user',$k.k_uid,'realname')}</td>
+                                                <td>{$k.px}</td>
+                                            </tr>
+                                            {/volist}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {include file='common/footer' /}
+    <script src="__SFDP__/lib/laydate5.0.9/laydate.js?v=7.0.1"></script>
+    <script type="text/javascript" src="__FLOW__/workflow.5.0.js"></script>
+    <script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+    <script type="text/javascript">
+        layui.use(['form','table','element'], function () {
+            var table = layui.table;
+            var util = layui.util;
+            var element = layui.element;
+            element.on('tab(wf_content)', function(){
+                var tabid = this.getAttribute('lay-id');
+                if(tabid==2){
+                    load(2,elem='#myList2')
+                }
+                if(tabid==3){
+                    load(3,elem='#myList3')
+                }
+                if(tabid==5){
+                    load(4,elem='#myList4')
+                }
+            });
+            load(0);
+            function load(type,elem='#myList'){
+                var ins1 = table.render({
+                    elem: elem,
+                    url: "{:url('wfmy')}?type="+type,
+                    method: 'post',
+                    page: true ,escape:false,
+                    limit: 20,
+                    limits:[20,40,60,80,100],
+                    height:'full-175',
+                    id: 'idData',
+                    cols: [[
+                        {field: 'id', title: 'id',width:80, fixed: 'left'},
+                        {field: 'tmp', title: '业务名称',width:480},
+                        {field: 'js_time', title: '流程接收时间',width:200,templet:function(d){return util.toDateString(d.js_time*1000, "yyyy-MM-dd HH:mm:ss");}},
+                        {field: 'bl_time', title: '流程办理时间',width:180,templet:function(d){
+                            if(d.bl_time>1){
+                                return util.toDateString(d.bl_time*1000, "yyyy-MM-dd HH:mm:ss");
+                            }else{
+                                return '待办';
+                            }
+                            }},
+                        {field: 'time_ver', title: '办理时限',width:200},
+                        {field: 'sponsor_text', title: '办理人员',width:200},
+                        {field: 'btn', title: '操作',width:280, fixed: 'right'}
+                    ]],
+                    done: function (res, curr, count) {
+                        if (res.hasOwnProperty('errMsg')&&res.errMsg.length >0){
+                            layer.alert(res.errMsg);
+                        }
+                        exportData=res.data;
+                    }
+                });
+                $("#reloadBtn").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('wfmy')}?type="+type
+                        , where: {
+                            keyword: $("#username").val()
+                        }
+                    });
+                })
+                $("#reloadBtn2").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('wfmy')}?type="+type
+                        , where: {
+                            keyword: $("#username2").val()
+                        }
+                    });
+                })
+                $("#reloadBtn3").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('wfmy')}?type="+type
+                        , where: {
+                            keyword: $("#username3").val()
+                        }
+                    });
+                })
+                $("#reloadBtn4").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('wfmy')}?type="+type
+                        , where: {
+                            keyword: $("#username4").val()
+                        }
+                    });
+                })
+            }
+        });
+    </script>
+</body>
+</html>

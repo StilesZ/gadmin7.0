@@ -1,0 +1,44 @@
+{include file='common/head' /}
+  <link rel="stylesheet" href="__LIB__/multiple-select/multiple-select.css" />
+	<div class="wap-container" style="padding: 10px">
+	<form action="" method="post" name="form" id="form">
+		<table class="layui-table table-border table-bordered table-bg">
+			<tr>
+			<td style='width:70px'>授权目录</td>
+			<td colspan=5>
+			<span class="select-box">
+				<select  multiple="multiple" class="select" id='select'>
+					{volist name='widget' id='k'}
+					<option value="{$k.node_id}" {in name="k.node_id" value="$data"}selected="selected" {/in} >{$k.title}</option>
+					{/volist}
+				</select>
+				</span>
+				<input type="hidden" name="widgetId" id='t'>
+			</td>
+			</tr>
+			
+			<tr style="text-align: center"><td colspan=6><button  class="layui-btn layui-btn-sm" type="submit"> 保存</button>
+				<button  class="layui-btn layui-btn-primary layui-btn-sm" type="button" onclick="layer_close()">&nbsp;&nbsp;取消&nbsp;&nbsp;</button></td></tr>
+		</table>
+	</form>
+</div>
+
+{include file='common/footer' /}
+<script src="__LIB__/multiple-select/multiple-select.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("[name='o_type']").find("[value='{$info.o_type ?? '0'}']").attr("selected",true);
+
+	g_checkForm($("#form"));
+	});
+	$(function() {
+        $('#select').change(function() {
+			$('#t').val($(this).val());
+        }).multipleSelect({
+			placeholder: "请选择目录！",allSelected:'已全部被选中',selectAllText:'一键全部选中',
+            width: '100%'
+        });
+    });
+</script>
+</body>
+</html>

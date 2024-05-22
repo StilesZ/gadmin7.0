@@ -1,0 +1,59 @@
+{include file='common/head' /}
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input type="text" id="username" placeholder="输入名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <button type="submit" class="layui-btn layui-btn-sm"  id="reloadBtn" data-type="reload"><i class="layui-icon  layui-icon-search" ></i></button>
+                <button class="layui-btn layui-btn-sm" id="getCheckData">选择</button>
+            </div>
+            <div class="layui-row" style="margin-top: 5px">
+                <table class="layui-hide" id="test" lay-filter="test" lay-data="{id: 'idData'}"></table>
+            </div>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#test'
+            , url: '{:url("system_user")}'
+            ,escape:false,method:'post'
+            , cols: [[
+                {type: 'radio'}
+                , {field: 'id', width: 65, title: '编号'}
+                , {field: 'username', width: 100, title: '用户名'}
+                , {field: 'realname', width: 100, title: '真实姓名'}
+                , {field: 'tel', width: 130, title: '手机号'}
+                , {field: 'mail', width: 150, title: '邮箱'}
+            ]]
+            ,page: true , height: 'full-90'
+        });
+        $("#reloadBtn").click(function (ev) {
+            var username = $("#username").val();
+            table.reload('test', {
+                url: "{:url('system_user')}"
+                , where: {
+                    username: username
+                }
+            });
+        })
+        $("#getCheckData").click(function () {
+            var checkStatus = table.checkStatus('test'); //获取选中行状态
+            var data = checkStatus.data;  //获取选中行数据
+            var parent_id='{$id}';
+            parent.document.getElementById(parent_id+'_text').value =data[0].id+'-'+data[0].username;
+            parent.document.getElementById(parent_id).value =data[0].id;
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/multiple-select/multiple-select.css" />
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<link rel="stylesheet" type="text/css" href="__SFDP__/lib/selecttree/select2totree.css?v=5.0.0">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+			{present name="info.id"}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+				<input type="hidden" name="id" value="{$info.id}">
+				{else /}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+			{/present}
+			<div class="layui-form-item">
+				<label class="layui-form-label">登入账号：</label>
+				<div class="layui-input-inline">
+					<input type="text" name="username"  class='layui-input' value="{$info.username ?? ''}"  datatype="*">
+				</div>
+				<label class="layui-form-label">真实姓名：</label>
+				<div class="layui-input-inline">
+					<input type="text" name="realname"  class='layui-input' value="{$info.realname ?? ''}"  datatype="*">
+				</div>
+			  </div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密　　码：</label>
+				<div class="layui-input-inline">
+					<input type="password" name="password" class='layui-input' value="">
+				</div>
+				<label class="layui-form-label">确认密码：</label>
+				<div class="layui-input-inline">
+					<input type="password" name="repassword"  class='layui-input' value="">
+				</div>
+			  </div>
+
+			 <div class="layui-form-item">
+				<label class="layui-form-label">手机电话：</label>
+				<div class="layui-input-inline">
+					<input type="text" name="tel"  class='layui-input' value="{$info.tel ?? ''}"  datatype="*">
+				</div>
+				 <label class="layui-form-label">电子邮箱：</label>
+				 <div class="layui-input-inline">
+					 <input type="text" name="mail"   class='layui-input' value="{$info.mail ?? ''}"  datatype="*">
+				 </div>
+			  </div>
+			   <div class="layui-form-item">
+				<label class="layui-form-label">用户角色：</label>
+				<div class="layui-input-inline">
+					<select name="role" class="select" id="pid" lay-ignore style="width: 100%">
+						<option value="">请选择</option>
+					</select>
+				</div><label class="layui-form-label">用户状态：</label>
+				   <div class="layui-input-inline">
+					   <input type="radio"  value="1" name="status" id="status1"  title="启用">
+					   <input type="radio"  value="0" name="status" id="status2" title="关闭">
+				   </div>
+			  </div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">组织部门：</label>
+					<div class="layui-input-inline">
+						<select name="dept_id" class="select" id="dept_id" lay-ignore style="width: 100%">
+							<option value="">请选择</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="layui-form-item"  {if condition="count($saas) <0"}style="display: none"{/if}>
+					<label class="layui-form-label">用户层级：</label>
+					<div class="layui-input-inline" style='width: 340px;'>
+
+						<select  multiple="multiple" class="select" id='select' lay-ignore>
+							{volist name='saas' id='k'}
+							<option value="{$k.id}" {in name="k.id" value="$sass_id"}selected="selected" {/in} >{$k.name}</option>
+							{/volist}
+						</select>
+						</span>
+						<input type="hidden" name="sass_id" id='t' value="{$sass_id}">
+					</div>
+					<div class="layui-form-mid layui-word-aux">*如果开启saas模式，则数据会被强制过滤</div>
+				</div>
+			  <div class="layui-form-item">
+				<label class="layui-form-label">数据权限：</label>
+				<div class="layui-input-inline" style='width: 340px;'>
+					<select name="dataaccess" class="select">
+							<option value="0">全局权限---列表数据不过滤</option>
+							<option value="1">当前角色权限---只能看到当前角色的数据信息</option>
+							<option value="2">本人数据权限---只能看到本人发布的信息</option>
+							<option value="3">当前角色及下级权限---能看到当前角色及当前角色下级的信息</option>
+						</select>
+				</div>
+				  <div class="layui-form-mid layui-word-aux">*此权限仅针对业务列表</div>
+			  </div>
+			   <div class="layui-form-item">
+				<label class="layui-form-label">备注说明：</label>
+				<div class="layui-input-block">
+					<textarea  name="remark"  class='layui-textarea' >{$info.remark ?? ''}</textarea>
+				</div>
+			  </div>
+			  <div class="layui-form-item">
+				<div class="layui-input-block">
+				  <button type="submit" class="layui-btn layui-btn-sm">立即提交</button>
+				  <a onclick="layer_close()" class="layui-btn layui-btn-sm layui-btn-primary">重置</a>
+				</div>
+			  </div>
+			</form>
+			</div>
+		</div>
+	</div>
+	{include file='common/footer' /}
+	<script src="__LIB__/multiple-select/multiple-select.js"></script>
+	<script src="__LIB__/select2/select2.min.js?v=7.0.1"></script>
+	<script type="text/javascript" src="__SFDP__/lib/selecttree/select2totree.js"></script>
+	<script type="text/javascript" src="__SFDP__/sfdp.7.0.js"></script>
+	<script>
+	$(function () {
+			layui.use('form', function(){
+				var form = layui.form;
+				$("[name='role']").find("[value='{$info.role ?? '0'}']").attr("selected",true);
+				$("[name='dataaccess']").find("[value='{$info.dataaccess ?? '0'}']").attr("selected",true);
+				$("input[type=radio][name=status][value={$info.status ?? '1'}]").attr("checked",true);
+				form.render();
+			});
+			g_checkForm($("#form"));
+			$(function() {
+				$('#select').change(function() {
+					$('#t').val($(this).val());
+				}).multipleSelect({
+					placeholder: "请选择用户层级！",allSelected:'已全部被选中',selectAllText:'一键全部选中',
+					width: '100%'
+				});
+			});
+		})
+	</script>
+	<script>
+		$(function () {
+			var roledata = sfdp.arrytotree({$role_tree|raw});
+			$("#pid").select2ToTree({treeData: {dataArr: roledata}});
+			$("#pid").select2().val({$info.role ?? '0'}).trigger("change");
+			$("#pid").select2ToTree();
+
+			var roledata = sfdp.arrytotree({$dept_tree|raw});
+			$("#dept_id").select2ToTree({treeData: {dataArr: roledata}});
+			$("#dept_id").select2().val({$info.dept_id ?? '0'}).trigger("change");
+			$("#dept_id").select2ToTree();
+		})
+
+
+	</script>
+</body>
+</html>

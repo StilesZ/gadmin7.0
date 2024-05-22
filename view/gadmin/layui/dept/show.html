@@ -1,0 +1,68 @@
+{include file='common/head' /}
+	<link rel="stylesheet" type="text/css" href="__LIB__/jOrgChart/jquery.jOrgChart.css?v=3.0.22">
+    <body>
+    <style>
+        a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 12px;
+        }
+        .jOrgChart .node {
+            height: 35px;
+            line-height: 35px;
+            border-radius: 4px;
+            margin: 0 8px;
+        }
+    </style>
+    <div id="body" style="zoom:1">
+        <div id='jOrgChart' style="padding: 10px;"></div>
+
+    </div>
+    <div style="position: absolute;left: 12px;top: 12px;">
+        <a  class="layui-btn layui-btn-xs" onclick="zoomOut()"><i class="layui-icon layui-icon-addition"></i></a>
+        <a class="layui-btn layui-btn-xs" onclick="zoomIn()"><i class="layui-icon layui-icon-subtraction"></i></a>
+
+    </div>
+</body>
+{include file='common/footer' /}
+<script type="text/javascript" src="__LIB__/jOrgChart/jquery.jOrgChart.js"></script>
+<script type='text/javascript'>
+	 $(document).ready(function(){
+		var showCon = $("<ul id='org' style='display:none'></ul>");
+		var node = $("<div class='click pull-left' ></div>");
+		showall({$json|raw}, showCon);
+		$("#jOrgChart").append(showCon);
+		$("#org").jOrgChart({chartElement: '#jOrgChart'});
+		$(".node").after(node);
+		$(".node-cell").mouseenter(function () {
+			var Node=$(this).children('.node').find('a').attr('pid');
+			if(Node!=0){
+				$(this).find('span').removeClass('hidden');
+			}
+		})
+		$(".node-cell").mouseleave(function () {
+			$(this).find('span').addClass('hidden');
+		})
+    });
+    function showall(menu_list, parent) {
+        $.each(menu_list, function (index, val) {
+            if (val.childrens && val.childrens.length > 0) {
+                var li = $("<li></li>");
+                li.append(`<a href='javascript:void(0)' data='${val.id}' pid='${val.pid}'>${val.name}</a>`).append("<ul></ul>").appendTo(parent);
+                showall(val.childrens, $(li).children().eq(1));
+            } else {
+                $("<li></li>").append(`<a href='javascript:void(0)'  data='${val.id}' pid='${val.pid}'>${val.name}</a>`).appendTo(parent);
+            }
+        });
+    }
+     function zoomIn() {
+        $('#body').css('zoom',$('#body').css('zoom') * 1 - 0.2);
+     }
+     function zoomOut(){
+         $('#body').css('zoom',$('#body').css('zoom') * 1 + 0.2);
+         return false;
+     }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+{include file='common/head' /}
+{$config.load_file.css|raw}
+{$config.g_js|raw}
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+<link href="__LIB__/sdashboard/sDashboard.css" rel="stylesheet">
+<style>.layui-table-tool{background-color:#FFFFFF}.layui-table-tool-temp{padding-right: 0px;}
+.sDashboardWidget {
+    margin: 0 1em 0.1em 0;
+}
+</style>
+</head>
+<body>
+<div style="padding: 0 10px 0 0px;">
+    <div class="layui-row" id="myDashboard">
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row" style="display: flex;white-space: nowrap;">
+                <div style="flex: 1;display: inline-block;">
+                    {eq name='sp' value='0'}
+                    <div class="">{$btns|raw}<b id='load_btn'></b></div>
+                    {else/}
+                    <a class="layui-btn layui-btn-sm addbtn layui-btn-primary" onclick="ent_select(`{$sp}`)">确认选择</a>
+                    {/eq}
+                </div>
+                <div class="align-right" style="flex: 1;display: inline-block;">
+                    <form id='searchform' method="post" action="" class="layui-form" >
+                        <div class="layui-inline" id='search'>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-btn-group">
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" id='searchsubmit'  lay-submit lay-filter="search"><i class="layui-icon layui-icon-search" ></i></a>
+                                {eq name='sp' value='0'}
+                                    <a class="layui-btn layui-btn-sm layui-btn-primary"  onclick="exp_excle('{$config.title}',{:count($config.field)})"><i class="layui-icon layui-icon-export" ></i></a>
+                                    <a class="layui-btn layui-btn-sm layui-btn-primary" onclick="exp_print()"><i class="layui-icon layui-icon-print" ></i></a>
+                                    <a class="layui-btn layui-btn-sm layui-btn-primary" onclick="help_view({$sid})"><i class="layui-icon layui-icon-help" ></i></a>
+                                    {if condition="session('softId') == 1"}
+                                    <a class="layui-btn layui-btn-sm layui-btn-primary" onclick='sfdp.openpage("列表控制台","/gadmin/sfdp/sfdpApi.html?act=custom&sid={$sid}")'><i style="color: red;" class="layui-icon layui-icon-console" ></i></a>
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" onclick='sfdp.openpage("列表容器","/gadmin/sfdp/sfdp_container.html?sid={$sid}",{w: "88%", h: "48%"})'><i style="color: #5e7ce0;" class="layui-icon layui-icon-snowflake" ></i></a>
+                                    {/if}
+                                {/eq}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="layui-tab layui-tab-brief" lay-filter="wf_content">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="0">全部</li>
+                    {volist name='tab_data' id='k'}
+                    <li lay-id="{$k.id}">{$k.name}</li>
+                    {/volist}
+                </ul>
+            </div>
+            <table id="tabledata" class="layui-table"  lay-filter='tabledata_filter'>
+                <thead>
+                <tr>
+                    <th lay-data="{width:40,fixed:'left',type:'radio',event:'checked'}"></th>
+                    <th lay-data="{field:'id',hide:true}"></th>
+                    <th lay-data="{width:40,type:'numbers'}">ID</th>
+                    {volist name='config.field' id='k'}
+                    {in name="config['sql_field'][$key]" value='$count_field'}
+                    <th lay-data="{field:'{$config['sql_field'][$key]}',fixed:'{$config['field_wz'][$config['sql_field'][$key]] ?? ''}',sort: true,totalRow:true}"> {$k} </th>
+                    {else/}
+                    <th lay-data="{field:'{$config['sql_field'][$key]}',sort: true,fixed:'{$config['field_wz'][$config['sql_field'][$key]] ?? ''}',width:{$config['field_lenth'][$config['sql_field'][$key]] ?? ''}}"> {$k}</th>
+                    {/in}
+                    {/volist}
+                    {eq name='gbtn' value='1'}
+                    <th lay-data="{field:'status'}">状态</th>
+                    <th lay-data="{field:'url',fixed:'right',width:185}">操作</th>
+                    {else/}
+                    <th lay-data="{field:'url',fixed:'right'}">操作</th>
+                    {/eq}
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var g_list_limit = 16;
+    var g_list_limit_page = [16,30,50,100,200];
+</script>
+{include file='common/footer' /}
+<script>
+    var Server_Url = '/gadmin/wf/wfdo';
+    var System_Url = '/gadmin/sfdp/';
+</script>
+<script src="__SFDP__/sfdp.plug.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.config.js?v=7.0.1"></script>
+<script type="text/javascript" src="__FLOW__/workflow.5.0.js"></script>
+<!--列表容器代码 Star-->
+{eq name='has_widget' value='1'}
+<script src="__LIB__/sdashboard/jquery-ui.js" type="text/javascript"></script>
+<script src="__LIB__/sdashboard/flotr2.js" type="text/javascript"></script>
+<script src="__LIB__/sdashboard/jquery-sDashboard.js" type="text/javascript"></script>
+{eq name='ver' value='0'}
+<script src="__LIB__/echarts/4.1.0.rc2/echarts.min.js" type="text/javascript"></script>
+<script src="/static/desk.js" type="text/javascript"></script>
+{else/}
+<script src="__LIB__/g2plot.min.js" type="text/javascript"></script>
+<script  src="/static/fk/fk.g2.js" type="text/javascript"></script>
+{/eq}
+<script type="text/javascript" src="/static/custom.js?v=3.1.4"></script>
+<script type="text/javascript">
+    $(function (){
+        $("#myDashboard").sDashboard({dashboardData: {$widgetdata|raw}});
+        {$Js|raw}
+    });
+    function save_desk_order(order){
+        let url = '{:url('save_desk')}?order='+order;
+        $.get(url, function (data) {
+            if (data.code == 0) {
+                layer.msg(data.msg);
+            }
+        });
+    }
+</script>
+{/eq}
+<!--列表容器代码 End-->
+{$config.fun|raw}
+<script>
+    window.onresize = function (){
+        adjustButtons()
+    }
+    $(document).ready(function() {
+        adjustButtons();
+        sfdp.generateFilterGroup({$config['search']|raw});/*渲染查询数据*/
+        layui.use(['form','table'],function (){
+            let form = layui.form;
+            let table = layui.table;
+            var element = layui.element;
+            element.on('tab(wf_content)', function(){
+                var tabid = this.getAttribute('lay-id');
+                if(tabid>0){
+                    table.reload('tabledata',{
+                        where:{search:{{$tab_field}:tabid}}
+                    })
+                }else{
+                    table.reload('tabledata',{
+                        where:{search:{}}
+                    })
+                }
+            });
+            form.render();
+            $('.layui-input').keypress(function(e){
+                if(e.keyCode==13){
+                    e.preventDefault();
+                }
+            });
+            //监听提交  搜索事件
+            form.on('submit(search)', function(data){
+                var param = {};
+                var search = $('#searchform').serializeArray();
+                var searchdata = sfdp.list_to_json(search);
+                if(searchdata != {}){
+                    param.search = searchdata;
+                }
+                table.reload('tabledata',{
+                    page: {curr: 1},
+                    where:param
+                })
+                return false;
+            });
+        })
+        try{
+            load_list_fun();//后置函数
+        }catch(e){
+            g_log('page no load end fun ~');
+        }
+        initLaytable();
+    });
+    document.onkeydown = function (event) {
+        var e = event || window.event;
+        if (e && e.keyCode == 13) { //回车键的键值为13
+            $('#searchsubmit').trigger("click");
+        }
+    };
+    var TableData;
+    function initLaytable(){
+        var toolbar = false;
+        if('{$count_field}' != ''){
+            toolbar = true;
+        }
+        var ymheight = 121;
+
+        if($('#myDashboard').height()>0){
+            ymheight = ymheight+$('#myDashboard').height() + 14
+        }
+
+        var table = layui.table;
+        var form = layui.form;
+        table.init('tabledata_filter', {
+            limit: g_list_limit,
+            limits:g_list_limit_page,
+            url:window.location.href,
+            page:true,
+            cellMinWidth: 120,
+            skin:'nob',// 无边框风格
+            size:'lg',// 大尺寸
+            height:'full-' + ymheight,
+            lineStyle: 'height: {$config["height"]|raw};',
+            method: 'post',
+            escape:false,
+            totalRow: toolbar,
+            done:function(res, curr, count){
+                TableData = res.data;
+                $(".layui-table-box").css("border-width","0px");
+                $(".layui-table-header tr").css("height","40px");
+                $(".layui-table-header tr").css("background-color","white");
+                $(".layui-table-header tr span").css("color","#666666");
+                $(".layui-table-body tr").css("height","40px");
+                setTimeout(()=>{
+                    table.resize();
+                },0)
+            }
+        });
+        //更改Gadmin 选中表单选中状态
+        table.on('tool(tabledata_filter)',function(obj){
+            if(obj.event == 'checked'){
+                $('input:checkbox').prop('checked',false);
+                $("input[name='ids']").prop('checked',false);
+                $(obj.tr).find('input:checkbox').prop('checked',true);
+            }
+        });
+        table.on('row(tabledata_filter)', function(obj){
+            $(obj.tr).find('input:radio').prop('checked',true);
+            $('input:checkbox').prop('checked',false);
+            $(obj.tr).find('input:checkbox').prop('checked',true);
+            form.render();
+        });
+        table.on('rowDouble(tabledata_filter)', function(obj){
+            var Param =  getParam();
+            var sid = g_getUrlParam('sid');
+            sfdp.openfullpage("查看",`/gadmin/sfdp/view?sid=${sid}&id=${Param[0]}`)
+        });
+    }
+    $('body').on("mouseenter",".layui-table-body tr",function () {
+        $(this).siblings().find("div").css("color","#666");
+        $(this).find("div").css("color","#4DA1FF");
+    })
+</script>
+<script type="text/javascript" src="/static/list/js.js?v1.0"></script>

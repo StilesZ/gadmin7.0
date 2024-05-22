@@ -1,0 +1,309 @@
+{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/multiple-select/multiple-select.css" />
+<title>基本设置</title>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <form class="layui-form" action='{:url("base")}' method="post" id="form-article-add">
+        <div class="layui-card-body">
+				  <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+					  <legend>基本信息 & 设置网站基本参数信息</legend>
+				  </fieldset>
+				<div class="layui-tab-item layui-show">
+					<div class="layui-form-item">
+                    <label class="layui-form-label">公司名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name='name' value="{$sys.name}" required  lay-verify="required" placeholder="公司名称" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">系统名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name='sysname' value="{$sys.sysname}" required  lay-verify="required" placeholder="系统名称" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">系统版本</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name='sysv' value="{$sys.sysv}" required  lay-verify="required" placeholder="系统版本" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">版权信息</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name='copy' value="{$sys.copy}" required  lay-verify="required" placeholder="版权信息" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">备案号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name='icp' value="{$sys.icp}" required  lay-verify="required" placeholder="备案号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+					<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+						<legend>系统配置 & 相关系统参数启闭信息</legend>
+					</fieldset>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">官网接口</label>
+						<div class="layui-input-inline">
+							<input type="text" name='g_api' readonly value="{$sys.g_api ?? 'https://up.gadmin8.com'}" required  lay-verify="required" placeholder="官网接口地址" autocomplete="off" class="layui-input">
+						</div>
+						<label class="layui-form-label">appId</label>
+						<div class="layui-input-inline">
+							<input type="text" name='username' value="{$sys.username ?? ''}"    placeholder="授权的账号信息" autocomplete="off" class="layui-input">
+						</div>
+					<!--
+					<div class="layui-form-item">
+						<label class="layui-form-label">授权密码</label>
+						<div class="layui-input-block">
+							<input type="password" name='password' value="{$sys.password ?? ''}"   placeholder="授权的密码信息" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					-->
+						<label class="layui-form-label">IP位置接口</label>
+						<div class="layui-input-inline">
+							<input type="text" value="{$sys.iptoken ?? ''}" class="layui-input" name="iptoken">
+						</div>
+						<div class="layui-form-mid layui-word-aux">IP位置接口<a target="_blank" style="color: #0e90d2" href="https://user.ip138.com/">申请IP接口</a></div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">启用验证码</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='2' title="启用" name="verify" {$sys.verify==2 ? 'checked' : ''} >
+							<input type="radio" value='1' title="禁用" name="verify" {$sys.verify==1 ? 'checked' : ''} >
+						</div>
+						<div class="layui-form-mid layui-word-aux">开启后页面登入页面需要正确输入验证码才能和登入</div>
+						<label class="layui-form-label">页面水印</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="启用" name="watermark"  >
+							<input type="radio" value='2' title="禁用" name="watermark">
+						</div>
+
+						<label class="layui-form-label">水印内容</label>
+						<div class="layui-input-inline">
+							<input type="text" value="{$sys.watermark_content ?? ''}" class="layui-input" name="watermark_content">
+						</div>
+						<div class="layui-form-mid layui-word-aux">用户id{uid}日期{date}角色{role}姓名{name}角色名{rolename}</div>
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">启用钉钉</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="启用" name="is_dd">
+							<input type="radio" value='2' title="禁用" name="is_dd">
+						</div>
+						<div class="layui-form-mid layui-word-aux">钉钉启用，可以使用钉钉通知、登入、钉钉组织同步</div>
+
+						<label class="layui-form-label">启用微信</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="启用" name="is_wx">
+							<input type="radio" value='2' title="禁用" name="is_wx">
+						</div>
+						<div class="layui-form-mid layui-word-aux">微信启用，可以使用微信通知，微信登入，及微信组织同步</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">Api接口开关</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="启用" name="is_api"  >
+							<input type="radio" value='2' title="禁用" name="is_api"  >
+						</div>
+						<div class="layui-form-mid layui-word-aux">Api接口的开关关闭后Api模块将无法访问，建议关闭</div>
+
+						<label class="layui-form-label">数据回收</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="启用" name="datarecycling"  >
+							<input type="radio" value='2' title="禁用" name="datarecycling"  >
+						</div>
+						<div class="layui-form-mid layui-word-aux">系统数据删除会被系统回收站给回收，作为数据存储</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">单一登入</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="启用" name="is_login" >
+							<input type="radio" value='2' title="禁用" name="is_login">
+						</div>
+						<div class="layui-form-mid layui-word-aux">开启后，账号只允许在一处登入使用</div>
+
+						<label class="layui-form-label">阅读模式</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='1' title="转换" name="viewmode"  >
+							<input type="radio" value='2' title="在线" name="viewmode">
+						</div>
+						<div class="layui-form-mid layui-word-aux">系统数据删除会被系统回收站给回收，作为数据存储</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">LibreOffice</label>
+						<div class="layui-input-inline">
+							<input type="text" name='office' value="{$sys.office ?? ''}" required  lay-verify="required" placeholder="不需要在线阅读文档，可不填写" autocomplete="off" class="layui-input">
+						</div>
+						<div class="layui-form-mid layui-word-aux">系统会自动转换为pdf并提供在线阅读</div>
+						<label class="layui-form-label">voffice</label>
+						<div class="layui-input-inline">
+							<input type="text" name='voffice' value="{$sys.voffice ?? ''}" required  lay-verify="required" placeholder="Ofice 在线API接口" autocomplete="off" class="layui-input">
+						</div>
+						<div class="layui-form-mid layui-word-aux">调用网页转换接口提供在线阅读</div>
+					</div>
+
+
+					<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+						<legend>界面信息 & 系统界面配置信息</legend>
+					</fieldset>
+					<div class="layui-form-item">
+						<label class="layui-form-label">模板配置</label>
+						<div class="layui-input-inline">
+							<!--<input type="radio"  value='hui' title="hui" name="view" {$sys.view=='hui' ? 'checked' : ''} >-->
+							<input type="radio" value='layui' title="layui" name="view" checked >
+						</div>
+						<label class="layui-form-label">桌面版本</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='0' title="echarts" name="desktype"  >
+							<input type="radio" value='1' title="G2" name="desktype" >
+						</div>
+						<label class="layui-form-label">查看页布局</label>
+						<div class="layui-input-block">
+							<input type="radio"  value='0' title="平铺模式" name="view_is_log" >
+							<input type="radio" value='1' title="按钮模式" name="view_is_log"  >
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">打印版本</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='0' title="UE" name="print"  >
+							<input type="radio" value='1' title="Hiprint" name="print" >
+						</div>
+						<label class="layui-form-label">在线用户</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='0' title="关闭" name="online" >
+							<input type="radio" value='1' title="开启" name="online"  >
+						</div>
+						<label class="layui-form-label">查看页审批</label>
+						<div class="layui-input-inline">
+							<input type="radio"  value='0' title="关闭" name="view_is_wf" >
+							<input type="radio" value='1' title="开启" name="view_is_wf"  >
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">登入页LOGO</label>
+						<div class="layui-input-inline flex-center">
+							<input name='logo' id='logo' type="text" value="{$sys.logo}" class="layui-input">
+							<a onclick="layer_show('上传','{:url('common/upload',['id'=>'logo'])}','14','15')" href="javascript:" class="layui-btn layui-btn-xs">
+								<i class="layui-icon layui-icon-upload"></i>
+							</a>
+						</div>
+						<label class="layui-form-label">后台首页LOGO</label>
+						<div class="layui-input-inline flex-center">
+							<input name='home_logo' id='home_logo' type="text" value="{$sys.home_logo ?? 'static/layui/icon/logo.png'}" class="layui-input">
+							<a onclick="layer_show('上传','{:url('common/upload',['id'=>'home_logo'])}','14','15')" href="javascript:" class="layui-btn layui-btn-xs">
+								<i class="layui-icon layui-icon-upload"></i>
+							</a>
+						</div>
+						<label class="layui-form-label">登录页背景</label>
+						<div class="layui-input-inline flex-center">
+							<input name='logimg' id='logimg' type="text" value="{$sys.logimg}" class="layui-input">
+							<a onclick="layer_show('上传','{:url('common/upload',['id'=>'logimg'])}','14','15')" href="javascript:" class="layui-btn layui-btn-xs">
+								<i class="layui-icon layui-icon-upload"></i>
+							</a>
+						</div>
+					</div>
+					<fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+					<legend>超级权限信息 & 设计器相关超级权限控制</legend>
+					</fieldset>
+					  <div class="layui-form-item">
+						  <label class="layui-form-label">去审核权</label>
+						  <div class="layui-input-inline">
+
+							  <span class="select-box">
+								<select  multiple="multiple" class="select" id='select' lay-ignore>
+									{volist name='user' id='k'}
+											<option value="{$k.id}" {in name="k.id" value="$sys.wf_qs"}selected="selected" {/in} >{$k.username}</option>
+									{/volist}
+								</select>
+								</span>
+							  <input type="hidden" name='wf_qs' id='t' value="{$sys.wf_qs ?? ''}">
+						  </div>
+						  <label class="layui-form-label">删表权限</label>
+						  <div class="layui-input-inline">
+							  <span class="select-box">
+								<select  multiple="multiple" class="select" id='select2' lay-ignore>
+									{volist name='user' id='k'}
+											<option value="{$k.id}" {in name="k.id" value="$sys.sfdp_db"}selected="selected" {/in} >{$k.username}</option>
+									{/volist}
+								</select>
+								</span>
+							  <input type="hidden" name='sfdp_db' id='t2' value="{$sys.sfdp_db ?? ''}">
+						  </div>
+						  <label class="layui-form-label">部署权限</label>
+						  <div class="layui-input-inline">
+							  <span class="select-box">
+								<select  multiple="multiple" class="select" id='select3' lay-ignore>
+									{volist name='user' id='k'}
+											<option value="{$k.id}" {in name="k.id" value="$sys.sfdp_fix"}selected="selected" {/in} >{$k.username}</option>
+									{/volist}
+								</select>
+								</span>
+							  <input type="hidden" name='sfdp_fix' id='t3' value="{$sys.sfdp_fix ?? ''}">
+						  </div>
+					  </div>
+				  </div>
+                <button class="layui-btn " type="submit">保存</button>
+				<a  class="layui-btn layui-btn-danger " onclick="cl()" > 清空缓存</a>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{include file='common/footer' /}
+<script src="__LIB__/multiple-select/multiple-select.js"></script>
+<script>
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element;
+});
+$("input[type=radio][name=is_login][value={$sys.is_login ?? '1'}]").attr("checked",true);
+$("input[type=radio][name=online][value={$sys.online ?? '0'}]").attr("checked",true);
+$("input[type=radio][name=datarecycling][value={$sys.datarecycling ?? '2'}]").attr("checked",true);
+$("input[type=radio][name=watermark][value={$sys.watermark ?? '2'}]").attr("checked",true);
+$("input[type=radio][name=is_wx][value={$sys.is_wx ?? '2'}]").attr("checked",true);
+$("input[type=radio][name=is_dd][value={$sys.is_dd ?? '2'}]").attr("checked",true);
+$("input[type=radio][name=desktype][value={$sys.desktype ?? '1'}]").attr("checked",true);
+$("input[type=radio][name=is_api][value={$sys.is_api ?? '2'}]").attr("checked",true);
+$("input[type=radio][name=print][value={$sys.print ?? '0'}]").attr("checked",true);
+$("input[type=radio][name=view_is_wf][value={$sys.view_is_wf ?? '0'}]").attr("checked",true);
+$("input[type=radio][name=view_is_log][value={$sys.view_is_log ?? '0'}]").attr("checked",true);
+$("input[type=radio][name=viewmode][value={$sys.viewmode ?? '1'}]").attr("checked",true);
+layui.use('form', function(){
+
+});
+$(function() {
+	$('#select').change(function() {
+		$('#t').val($(this).val());
+	}).multipleSelect({
+		width: '100%'
+	});
+	$('#select2').change(function() {
+		$('#t2').val($(this).val());
+	}).multipleSelect({
+		width: '100%'
+	});
+	$('#select3').change(function() {
+		$('#t3').val($(this).val());
+	}).multipleSelect({
+		width: '100%'
+	});
+});
+function cl(){
+	layer.confirm('您确定要清空缓存，此操作会删除【runtime】的数据！',function(index){
+		$.ajax({
+			type: 'POST',
+			url: '{:url("clear")}',
+			dataType: 'json',
+			success: function(data){
+				if(data.code==0){
+					layer.msg(data.msg,{icon: 1,time:1000});
+				}else{
+					layer.msg(data.msg,{icon: 5,time:1000});
+				}
+			},
+			error:function(data) {
+				console.log(data.msg);
+			},
+		});		
+	});
+}
+</script>
+</body>
+</html>

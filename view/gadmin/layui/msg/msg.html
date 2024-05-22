@@ -1,0 +1,43 @@
+﻿{include file='common/head' /}
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+		<div class="layui-card-body">
+			<div class="layui-row">
+				<div class="layui-col-md8">
+					<a class="layui-btn layui-btn-sm layui-btn-warm"onclick="dos('read','设置已读')"><i class="layui-icon layui-icon-edit"></i>标记已读</a>
+					<a class="layui-btn  layui-btn-sm layui-bg-gra" onclick="dos('del','删除全部')" style="background-color:#666 !important" ><i class="layui-icon layui-icon-vercode"></i>删除全部</a>
+				</div>
+			</div>
+		<table id='table_id' class="layui-table table-sort">
+			<thead>
+			<tr class="text-c">
+				<th width="25">id</th>
+				<th>标题</th>
+				<th>发送用户</th>
+				<th>状态</th>
+				<th>添加时间</th>
+			</tr>
+			</thead>
+			{volist name='list["data"]' id='k'}
+				<tr class="text-c">
+					<td width="25">{$k.id}</td>
+					<td><a onclick=sfdp.openfullpage("查看","{$k.href}")>{$k.title}</a></td>
+					<td>{:get_common_val('soft_user',$k.suid,'username')}</td>
+					<td>{$k.is_read}</td>
+					<td>{$k.add_time|date='Y-m-d'}</td>
+				</tr>
+			{/volist}
+		</table>
+    </div>
+</div>
+</body>
+</html>
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script>
+	function dos(action,msg) {
+		sfdp.Askshow("{:url('msg_set')}?act=" + action , "您确定要执行【" + msg + "】吗?该操作无法撤销！")
+	}
+</script>

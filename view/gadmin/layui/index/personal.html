@@ -1,0 +1,99 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/layui/layuiadmin.css?v=5.0.0">
+<div class="layui-fluid layadmin-homepage-fluid">
+    <div class="layui-row layui-col-space8">
+        <div class="layui-col-md2">
+            <div class="layadmin-homepage-panel layadmin-homepage-shadow">
+                <div class="layui-card text-center">
+                    <div class="layui-card-body">
+                        <div class="layadmin-homepage-pad-ver">
+                        </div>
+                        <h4 class="layadmin-homepage-font">{:session('sfotUserName')}</h4>
+                        <p class="layadmin-homepage-min-font">{:get_common_val('soft_role',session('sfotRoleId'),'name')}</p>
+                        <div class="layadmin-homepage-pad-ver">
+                            <a href="javascript:" class="layui-icon layui-icon-cellphone" title="{$info.tel}"></a>
+                            <a href="javascript:" class="layui-icon layui-icon-login-qq" title="{$info.mail}"></a>
+                        </div>
+                        <button class="layui-btn layui-btn-fluid" onclick="layer_show('修改','{:url('index/info')}',50,60)">修改信息</button>
+                    </div>
+                </div>
+                <p class="layadmin-homepage-about">
+                    信息
+                </p>
+                <ul class="layadmin-homepage-list-group">
+                    <li class="list-group-item"><i class="layui-icon layui-icon-location"></i>{$info.remark}</li>
+                    <li class="list-group-item"><i class="layui-icon layui-icon-snowflake"></i><span style="word-wrap:break-word;">{$info.realname ?? ''}</span></li>
+                    <li class="list-group-item"><i class="layui-icon layui-icon-slider"></i><span style="word-wrap:break-word;">{$info.last_login_ip}</span></li>
+                    <li class="list-group-item"><i class="layui-icon layui-icon-senior"></i><span style="word-wrap:break-word;">{$info.last_login_time|date='Y-m-d H:i:s'}</span></li>
+                </ul>
+                <p class="layadmin-homepage-about">
+                    组织
+                </p>
+                <ul class="layadmin-homepage-list-inline">
+                    <a href="javascript:" class="layui-btn layui-btn-primary">{:get_common_val('soft_role',session('sfotRoleId'),'name')}</a>
+                </ul>
+                <p class="layadmin-homepage-about">
+                    层级
+                </p>
+                <ul class="layadmin-homepage-list-inline">
+                    <a href="javascript:" class="layui-btn layui-btn-primary">{:get_common_strs('soft_saas',session('softSaasId') ?? '','name')}</a>
+                </ul>
+            </div>
+        </div>
+        <div class="layui-col-md10">
+            <div class="layui-fluid layadmin-homepage-content">
+                <div class="layui-row layui-col-space20 layadmin-homepage-list-imgtxt">
+                    <div class="layui-col-md9">
+                        {volist name='data' id='k'}
+                        <div class="grid-demo">
+                           <div class="panel-body layadmin-homepage-shadow">
+                                <div class="media-body">
+                                    <div class="pad-btm">
+                                        <p class="fontColor"><a href="javascript:;">{$k.sponsor_text}</a>
+                                            <ul class="list-inline" style="float: right;">
+                                                <li><span>{$k.btn|raw}</span></li>
+                                                {if condition='$k.sid > 0'}
+                                                <li><span><a onclick="layer_show('{$k.flow_name}','/gadmin/sfdp/view.html?sid={$k.sid}&id={$k.bid}')">查看</a></span></li>
+                                                {/if}
+                                            </ul>
+                                        </p>
+                                    </div>
+                                    <p>业务名称:{$k.flow_name} -  接收:{$k.js_time|date='Y-m-d H:i:s'}  办结：{$k.bl_time|date='Y-m-d H:i:s'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {/volist}
+
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="grid-demo">
+                            <div class="layui-card homepage-bottom">
+                                <div class="layui-card-header">
+                                    <h3 class="panel-title">
+                                        <i class="layui-icon layui-icon-user"></i>
+                                        登录
+                                    </h3>
+                                </div>
+                                <div class="layui-card-body">
+                                    {volist name='log' id='k'}
+                                    <a href="javascript:" class="layadmin-privateletterlist-item">
+                                        <div class="meida-left">
+                                            {$k.username}
+                                        </div>
+                                        <div class="meida-right">
+                                            <p>{$k.login_time|date='Y-m-d H:i:s'}</p>
+                                            <mdall>{$k.login_ip} - {$k.login_os}</mdall>
+                                        </div>
+                                    </a>
+                                    {/volist}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{include file='common/footer' /}

@@ -1,0 +1,299 @@
+{include file='common/head' /}
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <form class="layui-form" action="" method="post" lay-filter="form" id="form">
+                        <fieldset class="layui-elem-field layui-field-title" >
+                            <legend>主数据设计 - Join</legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">元素名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="title" value="{$row.title ?? ''}" placeholder="列表表头显示名称:系统设置" class="layui-input" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">元素调用</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="fun" value="{$row.fun ?? ''}" placeholder="英文名称：get_sys_name" class="layui-input" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">元素类别</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="stype" value="1"  title="业务调用">
+                                    <input type="radio" name="stype" value="2" title="报表调用" >
+                                    <input type="radio" name="stype" value="3" title="桌面调用" >
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">外部调用</label>
+                                <div class="layui-input-block" >
+                                    <input type="radio" name="open" value="0"  title="关闭">
+                                    <input type="radio" name="open" value="2" title="开启" >
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 60px;padding: 9px 5px;">主数据库</label>
+                                <div class="layui-input-block" style="margin-left: 80px">
+                                    <select name="conn" id="conn" lay-filter="conn" lay-search>
+                                        <option value="">请选择数据库连接</option>
+                                        {present name="row.id"}
+                                        <option value="{$row.conn}" selected>{$row.conn}</option>
+                                        {/present}
+                                        {volist name="$connections" id="vo"}
+                                        <option value="{$vo}" >{$vo}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 60px;padding: 9px 5px;">数据表</label>
+                                <div class="layui-input-block" style="margin-left: 80px;">
+                                    <select name="table" id="table" lay-filter="table" lay-search>
+                                        <option value="">请先选择数据表信息</option>
+                                        {present name="row.id"}
+                                        <option value="{$row.table}" selected>{$row.table}</option>
+                                        {/present}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 60px;padding: 9px 5px;">数据方法</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" lay-filter="type" name="type" value="0"  title="select">
+                                    <input type="radio" lay-filter="type" name="type" value="1" title="select group by" >
+                                    <input type="radio" lay-filter="type" name="type" value="2" title="find" >
+                                    <input type="radio" lay-filter="type" name="type" value="3" title="update" >
+                                    <input type="radio" lay-filter="type" name="type" value="4" title="insertGetId" >
+                                    <input type="radio" lay-filter="type" name="type" value="5" title="SQL" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block" id="field_html">
+                            </div>
+                        </div>
+                        <div id="fieldBox" {if condition="isset($row.type) and $row.type eq 5"} style="display: none" {/if}>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Field 字段</label>
+                            <div class="layui-input-block">
+                                <textarea id="field_val" placeholder="如：table.id as tid,table.title as name"  name='field' type="text/plain" class='layui-textarea' style="width:95%;height:80px;">{$row.field ?? ''}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Group 字段</label>
+                            <div class="layui-input-inline" style="width: 80%">
+                                <input type="text" name="group" value="{$row.group ?? ''}"  autocomplete="off" placeholder="如：table.id" class="layui-input" value="{$row.group ?? ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">排序条件</label>
+                            <div class="layui-input-inline" style="width: 80%">
+                                <input type="text" name="order" value="{$row.order ?? ''}"  autocomplete="off" placeholder="如：table.id desc" class="layui-input" value="{$row.order ?? ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">where 条件</label>
+                            <div class="layui-input-inline" style="width: 80%">
+                                <input type="text" name="where"  value="{$row.where ?? ''}" autocomplete="off" placeholder="如：table.id=:id and table.title=:title" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"></div>
+                        </div>
+                </div>
+
+                <div class="layui-form-item" id="customSql" {if condition="!isset($row.type) || $row.type neq 5"} style="display: none"{/if}>
+                <label class="layui-form-label">SQL语句</label>
+                <div class="layui-input-inline" style="width: 80%">
+                    <textarea name="customsql" rows="20" value="{$row.customsql ?? ''}" autocomplete="off"  class="layui-textarea">{$row.customsql ?? ''}</textarea>
+                </div>
+                <div class="layui-form-mid layui-word-aux"></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    {present name="row.id"}
+                    <input type="hidden" name="id" value="{$row.id ?? ''}" >
+                    <button class="layui-btn layui-btn-sm" type="submit">修改提交</button>
+                    {else/}
+                    <button class="layui-btn layui-btn-sm" type="submit">确认新增</button>
+                    {/present}
+                    <a onclick="run({$row.id ?? 0})" class=" layui-btn btn-23 layui-btn-sm"> 测试执行</a>
+                </div>
+            </div>
+            {present name="row.id"}
+
+            <div id="joinBox" {if condition = "isset($row.type) and $row.type eq 5"} style="display: none" {/if}>
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>数据关联设计 - Join <a onclick="layer_show('新增','{:url('join',['id'=>$row.id])}')" class="layui-btn layui-btn-primary layui-btn-xs">新增关联</a></legend>
+            </fieldset>
+            <div class="layui-form-item">
+                <table class="layui-table">
+                    <tr>
+                        <th width="38" nowrap="nowrap" >选择数据表</th>
+                        <th width="79" nowrap="nowrap" scope="col">子表字段=>主表字段</th>
+                        <th width="70" nowrap="nowrap" scope="col">读取字段</th>
+                        <th width="30" nowrap="nowrap" scope="col">操作</th>
+                    </tr>
+                    {volist name="$join" id="vo"}
+                    <tr>
+                        <td >{$vo.table}</td>
+                        <td >{$vo.link_id}=>{$vo.link_mid}</td>
+                        <td >{$vo.field}</td>
+                        <td>
+                            <a class=" layui-btn layui-btn-primary layui-btn-xs" onclick="del(this,{$vo.id})">删除</a>
+                        </td>
+                    </tr>
+                    {/volist}
+                </table>
+            </div>
+        </div>
+        </form>
+        {else/}
+        {/present}
+
+        <blockquote class="layui-elem-quote layui-text">
+            <p>备注：</p>
+            <p>　　 注意：保存后才可以设置关联表信息！</p>
+            <p>　　 内置变量有：{userid}用户ID {roleid} 用户角色ID</p>
+            <p>报表穿透规则：</p>
+            <p>　　1、报表支持无极限穿越；</p>
+            <p>　　2、报表穿越规则: @get_data@name@编号 第一个参数为报表名称,第二个参数为查询字段，第三个字段为查询字段名称</p>
+        </blockquote>
+    </div>
+</div>
+</div>
+</div>
+
+{include file="common/footer"/}
+<script>
+    $(function () {
+        $("#form").Validform({
+            tiptype:function(msg,o,cssctl){
+                if (o.type == 3){
+                    layer.msg(msg, {time: 800});
+                }
+            },
+            ajaxPost:true,
+            showAllError:true,
+            callback:function(ret){
+                if (ret.code == 1) {
+                    if(ret.msg !== 'add'){
+                        layer.msg(ret.msg,{icon:1,time: 1500},function(){
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    }else{
+                        location.href = ret.url;
+                    }
+                } else {
+                    layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                }
+            }
+        });
+    })
+</script>
+<script>
+    function run(id){
+        if(id === 0){
+            layer.msg('请先保存！');return;
+        }
+        layer_show('执行测试','/gadmin/source/run?id='+id)
+    }
+    layui.use(['transfer','layer','form'],function(){
+        var layer = layui.layer;
+        var form = layui.form;
+        var $ = layui.$;
+
+        $("input[type=radio][name=stype][value={$row.stype ?? '1'}]").attr("checked",true);
+        $("input[type=radio][name=type][value={$row.type ?? '0'}]").attr("checked",true);
+        $("input[type=radio][name=open][value={$row.open ?? '0'}]").attr("checked",true);
+        form.render();
+
+
+        form.on('radio(type)', function(data){
+            var type = data.value;
+            if(type==5){
+                $('#fieldBox').hide();
+                $('#joinBox').hide();
+
+                $('#customSql').show();
+            }else{
+                $('#fieldBox').show();
+                $('#joinBox').show();
+
+                $('#customSql').hide();
+            }
+        });
+
+        form.on('select(conn)', function(data){
+            $.ajax({
+                type:'post',
+                dataType:'json',
+                data:{connection:data.value},
+                url:'{:url("getTableList")}',
+                success:function(res){
+                    if(res.code==200){
+                        let opt = '<option>请选择数据表</option>';
+                        for (i=0;i<=res.data.length;i++){
+                            opt+='<option value="'+res.data[i]+'">'+res.data[i]+'</option>';
+                        }
+                        $('#table').html(opt);
+                        form.render();
+                    }
+                }
+            });
+        });
+        form.on('select(table)', function(){
+            let data = form.val("form");
+            $.ajax({
+                type:'post',
+                dataType:'json',
+                data:{connection:data.conn,table:data.table},
+                url:'{:url("getFieldList")}',
+                success:function(res){
+                    if(res.code==200){
+                        let opt = '';
+                        for (i=0;i<res.data.length;i++){
+                            opt+='<span class="layui-badge-rim" onclick=ins("'+data.table+'.'+res.data[i]['value']+'")>'+data.table+'.'+res.data[i]['value']+'|'+res.data[i]['title']+'</span> ';
+                        }
+                        $('#field_html').html(opt);
+                    }
+                }
+            });
+        });
+    });
+    function ins(funcName){
+        let val = $('#field_val').val();
+        if(val==''){
+            $('#field_val').val(funcName);
+        }else{
+            $('#field_val').val(val +',' + funcName);
+        }
+    }
+    function del(obj,id){
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            data:{id:id},
+            url:'{:url("deljoin")}',
+            success:function(res){
+                if(res.code==0){
+                    layer.msg('删除成功！');
+                    $(obj).parents("tr").remove();
+                }else{
+                    layer.alert('对不起删除失败！');
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

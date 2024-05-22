@@ -1,0 +1,83 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            {present name="info.id"}
+            <form action="" method="post" name="form" id="form" class="layui-form">
+                <input type="hidden" name="id" value="{$info.id}">
+                {else /}
+                <form action="" method="post" name="form" id="form" class="layui-form">
+                    {/present}
+                    <table>
+                        <tr>
+                            <td> 标题：</td>
+                            <td><input type="text" name="title" class='layui-input' datatype="*"
+                                       value="{$info.title ?? ''}" datatype="*"></td>
+                            <td>  主题：</td>
+                            <td>
+                                <select name="color">
+                                    <option value="orange">orange</option>
+                                    <option value="cyan">cyan</option>
+                                    <option value="blue">blue</option>
+                                    <option value="black">black</option>
+                                    <option value="gray">gray</option>
+                                </select>
+                            </td>
+                            <td>  角色：</td>
+                            <td>
+                                <select name="role">
+                                    {volist name='role' id='k'}
+                                        <option value="{$k.id}">{$k.name}</option>
+                                    {/volist}
+                                </select>
+                            </td>
+                            <td>
+                                <button type="submit" class="layui-btn layui-btn-sm" style="margin-left: 10px">立即提交</button>
+                                <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>标题</th>
+                    <th>颜色</th>
+                    <th>角色</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                {volist name='type' id='k'}
+                <tr>
+                    <td>{$key + 1}</td>
+                    <td>{$k.title}</td>
+                    <td><span class="layui-badge layui-bg-{$k.color}">{$k.color}</span></td>
+                    <td>{:get_common_val('soft_role',$k.role,'name')}</td>
+                    <td>
+                        <a href="{:url('desk_tag')}?id={$k.id}" class="layui-btn layui-btn-sm">修改</a>
+                  </td>
+                </tr>
+                {/volist}
+            </table>
+
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script src="__SFDP__/lib/laydate5.0.9/laydate.js"></script>
+<script>
+    $(function () {
+        layui.use('form', function () {
+            var form = layui.form;
+            $("[name='color']").find("[value='{$info.color ?? '0'}']").attr("selected", true);
+            $("[name='role']").find("[value='{$info.role ?? '0'}']").attr("selected", true);
+            form.render();
+        });
+        g_checkForm($("#form"));
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/lib/layer.sup.css?v=6.0.0">
+<script type="text/javascript" src="__VUE_ROOT__/vue.js"></script>
+<script type="text/javascript" src="__VUE_ROOT__/axios.min.js"></script>
+<script type="text/javascript" src="__VUE_ROOT__/babel.min.js"></script>
+
+<style id="theme-data">
+</style>
+<style id="layout-data">
+</style>
+</head>
+<style>
+    .g-admin-pagetabs .layui-tab-title {
+        height: 49px;
+    }
+    .g-admin-pagetabs .layui-tab-title li {
+        line-height: 49px;
+    }
+    .g-admin-layout .layui-logo, .layui-side-menu .layui-nav {
+        height: 43px;
+        line-height: 43px;
+    }
+    .g-admin-pagetabs .layui-icon-next {
+        right: 10px;
+    }
+    .top-menu-item span {
+        font-size: 14px;
+    }
+    .g-admin-pagetabs .layui-tab-title {height:44px;margin-top: 6px;}
+    .g-admin-pagetabs .layui-tab-title li {line-height: 44px;border-right:none;}
+    .layui-side-menu .layui-nav{padding: 0 15px;}
+    .layui-nav-tree .layui-this,.layui-nav-tree .layui-nav-child dd.layui-this a ,.layui-nav-tree .layui-this, .layui-nav-tree .layui-this>a, .layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a{background-color:#f7f9ff!important;color: #3963bc!important;border-radius:10px;font-weight:600}
+    .layui-nav .layui-nav-item{border-radius:10px;}
+    .layui-side-menu .layui-nav .layui-nav-more {right: 4px;}
+    .layui-side-menu .layui-nav .layui-nav-item a {border-radius:10px;padding-left:25px;padding-top:6px;padding-bottom:6px;}
+    .layui-side-menu .layui-nav .layui-nav-item a:hover{background-color: #f7f9ff!important;color: #3963bc!important;}
+    .layui-side-menu .layui-nav .layui-nav-item a:hover .layui-nav-more{border-top-color: #3963bc!important;}
+    .layui-side-menu .layui-nav .layui-nav-item .layui-icon{left:3px;}
+    .layui-nav .layui-nav-mored, .layui-nav-itemed>a .layui-nav-more {
+        margin-top: -17px;
+    }
+    .kjyc .layui-nav-more{
+        display: none;
+    }
+    .sideMenuBar{
+        overflow-y: scroll;
+    }
+    div::-webkit-scrollbar{
+        width: 0px;
+    }
+    .g-admin-sidebar-fold .g-admin-pagetabs{
+        left:175px!important;
+    }
+</style>
+<body class="layui-layout-body">
+<div id="low-level" style="display: none">
+    <h2 class="title">温馨提示：为了给您更好的使用体验，本系统已不再兼容IE浏览器，请换用<a href="" style="color:#ce7d14;font-weight: 600;">Chrome浏览器</a> 或 将您的浏览器内核切换为<span style="color:#A48566;font-weight: 600;">极速模式</span></h2>
+</div>
+<div id="g-app-main">
+    <div :class="sideBarOpen?'':'g-admin-sidebar-fold'" style="display: none;transition: all ease .3s;" id="main">
+        <!--layUi layout start-->
+        <div class="layui-layout g-admin-layout">
+            <!-- header -->
+            <div class="layui-header">
+                <ul class="layui-nav g-layout-left" style="z-index: 999;">
+                    {if condition="session('softId') ==1"}
+                    <li class="layui-nav-item layui-hide-xs">
+                        <a onclick=openUrl('超级中心','{:url("sys/sup")}')>
+                            超级中心
+                        </a>
+                    </li>
+                    {else/}
+                    <li class="layui-nav-item layui-hide-xs kjyc" style="margin-left: 10px">
+                        <a href="javascript:;" title="侧边栏" style='width: 75px;'>
+                            快捷功能
+                        </a>
+                        <dl class="layui-nav-child drop-down" style='text-align: center;'>
+                            {volist name='quick' id='k'}
+                            <dd @click='openTab("{$k.title}","{$k.data}")'><a>{$k.title}</a></dd>
+                            {/volist}
+                        </dl>
+                    </li>
+                    {/if}
+
+
+                </ul>
+                <!-- tabs -->
+                <div class="g-admin-pagetabs " style=" box-shadow: 0px 0px blue;top: 0px;padding: 0 0px 0 0px;z-index:0;height: 49px;line-height: 50px;background-color: #fff0;left:370px;width: calc(100% - 610px);">
+                     <div class="layui-icon g-admin-tabs-control layui-icon-prev" @click="toLeftPage"></div>
+                    <div class="layui-icon g-admin-tabs-control layui-icon-next" @click="toRightPage" style="border-left:0px"></div>
+                    <div class="layui-tab" lay-allowclose="true" lay-filter="g-admin-layout-tabs" style="position:relative;left: 40px;max-width: 91%">
+                        <ul class="layui-tab-title" ref="iframe-tabs">
+                            <li @click="selectedTabsIndex = -1" :class="{'layui-this':selectedTabsIndex === -1}"><i
+                                    class="layui-icon layui-icon-home"></i><i
+                                    class="layui-icon layui-unselect layui-tab-close">ဆ</i></li>
+                            <li v-for="(item,index) in tabsList" @click="selectedTabsIndex = index"
+                                :class="{'layui-this':selectedTabsIndex === index}" :data-url="item.src" :id="`tabsli-${index+1}`" :data-key="index+1">
+                                <span>{{item.name}}</span><i class="layui-icon layui-unselect layui-tab-close" @click="closeCurrentTabs(index)">ဆ</i>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+
+                <ul class="layui-nav g-layout-right">
+                    <li class="layui-nav-item" @click="reLoadCurrentPage">
+                        <a href="javascript:;" style="padding: 0 10px;">
+                            <i class="layui-icon layui-icon-refresh-3"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" onClick='openUrl("未读消息","{:url("msg/index")}")' id="msg">
+                        <a href="javascript:;" style="padding: 0 10px;">
+                            <i class="layui-icon layui-icon-notice">
+                                {gt name='msg_count' value='0'}<span class="layui-badge" style="margin-top: -20px;margin-left: -1px;">{$msg_count}</span> {/gt}
+                            </i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item layui-hide-xs" @click="changeFullScreenStatus">
+                        <a href="javascript:;" style="padding: 0 10px;">
+                            <i class="layui-icon"
+                               :class="inFullScreenMode ? 'layui-icon-screen-restore':'layui-icon-screen-full'"></i>
+                        </a>
+                    </li>
+                    <li class="layui-nav-item " style="margin-right: 10px">
+                        <a href="javascript:;" style="padding: 0 4px;line-height: 21px;text-align: center;">
+                            <span style="text-align: center;">{:session('sfotUserName')}</span><br/><span style="font-size: 7px">({:session('sfotRealName')}|{:session('sfotRoleName')})</span>
+                        </a>
+                        <dl class="layui-nav-child drop-down">
+                            <dd><a onClick='openUrl("个人信息","{:url("index/personal")}")'>个人信息</a></dd>
+                            <!--<dd><a onClick='layer_show("桌面布局","{:url("sys/deskconfig")}")'>桌面布局</a></dd>-->
+                            <dd><a onClick='layer_show("快捷菜单","{:url("common/menu")}",30,40)'>菜单索引</a></dd>
+                            <dd><a @click="openThemePicker">主题方案</a></dd>
+                            <dd><a onClick='layer_show("修改密码","{:url("index/pass")}",30,40)'>修改密码</a></dd>
+                            {if condition="session('softId') == 1"}
+                            {eq name=":g_cache('online')" value='1'}
+                            <dd><a onClick='layer_show("在线用户","{:url("index/online")}",80,40)'>在线用户</a></dd>
+                            {/eq}
+                            {/if}
+                            <dd><a href="{:url('logout')}">退出登录</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <!-- menus -->
+            <div v-if="classicalLayout" class="layui-side layui-side-menu" >
+                <div class="layui-side-scroll">
+                    <div class="layui-logo" v-if="sideBarOpen">{:g_cache('sysname')} {:g_cache('sysv')}</div>
+                    <div class="layui-logo" v-else style="display: flex;align-items: center; justify-content: center;">
+                        <img src="{:addslashes(g_cache('home_logo'))}" style="width: 32px;height:32px;" alt="logo">
+                    </div>
+                    <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                    <ul class="layui-nav layui-nav-tree">
+                        <li
+                                v-for="(item,index) in menuTreeData"
+                                @click="sideBarOpen = true"
+                                :class="[item.open ? 'layui-nav-itemed': '','layui-nav-item']"
+                        >
+                            <a v-if="Array.isArray(menuTreeData) && menuTreeData.length > 0" href="javascript:;"
+                               @click="item.open = !item.open">
+                                <i :class="`layui-icon layui-icon-${item.lay_icon}`"></i>
+                                <cite>{{item.title}}</cite>
+                                <span class="layui-nav-more"></span>
+                            </a>
+                            <a v-else href="javascript:;" :class="{'layui-this' : item.id === selectedId}"
+                               @click="openTab(item.title,item.data),selectedId = item.id">
+                                <i :class="`layui-icon layui-icon-${item.lay_icon}`"></i>
+                                <cite>{{item.title}}</cite>
+                            </a>
+                            <dl v-if="Array.isArray(menuTreeData) && menuTreeData.length > 0 && item.open"
+                                class="layui-nav-child"
+                            >
+                                <dd v-for="(ite,idx) in item.children"
+                                    :class="[ite.open ? 'layui-nav-itemed': '',{'layui-this': ite.id === selectedId}]">
+                                    <a v-if="Array.isArray(ite.children) && ite.children.length > 0"
+                                       @click="ite.open = !ite.open"
+                                       style="cursor: pointer;">
+                                        <i :class="`layui-icon layui-icon-${ite.lay_icon}`"></i>
+                                        {{ite.title}}
+                                        <span class="layui-nav-more"></span>
+                                    </a>
+                                    <a v-else
+                                       @click="openTab(ite.title,ite.data),selectedId = ite.id"
+                                       :class="{'layui-this': ite.id === selectedId}"
+                                       style="cursor: pointer;">
+                                        <i :class="`layui-icon layui-icon-${ite.lay_icon}`"></i>
+                                        {{ite.title}}
+                                    </a>
+                                    <dl v-if="Array.isArray(ite.children) && ite.children.length > 0 && ite.open"
+                                        class="layui-nav-child">
+                                        <dd v-for="(it,idx) in ite.children">
+                                            <a @click="openTab(it.title,it.data),selectedId = it.id"
+                                               :class="{'layui-this': it.id === selectedId}"
+                                               style="cursor: pointer;">
+                                                <i :class="`layui-icon layui-icon-${it.lay_icon}`"></i>
+                                                {{it.title}}
+                                            </a>
+                                        </dd>
+                                    </dl>
+                                </dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div v-else class="layui-side layui-side-menu" :style="sideBarOpen?``:`width:65px`">
+                <div class="layui-side-scroll">
+                    <div class="sideMenuBar">
+                        <li class="top-menu-item">
+                            <img src="{:addslashes(g_cache('home_logo'))}" alt="logo">
+                        </li>
+                        <li v-for="(item,index) in menuTreeData" :key="index" class="top-menu-item"
+                            :class="{'selected-top-menu':selectedTopMenuIndex === index}"
+                            @click="selectTopMenu(index)">
+                            <i class="layui-icon" :class="`layui-icon-${item.lay_icon}`"></i>
+                            <span>{{item.title}}</span>
+                        </li>
+                        <li class="top-menu-item g-admin-flexible" @click="resizeSideBar" :data="sideBarOpenData" style="position: unset;text-align: center;bottom: 0;margin: 25px 0;line-height: 45px;border-radius: 5px;left: 50%;">
+                            <a href="javascript:;" title="侧边栏" :style="`transform: rotate(${sideBarOpen?'0':'180deg'})`">
+                                <i class="layui-icon layui-icon-shrink-right" style="    color: #fff;"></i>
+                            </a>
+                        </li>
+                    </div>
+                    <div class="layui-logo">{:g_cache('sysname')} {:g_cache('sysv')}</div>
+                    <div class="sub-menu-divider">
+                        <div class="line"></div>
+                        <span>{{subMenuTitle}}</span>
+                        <div class="line"></div>
+                    </div>
+                    <ul class="layui-nav layui-nav-tree" :style="sideBarOpen?``:`display:none`">
+                        <li v-for="(item,index) in subMenuData.children" class="layui-nav-item">
+                            <a v-if="Array.isArray(item.children) && item.children.length > 0" href="javascript:;"
+                               @click="item.open = !item.open">
+                                <i :class="`layui-icon layui-icon-${item.lay_icon}`"></i>
+                                <cite>{{item.title}}</cite>
+                                <span class="layui-nav-more"></span>
+                            </a>
+                            <a v-else href="javascript:;" :class="{'layui-this' : item.id === selectedId}"
+                               @click="openTab(item.title,item.data,item.opentype),selectedId = item.id">
+                                <i :class="`layui-icon layui-icon-${item.lay_icon}`"></i>
+                                <cite>{{item.title}}</cite>
+                            </a>
+                            <dl v-if="Array.isArray(item.children) && item.children.length > 0 && item.open">
+                                <dd v-for="(it,idx) in item.children">
+                                    <a @click="openTab(it.title,it.data,item.opentype),selectedId = it.id"
+                                       :class="{'layui-this': it.id === selectedId}"
+                                       style="padding-left: 38px;cursor: pointer;">
+                                        <i :class="`layui-icon layui-icon-${it.lay_icon}`"></i>
+                                        <span>{{it.title}}</span>
+                                    </a>
+                                </dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- body -->
+            <div class="layui-body" style="top: 45px;">
+                <div :class="{'layui-show':selectedTabsIndex === -1}" class="g-admin-tabsbody-item">
+                    <iframe src="{:url('welcome')}" frameborder="0" ref="iframe-home"
+                            class="g-admin-iframe"></iframe>
+                </div>
+                <div v-for="(item,index) in tabsList" class="g-admin-tabsbody-item"
+                     :class="{'layui-show':index === selectedTabsIndex}" :tabsbody="index" :id="`tabsitem-${index+1}`">
+                    <div class="window-layer  iframe-item-key-1" :id="`tabsbody-${index+1}`" :data-key="`${index+1}`">
+                        <div class="window-layer-tab-bar" style="position: relative;z-index: 9999">
+                            <span>{{item.name}}</span>
+                            <div style="float: right;">
+                                <i class="layui-icon layui-icon-refresh refresh"></i>
+                                <i class="layui-icon layui-icon-top recovery"></i>
+                                <i class="layui-icon layui-icon-close close"></i>
+                            </div>
+                        </div>
+                        <iframe :src="item.src" frameborder="0" :ref="`iframe-${index}`"
+                                class="g-admin-iframe" ></iframe>
+                        <div class="window-layer-seat"></div>
+                        <div class="window-layer-resize-bar">
+                            <div data-type="left" class="window-layer-resize-item-left"></div>
+                            <div data-type="right" class="window-layer-resize-item-right"></div>
+                            <div data-type="top" class="window-layer-resize-item-top"></div>
+                            <div data-type="bottom" class="window-layer-resize-item-bottom"></div>
+                            <div data-type="left-top" class="window-layer-resize-item-left-top"></div>
+                            <div data-type="right-top" class="window-layer-resize-item-right-top"></div>
+                            <div data-type="left-bottom" class="window-layer-resize-item-left-bottom"></div>
+                            <div data-type="right-bottom" class="window-layer-resize-item-right-bottom"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- footer & copyright -->
+            <div class="layui-footer" style="height:30px;font-size: 6px;">
+                {:g_cache('sysname')} {:g_cache('sysv')}
+                {if condition="session('softId') == 1"}
+                [当前系统版本：{:GadminVer}]
+                {/if}
+                {eq name=":g_cache('online')" value='1'}<b id="online"></b>{/eq}
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--layUi layout end-->
+<script type="text/javascript" src="__LIB__/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="_LAY_UI_ROOT_/layui-v2.8.4/layui.js"></script>
+<script type="text/javascript" src="__VUE_ROOT__/index.js?v=6.0.0"></script>
+<script type="text/javascript" src="/static/common.js?v=6.0.0"></script>
+<script type="text/javascript" src="/static/custom.js?v=6.0.0"></script>
+<script type="text/javascript" src="/static/lib/layer.sup.js?v=6.0.2"></script>
+<script src="/static/lib/jquery.cookie.min.js"></script>
+<script type="text/javascript">
+    function IEVersion() {
+        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+        var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+        var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+        if (isIE) {
+            var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+            reIE.test(userAgent);
+            var fIEVersion = parseFloat(RegExp["$1"]);
+            if (fIEVersion == 7) {
+                return 7;
+            } else if (fIEVersion == 8) {
+                return 8;
+            } else if (fIEVersion == 9) {
+                return 9;
+            } else if (fIEVersion == 10) {
+                return 10;
+            } else {
+                return 6;//IE版本<=7
+            }
+        } else if (isEdge) {
+            return 'edge';//edge
+        } else if (isIE11) {
+            return 11; //IE11
+        } else {
+            return -1;//不是ie浏览器
+        }
+    }
+    if(IEVersion() !== -1){
+        document.getElementById("low-level").style.display = "block"
+    }
+    var loading = layer.load(2, {
+        shade: false,
+        time: 1 * 1000
+    });
+    function MsgNotice()
+    {
+        var sw = setInterval(function()
+        {
+            $.ajax({
+                url: '/gadmin/smsg',
+                type: 'post',
+                dataType: 'json',
+                success:function(res)
+                {
+                    if(res.code == 0 && res.Total > 0)
+                    {
+                        rtip(res.Total,res.flow);
+                    }else if(res.code == -1){
+                        g_notice('低碳环保，超30分钟无人使用，自动关闭消息轮询模块！Tip:刷新后，将被重新激活！',{time:500000,skin:'error'})
+                        clearInterval(sw);
+                    }else if(res.code == 1){
+                        if(res.msg=='长时间未操作，已退出登入！'){
+                            g_notice('已退出登入，请按F5刷新页面！',{time:90000*900000*9000000,skin:'error',offset: 'auto'})
+                            clearInterval(sw);
+                        }
+                    }else{
+                        $('.layui-icon-notice').html('');
+                    }
+                }
+            });
+        }, 1000*30);
+    }
+    // 自动开始
+    MsgNotice();
+    function openUrl(title,Url){
+        vm.openTab(title,Url);
+    }
+    function close_cb(){
+        if($('.g-admin-flexible').attr('data')==1){
+            vm.resizeSideBar();
+        }
+    }
+    var first_login = `{:session('first_login')}`
+    if(first_login==1){
+        layer.open({
+            type: 2,
+            area: ['30%', '40%'],
+            fix: false, //不固定
+            maxmin: true,closeBtn: 0,maxmin: true,
+            shade:0.4,
+            title: "首次登入，强制修改密码！",
+            content: `{:url("index/pass")}`
+        });
+    }
+    try{
+        load_home_page();//后置函数
+    }catch(e){
+
+    }
+
+
+</script>
+<script>
+    function rtip(msg=0,flow=0){
+        if(msg==0 && flow==0){
+            return;
+        }
+        if($.cookie('xzs_open')==0){
+            return;
+        }
+        layer.open({
+            type: 1,
+            title:'信息小助理',
+            anim: '5',
+            offset: ['auto', 'auto'],
+            content: `<div style="padding: 16px;"><span style="color: #3963bc !important"><div onClick='openUrl("未读消息","{:url("msg/index")}")'><i class="layui-icon layui-icon-notice"></i> 有 <span style="color: red">${msg}</span>  条未读消息</div><div onClick='openUrl("流程中心","{:url("wf/wfmy")}")'><i class="layui-icon layui-icon-chart"></i> 有 <span style="color: red">${flow}</span>  条代办流程</div><div onclick="close_xzs()" style="float: right;"><i class="layui-icon layui-icon-close"></i> 今日不提醒</div></span></div>`,
+            area: '240px',
+            time: 5*1000,
+            shade: 0, // 不显示遮罩
+            success: function(layero, index){
+                // 设置弹窗位置
+                var win_width = $(window).width();
+                var win_height = $(window).height();
+                var layer_width = layero.width();
+                var layer_height = layero.height();
+                layero.css({
+                    left: win_width - layer_width - 20 + 'px',
+                    top: win_height - layer_height - 20 + 'px'
+                });
+                var timeNum = this.time/500, setText = function(start){
+                    layer.title('信息小助理 <span class="layui-font-red"> '+ (start ? timeNum : --timeNum) + '</span> ', index);
+                };
+                setText(!0);
+                this.timer = setInterval(setText, 1000);
+                if(timeNum <= 0) clearInterval(this.timer);
+            },
+            end: function(){
+                clearInterval(this.timer);
+            }
+        });
+    }
+    function close_xzs(){
+        layer.confirm('是否今日不在小助手提醒？', {icon: 3}, function(){
+            $.cookie('xzs_open',0, { expires: 1 });
+            layer.msg('设置成功，今日内小助手不会再次弹窗提醒', {icon: 1});
+        }, function(){
+            $.cookie('xzs_open',1, { expires: 1 });
+        });
+
+    }
+</script>
+
+</body>
+{eq name='watermark' value='1'}
+<script>var watermark_content = `{$watermark_content}`</script>
+<script type="text/javascript" src="__LIB__/watermark.min.js?6.0.7"></script>
+{/eq}
+</html>
+{eq name=":g_cache('online')" value='1'}
+<script src='__LIB__/socket.io.js'></script>
+<script>
+    var socket = io(window.location.hostname+':2120');
+    uid = "{:session('softId')}";
+    socket.on('connect', function(){
+        socket.emit('login', uid);
+    });
+    socket.on('x_online', function(msg){
+        window.location.href="{:url('logout')}";
+    });
+    socket.on('online_count', function(online_stat){
+        $('#online').html(online_stat);
+    });
+</script>
+{/eq}

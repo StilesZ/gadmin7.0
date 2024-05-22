@@ -1,0 +1,154 @@
+{include file='common/head' /}
+<title>基本设置</title>
+<style>
+	.layui-card{
+	    border: 1px solid #f2f2f2;
+		border-radius: 5px;
+		box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+	}
+</style>
+</head>
+<body style='background: #ffff;'>
+  <div class="layui-fluid">
+	<div class="layui-row layui-col-space15">
+   <div class="layui-col-md8">
+	<div class="layui-row layui-col-space15">
+		 <div class="layui-col-md6">
+				<div class="layui-card">
+				 <div class="layui-card-header">
+				  <h3><i class="layui-icon layui-icon-template" style='position: inherit;color: #ff4907;'></i> 身份信息</h3>
+				 </div>
+				 <div class="layui-card-body" style="height: 215px;">
+					 <table class="layui-table"><colgroup><col width="120"><col></colgroup>
+						<tbody>
+						<tr><td>账号</td><td>{$user.email ?? ''}</td></tr>
+						<tr><td>用户名</td><td>{$user.username ?? ''}</td></tr>
+						<tr><td>公司名称</td><td>{$user.company ?? ''}</td></tr>
+						<tr><td>授权版本</td><td>{$user.type ?? ''}</td></tr>
+					</tbody>
+					</table>
+					<a href="https://gadmin8.com" target="_blank" class="layui-btn  layui-btn-sm layui-btn-normal">正版验证</a>
+					<a class="layui-btn  layui-btn-sm layui-btn-warm" id='update'>检测版本</a>
+
+				 </div>
+				</div>
+		 </div>
+		   <div class="layui-col-md6">
+			<div class="layui-card">
+			 <div class="layui-card-header">
+			  <h3><i class="layui-icon layui-icon-chart" style='position: inherit;color: #0781ff;'></i> 系统信息</h3>
+			 </div>
+			 <div class="layui-card-body" style="height: 215px;">
+			  <table class="layui-table"><colgroup><col width="100"><col></colgroup>
+				<tbody>
+				<tr><td>服务器</td><td>{$sys.server_os}({$sys.server_mac})</td></tr>
+				<tr><td>Ip地址</td><td>{$sys.server_ip}</td></tr>
+				<tr><td>PHP版本</td><td>{$sys.php_version} 数据库：{$sys.db_version}</td></tr>
+				<tr><td>内存限制</td><td>{$sys.memory_limit} 上传：{$sys.upload_max_filesize}</td></tr>
+				<tr><td>TP版本</td><td>{$sys.think_version}</td></tr>
+           </tbody>
+          </table>
+			 </div>
+			</div>
+		</div>
+   </div>
+   </div>
+   <div class="layui-col-md4">
+    <div class="layui-card">
+     <div class="layui-card-header">
+      <h3><i class="layui-icon layui-icon-chart" style='position: inherit;color: #ff07e0;'></i> 软件信息</h3>
+     </div>
+     <div class="layui-card-body" style="height: 215px;">
+      <table class="layui-table"><colgroup><col width="100"><col></colgroup>
+				<tbody>
+				<tr><td>系统名称</td><td>Gadmin企业级开发框架</td></tr>
+				<tr><td>当前版本</td><td>{:GadminVer}</td></tr>
+				<tr><td>最新版本</td><td>{$user.ver ?? ''}</td></tr>
+				<tr><td>官网地址</td><td>
+				<a href="https://gadmin8.com" target="_blank" class="layui-btn  layui-btn-sm">进入官网</a></td></tr>
+				<tr><td>在线支持</td><td>
+				<a href="http://wpa.qq.com/msgrd?v=3&amp;uin=632522043&amp;site=qq&amp;menu=yes" target="_blank" class="layui-btn  layui-btn-sm layui-btn-normal">技术支持</a>
+				<a href="https://gadmin8.com" target="_blank" class="layui-btn  layui-btn-sm layui-btn-warm">工单支持</a></td></tr>
+           </tbody>
+          </table>
+     </div>
+    </div>
+   </div>
+
+   <div class="layui-col-md12">
+    <div class="layui-card">
+     <div class="layui-card-header">
+      <h3><i class="layui-icon layui-icon-dialogue" style='position: inherit;color: #09ff6b;'></i> 更新新闻</h3>
+     </div>
+     <div class="layui-card-body">
+		<table class="layui-hide" id="myList" lay-size="sm"></table>
+     </div>
+    </div>
+   </div>
+  </div>
+</div>
+{include file='common/footer' /}
+<script type="text/javascript">
+	$('#update').click(function (){
+		var loding = layer.msg('系统检测中..', {icon: 16,shade: 0.3,time: false});
+		$.ajax({
+		 url:'{:url("Upgrade/get_ver")}',
+		 type:'post',
+		 dataType:'json',
+		 success:function(ret) {
+			 layer.close(loding);
+			 if (ret.code == 2) {
+					layer.msg(ret.msg,{icon:1,time: 1500});
+				}else if(ret.code == 0){
+				    $('#update').after('<a class="layui-btn  layui-btn-sm layui-btn-danger" onclick="start()">开始升级[V'+ret.msg+']</a>');
+				 	$('#update').hide();
+				}else{
+					layer.alert(ret.msg, {title: "错误信息", icon: 2});
+				}
+		  },
+		  error : function(ret) {
+			console.log(ret.responseText.code);
+		  }
+	 });
+	});
+	function start(){
+		layer.confirm('您确定已经完成<font color="red">代码备份，数据库备份</font>，开始要执行升级吗？<font color="red">升级有风险，请再次确认已经备份！</font>',function(index){
+			var loding = layer.msg('系统升级中..', {icon: 16,shade: 0.3,time: false});
+			$.ajax({
+				 url:'{:url("Upgrade/sys_update")}',
+				 type:'post',
+				 dataType:'json',
+				 success:function(ret) {
+					 if (ret.code == -1) {
+							layer.alert(ret.msg, {title: "错误信息", icon: 2});
+						}else{
+						 	layer.close(loding);
+							layer.msg(ret.msg,{icon:1,time: 1500},function(){
+								location.reload();
+							});
+						}
+				  },
+				  error : function(ret) {
+					console.log(ret.responseText.code);
+				  }
+			 });
+		});
+	}
+    layui.use('table', function(){
+        var table = layui.table;
+        table.render({
+            elem: '#myList',
+            url:"https://up.gadmin8.com/v1/get_ver_list" ,
+            method:'post',
+			page: true,
+			escape:false,
+            cols: [[
+                {field:'ver_no', width:'20%', title: '版本号'}
+                ,{field:'ver_con', width:'55%', title: '版本内容'}
+                ,{field:'time', width:'25%', title: '版本时间'}
+            ]]
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{include file='common/head' /}
+</head>
+<body style="background-color:#fff">
+<div class="layui-fluid" >
+  <div class="layui-card">
+      {volist name='data' id='k'}
+    <form action="" method="post" name="form" id="form{$key}" class='layui-form'>
+      <table class="layui-table">
+        <tr class="tr rt">
+          <td width="80">主节点：</td>
+          <td class="lt">
+            <div class="layui-col-xs6">
+              <select name="pid"  class="select" datatype="*">
+                {$select_categorys|raw}
+              </select>
+            </div>
+            <div class="layui-col-xs6">
+              <input type="text" name="title" placeholder="模块名称" class="layui-input" value="" datatype="*">
+              <input type="hidden" name="name" placeholder="模块名称" class="layui-input" value="{$key}" datatype="*">
+
+            </div>
+          </td>
+          <td >模块名称：</td>
+          <td class="lt">
+            <div class="layui-col-xs1">{$key}</div>
+              <div class="layui-col-xs9">
+              <input type="text" name="data" placeholder="英文名称" class="layui-input" value="{$key}/index" >
+              </div>
+          </td>
+        </tr>
+
+          {volist name='k' id='k2'}
+          <tr class="tr rt">
+            <td>链接名称：</td>
+            <td  class="lt">
+              <input type="text" name="titles[]" placeholder="如添加，列表" class='layui-input' value="{$common_node[$k2] ?? ''}" datatype="*">
+            </td>
+            <td>链接属性：</td>
+            <td  class="lt">
+              <input type="text" name="names[]" placeholder="英文名称" class="layui-input" value="{$k2}" readonly>
+            </td>
+          </tr>
+          {/volist}
+        <tr style="text-align: center">
+          <td colspan="4">
+            <input  class='layui-btn' type="submit" name="dosubmit" value="批量注册模块信息" >
+          </td>
+        </tr>
+      </table>
+    </form>
+        {/volist}
+
+
+  </div>
+</div>
+</body>
+{include file='common/footer' /}
+<script>
+  layui.use('form', function(){
+  });
+</script>
+<script>
+  $(function () {
+    g_checkForm($(".layui-form"));
+  })
+</script>
+</body>
+</html>

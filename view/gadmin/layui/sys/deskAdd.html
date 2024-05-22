@@ -1,0 +1,233 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/dracula.css" />
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+			{present name="info.id"}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+				<input type="hidden" name="id" value="{$info.id}">
+				{else /}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+			{/present}
+					<table class="layui-table">
+						<tr>
+							<th style="width: 120px">方案名称</th>
+							<td><input type="text" name="title"  autocomplete="off" value='{$info.title ?? ''}' placeholder="请输入方案名称" class="layui-input" datatype="*" nullmsg="方案名称~">
+							</td>
+							<th>组件类别</th>
+							<td>
+								<select name="type" class="select" >
+									<option value="0" >桌面组件</option>
+									<option value="1" >列表组件</option>
+								</select>
+							</td>
+							<th>标题显示</th>
+							<td>
+								<select  name="showtitle" class="select" >
+									<option value="0" >显示标题</option>
+									<option value="1" >不显标题</option>
+								</select>
+							</td>
+							<th>设备类型</th>
+							<td>
+								<select  name="is_app" class="select" >
+									<option value="0" >PC组件</option>
+									<option value="1" >APP组件</option>
+								</select>
+							</td>
+						</tr>
+
+						<tr>
+							<th>桌面标题</th>
+							<td><input type="text" placeholder="输入标题，可包含图标" name="widgetTitle"  value='{$info.widgetTitle ?? ''}' autocomplete="off" class="layui-input">
+							</td>
+							<th>桌面布局</th>
+							<td><select  name="widgetWidth"  class="select" datatype="*" nullmsg="布局规格必选~">
+								<option value="" >请选择</option>
+								<option value="col-xs-1" >col-xs-1</option>
+								<option value="col-xs-2" >col-xs-2</option>
+								<option value="col-xs-3" >col-xs-3</option>
+								<option value="col-xs-4" >col-xs-4</option>
+								<option value="col-xs-5" >col-xs-5</option>
+								<option value="col-xs-6" >col-xs-6</option>
+								<option value="col-xs-7" >col-xs-7</option>
+								<option value="col-xs-8" >col-xs-8</option>
+								<option value="col-xs-9" >col-xs-9</option>
+								<option value="col-xs-10" >col-xs-10</option>
+								<option value="col-xs-11" >col-xs-11</option>
+								<option value="col-xs-12" >col-xs-12</option>
+							</select></td>
+
+							<th>桌面类型</th>
+							<td><select  name="widgetType" id="wtid" lay-ignore="true" class="layui-input" datatype="*" nullmsg="类型必须选择~" onchange="set_tip()">
+								<option value="" >请选择</option>
+								<option value="1" >文本内容</option>
+								<option value="2" >表格展示</option>
+								<option value="10" >轮播图</option>
+								<option value="11" >视频组件</option>
+								<option value="3" >图表-柱状图</option>
+								<option value="4" >图表-饼状图</option>
+								<option value="5" >图表-折线图</option>
+								<option value="6" >图表-面积图 - V2</option>
+								<option value="7" >图表-玫瑰图 - V2</option>
+								<option value="8" >图表-仪表盘 - V2</option>
+								<option value="9" >图表-水波图 - V2</option>
+							</select></td>
+							<th>桌面高度</th>
+							<td><input type="text" name="widgetHeight"  autocomplete="off" value='{$info.widgetHeight ?? '180px'}' placeholder="填写桌面高度" class="layui-input">
+							</td>
+						</tr>
+						<tr>
+						<th>数据方法</th>
+						<td colspan="7"> <input type="text" name="widgetData"  autocomplete="off" value='{$info.widgetData ?? ''}' placeholder="填写数据方法" class="layui-input">
+						</td>
+						</tr>
+						<tr>
+							<th>设计模板</th>
+							<td colspan="7" id="tmpid">
+
+
+							</td>
+						</tr>
+						<tr>
+							<th >桌面内容</th>
+							<td colspan="7"><textarea id='code' name="Content" type="text/plain">{$info.Content ?? ''}</textarea>
+							</td>
+						</tr>
+					</table>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button type="submit" class="layui-btn">立即提交</button>
+      <a onclick="layer_close()" class="layui-btn layui-btn-primary">关闭</a>
+
+    </div>
+  </div>
+</form>
+<blockquote class="layui-elem-quote layui-text">
+<p>备注：</p>
+<p>　　1、数据方法支持：函数调用、支持直接写SQL语句。 @get_name  sql如下：SELECT id,username as name FROM `g_soft_user`  必须id,name值,</p>
+<p>　　2、桌面内容为变量控制内容,用于文本，及图表内容的变量替换，支持PHP写法.</p>
+<p>　　3、内置变量有：{ userid }用户ID { roleid } 用户角色ID</p>
+<p>		4、请注意，V2版本全部图标接口需传递 type/value 百分比数据，直接传递值（转换百分比）</p>
+</blockquote>
+</div>
+</div>
+</div>
+{include file='common/footer' /}
+<script src="/static/sfdp/lib/codemirror/codemirror.js"></script>
+<script src="/static/sfdp/lib/codemirror/javascript.js"></script>
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script type="text/javascript">
+
+	$("[name='is_app']").find("[value='{$info.is_app ?? '0'}']").attr("selected",true);
+	$("[name='type']").find("[value='{$info.type ?? '0'}']").attr("selected",true);
+	$("[name='widgetWidth']").find("[value='{$info.widgetWidth ?? ''}']").attr("selected",true);
+	$("[name='widgetType']").find("[value='{$info.widgetType ?? ''}']").attr("selected",true);
+	$("[name='showtitle']").find("[value='{$info.showtitle ?? ''}']").attr("selected",true);
+	var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+		lineNumbers: true,
+		lineWrapping: true,
+		mode: "text/typescript",
+		theme: "dracula",	//设置主题
+		matchBrackets: true,
+	});
+    g_checkForm($("#form"),false);
+	var desk_tmp = [
+			[],
+		  [
+			['带图标的面板',`<a style="display: block;color: inherit;padding: 15px 0;text-align: center;text-decoration: none;cursor: pointer;" onclick=window.parent.openUrl('自定义开发','url')>\n<i class="layui-icon layui-icon-face-smile" style="font-size: 30px; color: #1E9FFF;"></i>\n<div style="margin-top: 8px;">标题标题标题</div>\n</a>`],
+			['带数字统计面板',`<div class="layui-card">
+        <div class="layui-card-header">
+          本月合同数
+          <span class="layui-badge layui-bg-orange layuiadmin-badge">总</span>
+        </div>
+        <div class="layui-card-body layuiadmin-card-list">
+          <p class="layuiadmin-big-font">1000</p>
+          <p>
+             签订总额
+            <span class="layuiadmin-span-color">1000元<i class="layui-icon"></i></span>
+          </p>
+        </div>
+      </div>`],
+		['带小图标的面板无标题',`<a style="display: block;color: inherit;padding: 15px 0;text-align: center;text-decoration: none;cursor: pointer;" onclick=layer_show("查看",'/gadmin/sfdp/add?sid=xxx')>
+  <i class="layui-icon layui-icon-face-smile" style="font-size: 30px; color: #1E9FFF;"></i>
+<div style="margin-top: 8px;">出差申请</div></a>`],
+				  ['多图标的面板',`<div class="layui-carousel g-admin-carousel g-admin-shortcut">
+							<ul class="layui-row layui-col-space10">
+							  <li class="layui-col-xs3">
+								<a >
+								  <i class="layui-icon layui-icon-console"></i>
+							<cite>主页一</cite>
+							</a>
+							</li>
+							<li class="layui-col-xs3">
+							  <a >
+								<i class="layui-icon layui-icon-chart"></i>
+							<cite>主页二</cite>
+							</a>
+							</li>
+							<li class="layui-col-xs3">
+							  <a>
+								<i class="layui-icon layui-icon-template-1"></i>
+							<cite>弹层</cite>
+							</a>
+							</li>
+							</ul>
+							</div>
+		`]
+		],
+		[
+		['常用新闻信息列表',`<table class='layui-table'>
+<tr><td>会议主题</td><td>查看</td></tr>
+<tr><td>标题标题标题</td><td><a class="layui-btn layui-btn-xs"onclick=layer_show(\`查看\`,'/gadmin/sfdp/view?sid=2&id=1')>查看</a></td></tr>
+</table>`],
+		['带Tab切换的信息',`<div class="layui-tab layui-tab-brief g-admin-latestData">
+  <ul class="layui-tab-title">
+    <li class="layui-this">今日热搜</li>
+<li>今日热帖</li>
+</ul>
+<div class="layui-tab-content">
+  <div class="layui-tab-item layui-show">
+    内容1
+</div>
+<div class="layui-tab-item">
+  内容2
+</div>
+</div>
+</div>`],
+		['进度条展示',`<div class="layui-code-item layui-code-item-preview layui-border layui-show" style="">
+   <div class="layui-progress layui-progress-big">
+    <div class="layui-progress-bar"  style="width: 15%;"></div>
+  </div>
+\t<hr class="ws-space-16">
+  <div class="layui-progress layui-progress-big">
+    <div class="layui-progress-bar layui-bg-orange"  style="width: 35%;"></div>
+  </div>
+</div>`]
+		]
+	];
+	function set_tip(){
+		var pid = $('#wtid').val();
+		if(pid==10){
+			$('#tmpid').html('Tip：获取数据格式为带Urls的数组！');return;
+		}
+		if(pid==11){
+			$('#tmpid').html('Tip：请直接在桌面内容中输入播放事情地址，包含http');return;
+		}
+		if(pid>=3){
+			$('#tmpid').html('Tip：参考手册数据调用写法！');return;
+		}
+		$('#tmpid').html('');
+		var val = desk_tmp[pid];
+		$.each(val, function(index, value) {
+			$('#tmpid').append('<span onclick=ins('+pid+','+index+') class="layui-badge">'+value[0]+'</span> ');
+		});
+	}
+	function ins(pid,index){
+		var val = desk_tmp[pid][index];
+		editor.setValue(val[1]);
+	}
+</script>
+
+

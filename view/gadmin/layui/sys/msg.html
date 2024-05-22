@@ -1,0 +1,211 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" action='{:url("msg")}' method="post" id="form-article-add">
+			<div class="layui-tab">
+			  <ul class="layui-tab-title">
+				<li class="layui-this">基本设置</li>
+				<li>邮箱模式</li>
+				<li>短信模式</li>
+                  <li>钉钉模式</li>
+                  <li>企业微信模式</li>
+			  </ul>
+			  <div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">
+                        <span style="color: red">*</span>工作流:</label>
+                    <div class="layui-input-block">
+                            <input type="radio"  name="wf_type"  title='关闭' {$msg.wf_type=='-1' ? 'checked' : ''} value='-1'>
+                            <input type="radio"  name="wf_type"  title='邮件' {$msg.wf_type=='0' ? 'checked' : ''} value='0'>
+							<input type="radio"  name="wf_type"  title='短信' {$msg.wf_type=='1' ? 'checked' : ''}  value='1'>
+                            <input type="radio"  name="wf_type"  title='钉钉' {$msg.wf_type=='2' ? 'checked' : ''}  value='2'>
+                            <input type="radio"  name="wf_type"  title='微信' {$msg.wf_type=='3' ? 'checked' : ''}  value='3'>
+                    </div>
+                </div>
+                    <!--
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span style="color: red">*</span>超时办理:</label>
+                        <div class="layui-input-inline" style="width: auto">
+                            <input type="radio"  name="wf_cs"  title='关闭' {$msg.wf_cs=='-1' ? 'checked' : ''} value='-1'>
+                            <input type="radio"  name="wf_cs"  title='邮件' {$msg.wf_cs=='0' ? 'checked' : ''} value='0'>
+                            <input type="radio"  name="wf_cs"  title='短信' {$msg.wf_cs=='1' ? 'checked' : ''}  value='1'>
+                        </div>
+                        <label class="layui-form-label">
+                            <span style="color: red">*</span>超时时间:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" value="{$msg.cj_time}" name="cj_time">
+                        </div>
+                        <label class="layui-form-label">
+                            <span style="color: red">*</span>发送次数:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" value="{$msg.cj_num}" name="cj_num">
+                        </div>
+                    </div>
+                    -->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span style="color: red">*</span>其他消息:</label>
+                        <div class="layui-input-block">
+                            <input type="radio"  name="o_type"  title='关闭' {$msg.o_type=='-1' ? 'checked' : ''} value='-1'>
+                            <input type="radio"  name="o_type"  title='邮件' {$msg.o_type=='0' ? 'checked' : ''} value='0'>
+                            <input type="radio"  name="o_type"  title='短信' {$msg.o_type=='1' ? 'checked' : ''}  value='1'>
+                            <input type="radio"  name="o_type"  title='钉钉' {$msg.o_type=='2' ? 'checked' : ''}  value='2'>
+                            <input type="radio"  name="o_type"  title='微信' {$msg.o_type=='3' ? 'checked' : ''}  value='3'>
+                        </div>
+                    </div>
+				 </div>
+				<div class="layui-tab-item ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">SMTP服务器：</label>
+                    <div class="layui-input-block">
+                        <input type="text" value="{$msg.smtp}" class="layui-input" name="smtp">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">SMTP 端口：</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" value="{$msg.eport}" name="eport">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱帐号</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" value="{$msg.euser}" id="emailName" name="euser">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" id="email-password" value="{$msg.epwd}" class="layui-input" name="epwd">
+                    </div>
+                </div>
+				</div>
+				<div class="layui-tab-item">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">API接口</label>
+                    <div class="layui-input-inline" style="width: 60%">
+                        <input type="text" value="{$msg.mapi}" class="layui-input" name="mapi" readonly>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">短信接口<a target="_blank" style="color: #0e90d2" href="https://market.topthink.com/product/395">申请ThinkApi接口</a></div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">签名ID</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" value="{$msg.mkey}" name="mkey">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">AppCode</label>
+                    <div class="layui-input-block">
+                        <input type="text" class="layui-input" value="{$msg.mname}" name="mname">
+                    </div>
+                </div>
+                 <div class="layui-form-item">
+                        <label class="layui-form-label">工作流模板</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" value="{$msg.wfmid}" name="wfmid">
+                        </div>
+                     <div class="layui-form-mid layui-word-aux">您有一条${content}的业务需要办理！</a></div>
+                 </div>
+                 <div class="layui-form-item">
+                        <label class="layui-form-label">OA消息模板</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input" value="{$msg.oamid}" name="oamid">
+                        </div>
+                     <div class="layui-form-mid layui-word-aux">您有一条${content}的业务需要办理！</a></div>
+                 </div>
+                </div>
+                  <div class="layui-tab-item">
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">AgentId</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.d_agentid ?? ''}" name="d_agentid">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">appkey</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.d_appkey ?? ''}" name="d_appkey">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">AppSecret</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.d_appsecret ?? ''}" name="d_appsecret">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">工作流模板</label>
+                          <div class="layui-input-inline" style="width: 60%">
+                              <input type="text" class="layui-input" value="{$msg.d_wf ?? ''}" name="d_wf">
+                          </div>
+                          <div class="layui-form-mid layui-word-aux">您有一条${content}的业务需要办理！</a></div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">OA消息模板</label>
+                          <div class="layui-input-inline" style="width: 60%">
+                              <input type="text" class="layui-input" value="{$msg.d_oa ?? ''}" name="d_oa" >
+                          </div>
+                          <div class="layui-form-mid layui-word-aux">您有一条${content}的业务需要办理！</a></div>
+                      </div>
+                  </div>
+                  <div class="layui-tab-item">
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">corpid</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.w_corpid ?? ''}" name="w_corpid">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">agentid</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.w_agentid ?? ''}" name="w_agentid">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">secret</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.w_secret ?? ''}" name="w_secret">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">secret-msg</label>
+                          <div class="layui-input-block">
+                              <input type="text" class="layui-input" value="{$msg.w_secret_msg ?? ''}" name="w_secret_msg">
+                          </div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">工作流模板</label>
+                          <div class="layui-input-inline" style="width: 60%">
+                              <input type="text" class="layui-input" value="{$msg.w_wf ?? ''}" name="w_wf">
+                          </div>
+                          <div class="layui-form-mid layui-word-aux">您有一条${content}的业务需要办理！</a></div>
+                      </div>
+                      <div class="layui-form-item">
+                          <label class="layui-form-label">OA消息模板</label>
+                          <div class="layui-input-inline" style="width: 60%">
+                              <input type="text" class="layui-input" value="{$msg.w_oa ?? ''}" name="w_oa" >
+                          </div>
+                          <div class="layui-form-mid layui-word-aux">您有一条${content}的业务需要办理！</a></div>
+                      </div>
+                  </div>
+              <button class="layui-btn layui-btn-fluid" type="submit">保存</button>
+            </form>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script>
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element;
+});
+layui.use('form', function(){
+
+});
+</script>
+</body>
+</html>

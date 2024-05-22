@@ -1,0 +1,178 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+<style>
+    #tabledata_wrapper {
+        margin-top: 5px;
+        height: calc(100% - 100px);
+        overflow-y: auto;
+    }
+    .custom-table-content {
+        float: none;
+        display: flex;
+        height: calc(100vh - 20px);
+    }
+    .dataTables_info{
+        position: absolute;
+        left: 15px;
+        bottom: 30px;
+    }
+    .dataTables_paginate{
+        position: absolute;
+        right: 15px;
+        bottom: 30px;
+    }
+    .selected{
+        background:#e2e2e2; color:#666666;
+    }
+    .layui-table-cell {
+        padding: 0 8px;
+    }
+</style>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15 custom-table-content">
+    <div class="layui-col-md2">
+        <div class="layui-card" style="height: 100%">
+            <div class="layui-card-body" style="height: 100%;">
+                <div style="height: 100%;overflow-y: auto">
+                    <ul id="test2" class=" demo-tree-box" style="height: 100%;"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md10" style="padding-left: 0px;" >
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input name="table" id="show_field" type="hidden">
+                        <input type="text" id="username"  placeholder="输入元素名称/元素调用" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary"  id="reloadBtn" data-type="reload"><i class="layui-icon  layui-icon-search " ></i></button>
+                <a onclick="layer_show('新增函数管理','{:url('add')}',98,98)" class=" layui-btn layui-btn-primary layui-btn-sm"> 创建</a>
+                <a id="edit" class=" layui-btn  layui-btn-sm"> 修改</a>
+                <a id="del" class=" layui-btn layui-btn-danger layui-btn-sm"> 删除</a>
+                <a id="run" class=" layui-btn layui-btn-sm layui-bg-cyan"> 测试</a>
+            </div>
+            <div class="layui-row"  style='margin:5px'>
+                <table class="layui-table" id="myList" lay-size="sm" lay-filter="data"></table>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    {include file='common/footer' /}
+    <script type="text/javascript">
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#myList'
+                ,url:"{:url('index')}"
+                ,method:'post'
+                ,page: true
+                ,escape:false
+                ,limit:20
+                ,height:'full-90'
+                ,id:'idData'
+                ,cols: [[
+                    {type:'radio',width:'3%'},
+                    {field:'title', title: '元数名称',width:'13%'},
+                    {field:'fun',  title: '元数调用',width:'9%'},
+                    {field:'open',  title: '外部调用',width:'6%',align:'center',templet: function(d){
+                        if(d.open==0){
+                            return '<span class="layui-badge layui-bg-orange">关闭</span>';
+                        }else{
+                            return '<span class="layui-badge layui-bg-blue">开启</span>';
+                        }
+                    }},
+                    {field:'conn',  title: '主数据库',width:'6%',align:'center'},
+                    {field:'table',  title: '数据表',width:'8%'},
+                    {field:'field',  title: '字段信息',width:'36%'},
+                    {field:'add_time',  title: '加入时间',width:'12%',align:'center'}
+                ]]
+            });
+            table.on('row(data)', function(obj){
+                //动态添加背景色
+                obj.tr.siblings().removeClass('selected')
+                obj.tr.addClass('selected');
+                obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+            });
+            $("#reloadBtn").click(function (ev) {
+                var username = $("#username").val();
+                table.reload('idData', {
+                    url: "{:url('index')}", where: {username: username,table:$('#show_field').val()}
+                });
+            })
+            $("#edit").click(function (ev) {
+                var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+                if(data.length == 0){
+                    layer.msg('请选择您要操作的单据~~');
+                }
+                layer_show('修改元数据信息','/gadmin/source/edit?id='+data[0].id,98,98)
+            })
+            $("#run").click(function (ev) {
+                var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+                if(data.length == 0){
+                    layer.msg('请选择您要操作的单据~~');
+                }
+                layer_show('执行测试','/gadmin/source/run?id='+data[0].id)
+            })
+            $("#del").click(function (ev) {
+                var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+                if(data.length == 0){
+                    layer.msg('请选择您要操作的单据~~');
+                }
+                layer.confirm('您确定要删除吗，请确保没有业务调用到本元数！！',function(index){
+                    var loding = layer.msg('同步中..', {icon: 16,shade: 0.3,time: false});
+                    var url ='{:url("del")}?id=' + data[0].id;
+                    $.ajax({
+                        url:url,
+                        type:'post',
+                        dataType:'json',
+                        success:function(ret) {
+                            layer.close(loding);
+                            if (ret.code == 0){
+                                layer.msg(ret.msg);
+                                window.location.reload()
+                            }else{
+                                layer.alert(ret, {title: "错误信息", icon: 2});
+                            }
+                        },
+                        error : function(ret) {
+                            console.log(ret.responseText.code);
+                        }
+                    });
+                });
+            })
+        });
+
+
+    </script>
+    <script>
+        layui.use(['tree', 'util'], function () {
+            var tree = layui.tree
+            //仅节点左侧图标控制收缩
+            tree.render({
+                    elem: '#test2'
+                    ,data: {$tree|raw}
+                ,spread: true
+                , onlyIconControl: true  //是否仅允许节点左侧图标控制展开收缩
+                , click: function (obj) {
+                        if(obj.data.id==1){
+                            $('#show_field').val('');
+                        }else{
+                            $('#show_field').val(obj.data.id);
+                        }
+                        $('.layui-tree-set').removeClass('selected');
+                obj.elem.addClass('selected');
+                $('#reloadBtn').click();
+            }
+        });
+
+        });
+    </script>
+</body>
+</html>

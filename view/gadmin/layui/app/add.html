@@ -1,0 +1,120 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            {present name="info.id"}
+            <form action="" class="layui-form" id="form" method="post" name="form">
+                <input name="id" type="hidden" value="{$info.id}">
+                {else /}
+                <form action="" class="layui-form" id="form" method="post" name="form">
+                    {/present}
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">业务模块:</label>
+                        <div class="layui-input-block">
+                            <select class="select" id='table' lay-filter="get_field" name='sid' onchange='get_field()'>
+                                <option value="">请选择</option>
+                                {volist name='yw' id='k'}
+                                    <option value="{$k.id}">{$k.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标题名称：</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" datatype="*" name="title" id="title"
+                                       nullmsg="标题不能为空~" placeholder="请输入APP标题名称" type="text" value="{$info.title ?? ''}">
+                            </div>
+                        </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">关联表名：</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" datatype="*" placeholder="选择类别后，自动填写" readonly id='datatable' name="table" nullmsg="~" type="text" value="{$info.table ?? ''}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">显示图标：</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" datatype="*" name="icon" nullmsg="~" type="text" value="{$info.icon ?? 'star'}">
+                        </div>
+                    </div>
+                        <div class="layui-form-item">
+                        <label class="layui-form-label">归属组别：</label>
+                        <div class="layui-input-inline" style="width: 70%">
+                            <select class="select" name='typeid'>
+                                <option value="">请选择</option>
+                                {volist name='tag' id='k'}
+                                <option value="{$k.id}">{$k.title}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                            <div class="layui-form-mid layui-word-aux"><a class="layui-btn layui-btn-xs" onclick="layer_show('类别管理','{:url("app_tag")}')">组别</a></div>
+                    </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">备注说明：</label>
+                            <div class="layui-input-block" >
+                                <textarea class="layui-textarea" name="content" placeholder="备注说明">{$info.content ?? ''}</textarea>
+                            </div>
+                        </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" type="submit">立即提交</button>
+                            <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                        </div>
+                    </div>
+                </form>
+                <blockquote class="layui-elem-quote layui-text">
+                    <p>备注：</p>
+                    <p>　　1、功能必须关联到数据表,</p>
+                    <p>　　2、若读数据不填写，默认为读本表数据！若加载WorkFlow则自动读取审批日志！</p>
+                    <p>　　3、图标参考：<a href="https://www.uviewui.com/components/icon.html#图标集" target="_blank">跳转UVIEW图标库</a></p>
+                </blockquote>
+        </div>
+    </div>
+</div>
+
+{include file='common/footer' /}
+<script>
+    layui.use('element', function () {
+        var $ = layui.jquery
+            , element = layui.element;
+    });
+    layui.use('form', function () {
+        var form = layui.form;
+        form.on('select(get_field)', function (data) {
+            var op = '';
+            var val = data.value;
+            var url = "{:url('get_table')}";
+            $.ajax({
+                url: url,
+                data: {id: val},
+                type: 'post',
+                cache: true,
+                dataType: 'json',
+                success: function (ret) {
+                    if (ret.code == 0) {
+                        $('#title').val(ret.msg.s_title);
+                        $('#datatable').val(ret.msg.s_db);
+                    } else {
+                        layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.alert('请求出错！', {title: "错误信息", icon: 2});
+                }
+            });
+        });
+
+    });
+
+</script>
+<script type="text/javascript">
+
+    $("[name='typeid']").find("[value='{$info.typeid ?? ''}']").attr("selected", true);
+    $("[name='sid']").find("[value='{$info.sid ?? ''}']").attr("selected", true);
+    g_checkForm($("#form"));
+
+</script>
+
+					
+

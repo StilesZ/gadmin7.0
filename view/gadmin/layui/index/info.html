@@ -1,0 +1,41 @@
+{include file='common/head' /}
+  <title>{:config('sys.sysname')} {:config('sys.sysv')}</title>
+</head>
+<body style="padding: 10px">
+  <div class="page-container">
+	  <form action="" method="post" name="form" id="form">
+			<table class="layui-table table-border table-bordered table-hover table-bg">
+				<tr class="tr rt">
+					<td width="100">用户名称：</td>
+					<td class="lt">{:isset($info.username)?$info.username:''}
+					</td>
+				</tr>
+				<tr class="tr rt">
+					<td width="100">姓名：</td>
+					<td class="lt"><input type="text" name="realname"  class='layui-input' value="{$info.realname ?? ''}"></td>
+				</tr>
+				<tr class="tr rt">
+					<td width="100">手机电话：</td>
+					<td class="lt"><input type="text" name="tel"  class='layui-input' value="{$info.tel ?? ''}"></td>
+				</tr>
+				<tr class="tr rt">
+					<td width="100">电子邮箱：</td>
+					<td class="lt"><input type="text" name="mail" class='layui-input' value="{$info.mail ?? ''}"></td>
+				</tr>
+				<tr class="tr rt">
+					<td width="100">用户备注：</td>
+					<td class="lt"><input type="text" name="remark"  class='layui-input' value="{$info.remark ?? ''}"></td>
+				</tr>
+				<tr class="tr lt">
+					<td colspan="4" class='text-c'>
+						<button type="submit" class="layui-btn layui-btn-sm">立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button></td>
+				</tr>
+			</table>
+	  </form>
+  {include file='common/footer' /}
+  <script>
+	  $(function () {
+		  g_checkForm($("#form"));
+	  })
+  </script>

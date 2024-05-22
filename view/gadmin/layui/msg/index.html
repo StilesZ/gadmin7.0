@@ -1,0 +1,133 @@
+{include file='common/head' /}
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md8">
+                <a class="layui-btn layui-btn-sm layui-btn-warm"onclick="dos('read','设置已读')"><i class="layui-icon layui-icon-edit"></i>标记已读</a>
+                <a class="layui-btn  layui-btn-sm layui-bg-gra" onclick="dos('del','删除全部')" style="background-color:#666 !important" ><i class="layui-icon layui-icon-vercode"></i>删除全部</a>
+
+                </div>
+                <div class="layui-col-md4 align-right">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input autocomplete="off" class="layui-input" id="type" type="hidden" value="0">
+                            <input autocomplete="off" class="layui-input" id="title" placeholder="消息主题"
+                                   type="text">
+                        </div>
+                        <div class="layui-input-inline">
+                            <input autocomplete="off" class="layui-input" id="con" placeholder="消息内容"
+                                   type="text">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" id='reloadBtn'><i
+                                class="layui-icon layui-icon-search"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab layui-tab-brief" lay-filter="wf_content">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="0">未读消息</li>
+                    <li lay-id="2">已读消息</li>
+                </ul>
+                <div class="layui-tab-content " style="padding-top: 0px">
+                    <div class="layui-tab-item layui-show">
+                        <table class="layui-table" id="myList"></table>
+                    </div>
+                    <div class="layui-tab-item">
+                        <table class="layui-table" id="myList2"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
+{include file='common/footer' /}
+<script type="text/javascript" src="__FLOW__/workflow.5.0.js"></script>
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script id="barDemo" type="text/html">
+    <span class="layui-btn layui-btn-xs" onClick=view("查看","{{d.href}}","{{d.id}}",{{d.is_read}})>查看</span>
+</script>
+<script type="text/javascript">
+    var tableObj;
+    layui.use(['form','table','element'], function () {
+        var table = tableObj = layui.table;
+        var util = layui.util;
+        var element = layui.element;
+        element.on('tab(wf_content)', function(){
+            var tabid = this.getAttribute('lay-id');
+            $("#title").val('');
+             $("#con").val('');
+            if(tabid==2){
+                load(2,'#myList2')
+                $('#type').val(2);
+            }
+            if(tabid==0){
+                load(0)
+                $('#type').val(0);
+            }
+        });
+        load(0)
+        function load(type,elem='#myList'){
+            table.render({
+                elem: elem,
+                url: "{:url('index')}?type="+type,
+                method: 'post',
+                page: true,
+                limit: 20,
+                escape:false,
+                limits:[20,40,60,80,100],
+                height:'full-160',
+                id: 'idData',
+                cols: [[
+                    {field:'id',  title: 'id',width:'5%'},
+                    {field:'suid', title: '推送人',width:'7%'},
+                    {field:'title', title: '消息主题'},
+                    {field:'content', title: '消息内容',width:'55%'},
+                    {field:'add_time',  title: '接收时间' ,sort: true, templet: function(d) {return util.toDateString(d.add_time*1000); }},
+                    {toolbar: '#barDemo', title: '操作'}
+                ]]
+            });
+            $("#reloadBtn").click(function (ev) {
+                table.reload('idData', {
+                    url: "{:url('index')}"
+                    , where: {
+                        type:$("#type").val(),
+                        title: $("#title").val(),
+                        con: $("#con").val()
+                    }
+                });
+            })
+        }
+    });
+    function view(title,urls,id,is_read){
+        if(is_read==0){
+            $.ajax({
+                url: '/gadmin/msg/read_id?id='+id,
+                type: 'post',
+                dataType: 'json',
+                success:function(res)
+                {
+                    if(res.code == 0 )
+                    {
+                        tableObj.reload('idData', {
+                            url: "{:url('index')}?type=0"
+                        });
+                        sfdp.openfullpage(title,urls)
+                        //打开页面
+                    }else{
+                        $('.layui-icon-notice').html('');
+                    }
+                }
+            });
+        }else{
+            sfdp.openfullpage(title,urls)
+        }
+
+    }
+    function dos(action,msg) {
+        sfdp.Askshow("{:url('msg_set')}?act=" + action , "您确定要执行【" + msg + "】吗?该操作无法撤销！")
+    }
+</script>

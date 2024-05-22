@@ -1,0 +1,79 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/dracula.css" />
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<style>
+    .layui-form-select dl{
+        z-index:999999;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        border: 1px solid rgb(204, 204, 204);
+        border-radius: 0px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="height: calc(100vh - 100px);">
+            <form action="" method="post" name="form" id="form" class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">自定义类型</label>
+                    <div class="">
+                        <select name="act" class="this-select" lay-ignore id="act"  datatype="*">
+                            <option value="">请选择</option>
+                            <option value="php">php 自定义公共函数</option>
+                            <option value="js">JS 自定义脚本</option>
+                            <option value="css">Css 自定义样式</option>
+                        </select>
+                        <a class="layui-btn layui-btn-sm "onClick=g_help('custom') style="display: none"><i class="layui-icon layui-icon-help"></i></a>
+                    </div>
+                </div>
+                <div class="layui-form-item" style='overflow:visible'>
+                    <label class="layui-form-label">自定义代码</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="" name='code' type="text/plain" style="width:100%;height:550px;display:inline-block;" id='codedata' ></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn layui-btn-sm">立即提交</button>
+                        <a type="reset" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layer_close()">关闭</a>
+                    </div>
+                </div>
+            </form>
+
+            {include file='common/footer' /}
+            <script src="__LIB__/select2/select2.min.js?v=7.0.1"></script>
+            <script src="/static/sfdp/lib/codemirror/codemirror.js"></script>
+            <script src="/static/sfdp/lib/codemirror/javascript.js"></script>
+            <script>
+                $(function () {
+                    g_checkForm($("#form"));
+                })
+            </script>
+            <script type="text/javascript">
+                $('.this-select').select2({width: '400'});
+                var editor = CodeMirror.fromTextArea(document.getElementById("codedata"), {
+                    lineNumbers: true,
+                    lineWrapping: true,
+                    mode: "text/typescript",
+                    theme: "dracula",	//设置主题
+                    matchBrackets: true,
+                });
+                editor.setSize('auto',document.body.clientHeight - 240 +"px");
+                $('#act').on('change',function(){
+                    var act = $('#act').val();
+                    $.ajax({
+                        type:'get',
+                        dataType:'json',
+                        data:{act:act},
+                        url:'{:url("custom")}',
+                        success:function(res){
+                            editor.setValue(res);
+                        }
+                    });
+                });
+            </script>

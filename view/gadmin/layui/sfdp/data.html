@@ -1,0 +1,194 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/dracula.css" />
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<style>
+    .layui-form-select dl{
+        z-index:999999;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        border: 1px solid rgb(204, 204, 204);
+        border-radius: 0px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form action="" method="post" name="form" id="form" class="layui-form">
+                <input type="hidden" name="sid" value="{$sid}">
+                <input type="hidden" value="{$row.table ?? $data.s_db}" name="table"  >
+                {present name="row.id"}
+                {eq name='row.act' value='1'}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数据接口：</label>
+                    <div class="layui-input-block">
+                        <span style="min-height: 38px;line-height: 38px;margin-left: 10px;">
+                            <input value="http://{$_SERVER['HTTP_HOST'].':'.$_SERVER["SERVER_PORT"]}/api/m/{$row.route}?token={$row.token}" id='url' type='hidden'>
+                            http://{$_SERVER['HTTP_HOST'].':'.$_SERVER["SERVER_PORT"]}/api/m/{$row.route}?token={$row.token} <div id="show_ewm"></div>
+                        </span>
+                    </div>
+                </div>
+                {/eq}
+                {/present}
+                <div class="layui-form-item">
+                    <div class="layui-col-xs6">
+                    <label class="layui-form-label">业务关联：</label>
+                    <div class="layui-input-block">
+                        <span style="min-height: 38px;line-height: 38px;margin-left: 10px;">{$data.s_name}</span>
+                    </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">路由名称：</label>
+                        <div class="layui-input-block">
+                            <input type="text" datatype="*" nullmsg="路由名称"  value="{$row.route ?? $data.s_db}"  name="route"  class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-xs6">
+                    <label class="layui-form-label">数据类型：</label>
+                    <div class="layui-input-block">
+                        <input type="radio"  value="1" name="type"   title="APi接口">
+                        <input type="radio"  value="0" name="type"  title="开放web数据收集">
+                    </div></div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">开启状态：</label>
+                            <div class="layui-input-block">
+                                <input type="radio"  value="1" name="is_open"  title="启用">
+                                <input type="radio"  value="0" name="is_open"  title="关闭">
+                            </div>
+                        </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">过期时间：</label>
+                        <div class="layui-input-block">
+                            <input type="text" datatype="*" nullmsg="过期时间"  value="{$row.exp_time ?? ''}" data-type="date"
+                                   data-format="yyyy-MM-dd" class="datetime  layui-input" name="exp_time"  >
+                        </div>
+                     </div>
+                    <div class="layui-col-xs6">
+                    <label class="layui-form-label">开放元素：</label>
+                    <div class="layui-input-block">
+                        <input type="text"  value="{$row.source ?? ''}" placeholder="请输入使用到的元素，才能正常被Api接口调用" name="source"  class="layui-input">
+                    </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-xs6">
+                    <label class="layui-form-label">收集总量：</label>
+                    <div class="layui-input-block">
+                        <input type="number"   value="{$row.numb ?? ''}" placeholder="如需限制填报总数，请填写收集总量" name="numb"  class="layui-input">
+                    </div></div>
+                        <div class="layui-col-xs6">
+                    <label class="layui-form-label">访问密码：</label>
+                    <div class="layui-input-block">
+                        <input type="number"  value="{$row.pass ?? ''}"  placeholder="如需密码访问表单，请设置【6位数数字】密码，默认不需要" name="pass"  class="layui-input">
+                    </div></div>
+                </div>
+                <div class="layui-form-item">
+                        <label class="layui-form-label">收集说明：</label>
+                        <div class="layui-input-block">
+                            <textarea class="layui-textarea" name="content" placeholder="可用于说明页面的文本介绍， 支持Html标签;">{$row.content ?? ''}</textarea>
+                        </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input type="hidden" value="0" name="act" id='act' class="layui-input">
+                        <a class="layui-btn savedata " onclick="save(0)">&nbsp;&nbsp;保存&nbsp;&nbsp;</a>
+                        <a class="layui-btn savedata  layui-btn-danger" onclick="save(1)">立即构建</a>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <blockquote class="layui-elem-quote layui-text" style="border-left: 5px solid #960000;">
+                                    <p>帮助：</p>
+                                    <p>【保存】将数据保存到数据库</p>
+                                    <p>【构建】直接构建出Api接口</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {include file='common/footer' /}
+            <script src="__SFDP__/lib/H5upload.js"></script>
+            <script src="__SFDP__/lib/laydate5.0.9/laydate.js"></script>
+            <script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+            <script src="/static/lib/qrcode.min.js?v=7.0.1"></script>
+            <script>
+                $("[name='type'][value='{$row.type ?? '1'}']").attr("checked",true);
+                $("[name='is_open'][value='{$row.is_open ?? '1'}']").attr("checked",true);
+                setDate();
+                function setDate() {
+                    $(".datetime").click(function () {
+                        var type = $(this).attr('data-type');
+                        var format = $(this).attr('data-format');
+                        var keyid = $(this).attr('id');
+                        if (type != 'date' && type != 'datetime') {
+                            var fs = {
+                                'yyyy': 'year',
+                                'yyyy-MM': 'month',
+                                'yyyy-MM-dd': 'date',
+                                'yyyyMMdd': 'date',
+                                'yyyy-MM-dd': 'date',
+                                'MM-dd': 'date',
+                                'yyyy-MM-dd HH:mm:ss': 'datetime'
+                            }
+                            type = fs[format];
+                        }
+                        if ($(this).attr('readonly') == 'readonly') {
+                            return;
+                        }
+                        $(this).removeAttr("lay-key");
+                        layui.laydate.render({
+                            elem: this,
+                            format: format,
+                            show: true,
+                            type: type,
+                            zIndex: 99999999,
+                            trigger: 'click',
+                            done: function (value, date, endDate) {
+                                if ($.isFunction(window.load_end_time_done)) {
+                                    load_end_time_done(keyid, value);
+                                }
+                            }
+                        });
+                    });
+                }
+                $(function () {
+                    $("#form").Validform({
+                        tiptype:function(msg,o,cssctl){
+                            if (o.type == 3){
+                                layer.msg(msg, {time: 800});
+                            }
+                        },
+                        ajaxPost:true,
+                        showAllError:true,
+                        callback:function(ret){
+                            if (ret.code == 0) {
+                                layer.msg(ret.msg);
+                                location.reload(); // 父页面刷新
+                            } else {
+                                layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                            }
+                        }
+                    });
+                })
+                var url = $('#url').val();
+                var qrcode = new QRCode(document.getElementById("show_ewm"), {
+                    width : 80,
+                    height : 80
+                });
+                qrcode.makeCode(url);
+                function save(act){
+                    $('#act').val(act);
+                    $("#form").submit();
+                }
+            </script>

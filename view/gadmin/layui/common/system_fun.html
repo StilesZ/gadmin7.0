@@ -1,0 +1,73 @@
+{include file='common/head' /}
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <input type="text" id="username" placeholder="输入名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <button type="submit" class="layui-btn  layui-btn-sm"  id="reloadBtn" data-type="reload"><i class="layui-icon  layui-icon-search" ></i></button>
+                <button class="layui-btn  layui-btn-sm" id="getCheckData">选择</button>
+                <button class="layui-btn  layui-btn-sm" id="add">新增</button>
+            </div>
+            <div class="layui-row" style="margin-top: 5px">
+                <table class="layui-hide" id="test" lay-filter="test" lay-data="{id: 'idData'}"></table>
+            </div>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#test'
+            , url: '{:url("system_fun")}'
+            ,escape:false,method:'post'
+            , cols: [[
+                {type: 'radio', width:'10%'}
+                , {field: 'id',  width:'10%', title: 'ID', sort: true}
+                , {field: 'title', width:'30%', title: '函数名'}
+                , {field: 'fun', width:'30%', title: '函数方法', sort: true}
+                , {field: 'table',  width:'20%', title: '表名', sort: true}
+            ]]
+            ,page: true, height: 'full-90'
+        });
+        table.on('row(test)', function (obj) {
+            obj.tr.siblings().removeClass('selected')
+            obj.tr.addClass('selected');
+            obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+        });
+        $("#reloadBtn").click(function (ev) {
+            table.reload('test', {
+                url: "{:url('system_fun')}"
+                , where: {
+                    keyword: $("#username").val()
+                }
+            });
+        })
+        $("#getCheckData").click(function () {
+            var checkStatus = table.checkStatus('test'); //获取选中行状态
+            var data = checkStatus.data;  //获取选中行数据
+            var parent_id='{$id}';
+            parent.document.getElementById(parent_id).value =data[0].fun;
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+        });
+        $('#add').click(function(){
+            top.layer.open({
+                type: 2,
+                title: '新增元素标题',
+                shadeClose: true,
+                shade: 0.3,
+                area : ['98%' , '98%'],
+                content: '{:url("Source/add")}' //这里content是一个URL，
+            });
+            top.layer.msg('新增后，刷新下页面哦！');
+        });
+    });
+</script>
+</body>
+</html>

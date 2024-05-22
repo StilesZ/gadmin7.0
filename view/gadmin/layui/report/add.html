@@ -1,0 +1,165 @@
+{include file='common/head' /}
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+			{present name="info.id"}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+				<input type="hidden" name="id" value="{$info.id}">
+				{else /}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+			{/present}					 
+			<table  width="100%" class="layui-table">
+							<tr>
+							<td colspan='4' style='text-align:center'><h2>模板定义</h2></td>
+							</tr>
+							<tr>
+							<th style='width:70px'>报表标题：</th><td colspan=3>
+									<input type="text" class="layui-input" value="{$info.title ?? ''}" name="title" datatype="*" nullmsg="标题不能为空~">
+							</td>
+							</tr>
+							<tr>
+							<th style='width:70px'>数据来源:</th><td style='width:230px'>
+							<span class="select-box">
+								<select id='table'  class="layui-input" onchange='get_field()' lay-ignore>
+										<option value="" >请选择</option>	
+										{volist name='table' id='k'}
+										<option value="{$k.s_field}" >{$k.s_title}</option>
+										{/volist}
+									</select>
+							</span>
+							</td>
+							<input type="hidden" name="name" id='form_val' value="{$info.name ?? ''}">
+							<input type="hidden" name="table" id='form_table' value="{$info.table ?? ''}">
+							
+							<th style='width:70px'>查询字段</th><td>
+									 <div class="layui-input-inline">
+									<select  id='field' class="select" >
+										<option value="" >请选择</option>	
+									</select>
+								</div>
+								 <div class="layui-input-inline">
+									<select  id='field_type' class="select">
+										<option value="" >选择组件类型</option>	
+										<option value="select" >下拉选择</option>	
+										<option value="between" >区间查询</option>	
+										<option value="like" >模糊匹配</option>	
+									</select>
+								</div>
+								 <a class="btn btn-primary radius" onclick='ins()'>新增</a>
+							</td>
+							</tr>
+							<tr id='fi'></tr>
+							{present name="info.id"}
+							{volist name='field' id='k'}
+								
+							<tr class='field_val' id='field_val_{$k.name}'><th><input type=hidden name=val[] value="{$k.name}"><input type=hidden name=titles[] value="{$k.title}"><input type=hidden name=type[] value="{$k.type}">{$k.name}</th><td colspan=3>
+							{if condition='$k.type =="select"'}
+								<span class="select-box" style=width:25%><select class="select"><option value="" >组件示例</option>	</select></span><input value='{$k.fun}' style=width:25% class="input-text" name="select[{$k.name}]" datatype="*" nullmsg="请输入选择信息【{$k.name}】">
+							{/if}
+							{if condition='$k.type =="between"'}
+							起止<input>~<input>
+							{/if}
+							{if condition='$k.type =="like"'}
+							<input>
+							{/if}
+							
+							  <a class='btn btn-danger radius' onclick='del(this)'><i class='layui-icon layui-icon-delete'></i></a></td></tr>
+							{/volist}
+							 {/present}
+						   <tr class="text-c" style='text-align:center'>
+							<td colspan='4'> 
+							<button type="submit" class="layui-btn">&nbsp;&nbsp;提交&nbsp;&nbsp;</button></td> </tr>
+						<tr>
+							<td colspan='4'>
+							<blockquote class="layui-elem-quote layui-text">
+							<p>备注：</p>
+							<p>　　1、函数方法写法如：@get_name  sql如下：SELECT id,username as name FROM `g_soft_user`  必须id,name值,</p>
+							<p>　　2、数组写法如下：[{"id":"1","name":"admin1"},{"id":"2","name":"admin2"}]</p>
+							</blockquote>
+							</td>
+							</tr>
+							</tr>
+						</table>
+					</form>
+				</div>
+		</div>
+	</div>
+{include file='common/footer' /}
+<script>
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element;
+});
+layui.use('form', function(){
+	var form = layui.form;
+});
+</script>
+<script type="text/javascript">
+	g_checkForm($("#form"));
+	//get_field()
+	if(`{$info.id ?? 0}` >0){
+		get_field();
+	}
+	
+	function get_field(){
+		var op ='';
+		var val = $('#table').val();
+		var json =JSON.parse(val);
+		console.log(json);
+		for (x in json['list']){
+			for (x1 in json['list'][x]['data']){
+				op += '<option class="remove" value="'+json['list'][x]['data'][x1]['tpfd_db']+'@'+json['list'][x]['data'][x1]['tpfd_dblx']+'@'+json['list'][x]['data'][x1]['tpfd_name']+'" >'+json['list'][x]['data'][x1]['tpfd_name']+'</option>	';
+			}
+		}
+		$('#form_val').val(json.name);
+		$('#form_table').val(json.name_db);
+		
+		$("#field .remove").remove();
+		$('#field').append(op);
+		renderForm();
+	}
+	
+	//重新渲染表单
+	function renderForm(){
+	  layui.use('form', function(){
+	   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+	   form.render();
+	  });
+	}
+	function ins(){
+		var val = $('#field').val();
+		var field_type = $('#field_type').val();
+		if(val=='' || field_type==''){
+			layer.msg('请选择类型及字段~');return ;
+		}
+		var val_arr = val.split('@');
+		if ( $("#field_val_"+val_arr[0]+"").length > 0 ) {
+			layer.msg('字段重复~');return ;
+		}
+		
+		 var html="<tr class='field_val' id='field_val_"+val_arr[0]+"'><th><input type=hidden name=val[] value="+val_arr[0]+"><input type=hidden name=titles[] value="+val_arr[2]+"><input class='layui-input'type=hidden name=type[] value="+field_type+">"+val_arr[0]+"</th><td colspan=3>"+c_html(val_arr[0],field_type)+"  <a class='btn btn-danger radius' onclick='del(this)'><i class='Hui-iconfont Hui-iconfont-del'></i></a></td></tr>"; 
+         $('#fi').prev().after(html); 
+	}
+	function del($this){
+        $($this).parent().parent().remove();
+    }
+	function c_html(name,type){
+		var select ='<span class="select-box" style=width:25%><select class="select"><option value="" >组件示例</option>	</select></span><input style=width:25% class="layui-input" name="select['+name+']" datatype="*" nullmsg="请输入选择信息【'+name+'】">@可以使用函数方法，或者直接使用数组';
+		var between ='起止<input>~<input>';
+		var like ='<input>';
+		if(type=='select'){
+			return select;
+		}
+		if(type=='between'){
+			return between;
+		}
+		if(type=='like'){
+			return like;
+		}
+	}
+	
+</script>
+
+					
+

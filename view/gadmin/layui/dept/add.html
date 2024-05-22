@@ -1,0 +1,75 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<link rel="stylesheet" type="text/css" href="__SFDP__/lib/selecttree/select2totree.css?v=5.0.0">
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<form action="" method="post" name="form" id="form" class="layui-form">
+				<div class="layui-form-item">
+					<label class="layui-form-label">上级组织：</label>
+					<div class="layui-input-block">
+						<select name="dept_pid" class="select" id="pid" lay-ignore style="width: 100%">
+							<option value="">请选择</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">组织编码：</label>
+					<div class="layui-input-block">
+						<input type="text" name="dept_code" class="layui-input"  value="{$info.dept_code ?? ''}" datatype="*">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">组织名称：</label>
+					<div class="layui-input-block">
+						<input type="text" name="dept_name" class="layui-input"  value="{$info.dept_name ?? ''}" datatype="*">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">组织状态：</label>
+					<div class="layui-input-block">
+						<input type="radio" id="radio-1" title='启用' name="status"   value='2'>
+						<input type="radio" id="radio-2" title='关闭' name="status"  value='0'>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">备注说明：</label>
+					<div class="layui-input-block">
+						<textarea type="text" name="remark" class="layui-textarea">{$info.remark ?? ''}</textarea>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button type="submit" class="layui-btn layui-btn-sm">立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+{include file='common/footer' /}
+<script src="__LIB__/select2/select2.min.js?v=7.0.1"></script>
+<script type="text/javascript" src="__SFDP__/lib/selecttree/select2totree.js"></script>
+<script type="text/javascript" src="__SFDP__/sfdp.7.0.js"></script>
+<script>
+	layui.use('form', function(){
+		var form = layui.form;
+		$("input[type=radio][name=status][value={$info.status ?? '2'}]").attr("checked",true);
+		form.render();
+
+	});
+</script>
+<script>
+	$(function () {
+		var roledata = sfdp.arrytotree({$role|raw});
+		g_checkForm($("#form"));
+		$("#pid").select2ToTree({treeData: {dataArr: roledata}});
+		$("#pid").select2().val({$info.dept_pid ?? '0'}).trigger("change");
+		$("#pid").select2ToTree();
+	})
+</script>
+</body>
+</html>

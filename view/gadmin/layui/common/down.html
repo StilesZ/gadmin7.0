@@ -1,0 +1,63 @@
+{include file='common/head' /}
+<style>
+    html {
+        background-color: #FFFFFF;
+        color: #FFFFFF;
+    }
+    .center{
+        text-align: center;
+    }
+</style>
+<body>
+<div class="layui-fluid" style="overflow: scroll;height: calc(100% - 10px);">
+    <div class="layui-col-md2">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-card-header"><b>附件列表</b></div>
+                    <table id="upfileGrid" class='layui-table table-sort'></table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md10">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 0px;">
+                    <iframe onload="SetHeight()" id="view_page" src="/gadmin/Common/viewfile.html?id=0" style='overflow: scroll;min-height:850px'  frameborder="0"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+</div>
+</body>
+{include file='common/footer' /}
+<script type="text/javascript">
+    var callbackId = '{$did}';
+    var dataJson = {$json|raw};
+</script>
+<script>
+    $("#upfileGrid").addClass('center');
+
+    $("#upfileGrid").DataTable({
+        data: dataJson,
+        ordering: false,
+        searching : false,
+        paging: false,
+        info: false,
+        columns:[
+            { title: '序号', data: 'fileId',hidden:true,width:30,className: 'center'},
+            { title: '文件名称',data: 'fileName',fixed:true}
+        ]
+    });
+    function SetHeight(){
+        var ifm= document.getElementById("view_page");
+        var subWeb = document.frames ? document.frames["view_page"].document : ifm.contentDocument;
+        if(ifm != null && subWeb != null) {
+            ifm.height = '100%';
+            ifm.width = '100%';
+        }
+    }
+    function select(id){
+        $('#view_page').attr('src','/gadmin/Common/viewfile.html?id='+id)
+    }
+</script>
+        

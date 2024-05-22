@@ -1,0 +1,54 @@
+{include file='common/head' /}
+<div class="page-container" style="padding: 10px">
+			<form action="" method="post" name="form" id="form">
+			<table class="layui-table">
+				<tr class="tr rt">
+					<td width="100">用户名称：</td>
+					<td  class="lt">{:isset($info.username)?$info.username:''}
+					</td>
+				</tr>
+				<tr class="tr rt">
+					<td width="100">密　　码：</td>
+					<td  class="lt">
+						<input type="password" name="password" style="width:300px" class='layui-input' id="pass" value=""><span id="passstrength" ></span>
+					</td>
+
+				</tr>
+				<tr class="tr rt">
+					<td width="100">确认密码：</td>
+					<td class="lt">
+						<input type="password" name="repassword" style="width:300px"  class='layui-input' value="">
+					</td>
+				</tr>
+				<tr class="tr lt">
+					<td colspan="4" class='text-c'>
+						<button type="submit" class="layui-btn layui-btn-sm">立即提交</button>
+				  <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button></td>
+				</tr>
+			</table>
+			</form>
+</div>
+{include file='common/footer' /}
+<script>
+$(function () {
+	g_checkForm($("#form"));
+	$('#pass').blur(function(e) {
+		var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\W).*$", "g");
+		var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+		var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+		if (false == enoughRegex.test($(this).val())) {
+			g_toast('密码长度太短,请增加！',{skin:'warning'})
+			$('#passstrength').html('密码太短');
+		} else if (strongRegex.test($(this).val())) {
+			$('#passstrength').html('密码安全!');
+		} else if (mediumRegex.test($(this).val())) {
+			$('#passstrength').html('密码中等!');
+		} else {
+			g_toast('密码不安全,请修改！',{skin:'warning'})
+			$('#passstrength').html('密码不安全!');
+		}
+		return true;
+	});
+})
+</script>
+  

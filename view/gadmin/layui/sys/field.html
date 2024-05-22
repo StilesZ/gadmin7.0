@@ -1,0 +1,157 @@
+{include file='common/head' /}
+<style>
+  .layui-form-label {
+    width: auto;
+  }
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-card-body">
+      <div class="layui-row">
+
+        <div class="layui-col-md12">
+          <div class="layui-row">
+              <div class="layui-col-md12">
+                {present name="info.id"}
+                    <form action="{:url('field_save')}" method="post" name="form" id="form" class="layui-form">
+                      <input type="hidden" name="id" value="{$info.id}">
+                      {else /}
+                      <form action="{:url('field_save')}" method="post" name="form" id="form" class="layui-form">
+                        {/present}
+                        <div class="layui-form-item">
+                          <label class="layui-form-label">主表选择</label>
+                          <div class="layui-input-inline">
+                            <select name="table">
+                              {volist name='t' id='k'}
+                              <option value="{$k.Name}">{$k.Name}</option>
+                              {/volist}
+                            </select>
+                          </div>
+                          <label class="layui-form-label">字段名称</label>
+                          <div class="layui-input-inline">
+                            <input type="text" name="title" class='layui-input'  datatype="*" value="{$info.title ?? ''}" datatype="*">
+                          </div>
+                          <label class="layui-form-label">字段英文</label>
+                          <div class="layui-input-inline">
+                            <input type="text" name="title_en" class='layui-input' placeholder="系统会自动带上u_xx_id" datatype="*" value="{$info.title ?? ''}" datatype="*">
+                          </div>
+                          <label class="layui-form-label">填写类型</label>
+                          <div class="layui-input-inline">
+                            <select name="type">
+                              <option value="0">input</option>
+                              <option value="1">select</option>
+                              <option value="2">radio</option>
+                              <option value="3">checkbox</option>
+                            </select>
+                          </div>
+                        </div>
+                          <div class="layui-form-item">
+                            <label class="layui-form-label">字段长度</label>
+                            <div class="layui-input-inline">
+                              <input type="text" name="lenth" class='layui-input' datatype="*" value="{$info.title ?? ''}" datatype="*">
+                            </div>
+                            <label class="layui-form-label">字段类型</label>
+                            <div class="layui-input-inline">
+                              <input type="text" name="mytpe" class='layui-input' datatype="*" value="{$info.title ?? ''}" datatype="*">
+                            </div>
+                          <label class="layui-form-label">字段数据</label>
+                          <div class="layui-input-inline">
+                            <input type="text" name="data" class='layui-input' datatype="*" value="{$info.title ?? ''}" datatype="*">
+                          </div>
+                            <label class="layui-form-label">备注说明</label>
+                            <div class="layui-input-inline" style="width: 300px">
+                              <input type="text" name="content" class='layui-input' datatype="*" value="{$info.title ?? ''}" datatype="*">
+                            </div>
+                          <div class="layui-input-inline">
+                            <button type="submit" class="layui-btn layui-btn-sm" style="margin-left: 10px">添加</button>
+                          </div>
+                        </div>
+                      </form>
+              </div>
+
+          </div>
+          <blockquote class="layui-elem-quote">
+            注意：该功能正在内测，后面会增加较多功能......
+          </blockquote>
+          <div class="layui-row" style='margin:5px'>
+            <table class="layui-hide" id="myList" lay-filter="data" lay-size="sm"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script id="barDemo" type="text/html">
+      {{#  if(d.is_add == 0){ }}
+      <span class="layui-btn layui-btn-xs" onClick=check(this,{{ d.id }},0)>立即执行</span>
+      {{#  } }}
+    </script>
+    {include file='common/footer' /}
+    <script src="__SFDP__/sfdp.7.0.js"></script>
+    <script>
+      window.onresize = function (){
+        adjustButtons()
+      }
+      layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+          elem: '#myList'
+          , url: "{:url('field')}"
+          , method: 'post', id: 'idData'
+
+          ,escape:false, height: 'full-216', page: true
+          , cols: [[
+            {type: 'radio', width: '3%'}, {field: 'id', title: '编号', width: '4%',align:'center'}
+            ,{field: 'title', title: '字段名称', width: '18%'}
+            ,{field: 'title_en', title: '生成字段', width: '15%',align:'center'},
+            {field: 'table', title: '关联表', width: '8%',align:'center'},
+            {field: 'add_time', title: '录入时间', width: '12%',align:'center'},
+            {field: 'typev', title: '填写类别', width: '10%',align:'center'},
+            {field: 'stv', title: '状态', width: '6%',align:'center'},
+            {toolbar: '#barDemo', title: '操作'}
+          ]]
+        });
+        table.on('row(data)', function (obj) {
+          //动态添加背景色
+          obj.tr.siblings().removeClass('selected')
+          obj.tr.addClass('selected');
+          obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+        });
+        $("#reloadBtn").click(function (ev) {
+          table.reload('idData', {
+            url: "{:url('base')}"
+            , where: {
+              sid: $("#sid").val(),
+              table: $("#table").val(),
+              title: $("#title").val()
+            } //设定异步数据接口的额外参数
+          });
+        })
+      });
+      function check(obj, id,st) {
+          var msg = '您确定要立即执行增加字段吗？';
+        layer.confirm(msg, function (index) {
+          $.ajax({
+            type: 'POST',
+            url: '{:url("field_save")}?id=' + id + '&t=1',
+            dataType: 'json',
+            success: function (data) {
+              if (data.code == 0) {
+                window.location.reload()
+                layer.msg('已停用!', {icon: 5, time: 1000});
+              } else {
+                layer.msg('系统出错!', {icon: 5, time: 1000});
+              }
+            },
+            error: function (data) {
+              console.log(data.msg);
+            },
+          });
+        });
+      }
+      $(function () {
+        g_checkForm($("#form"));
+      })
+    </script>
+</body>
+</html>

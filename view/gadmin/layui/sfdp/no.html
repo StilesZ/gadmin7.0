@@ -1,0 +1,242 @@
+{include file='common/head' /}
+<style>
+    .layui-table-view .layui-table-body{min-height: 456px;}
+    .layui-table-cell .layui-input.layui-unselect{height: 30px; line-height: 30px;}
+    /*设置 layui 表格中单元格内容溢出可见样式*/
+    .overlay .layui-table-view,
+    .overlay .layui-table-box,
+    .overlay .layui-table-body{overflow: visible;}
+    .overlay .layui-table-cell{height: auto; overflow: visible;}
+    .text-center{text-align: center;}
+</style>
+<body>
+    <div class="layui-card" style="margin: 15px">
+        <div class="layui-card-body layui-text">
+            <div id="toolbar" style="padding: 10px;">
+                    <button type="button" class="layui-btn layui-btn-sm"data-type="addRow"><i class="layui-icon layui-icon-add-1"></i> 添加一行</button>
+                    <div class=" layui-word-aux" style="float: right">编码规则需符合：前缀$日期格式$[可选分隔符]：YMD=20230201  YM=202302 Y=2023  YMDhis=20230201011010 如：BH-$YMD$- 流水号3 即为：BH-20230201-001</div>
+            </div>
+            <div id="tableRes" class="overlay">
+                <table id="dataTable" lay-filter="dataTable" class="layui-hide"></table>
+            </div>
+            <div id="action" class="text-center" style="margin-top: 5px">
+                <a type="button" name="btnSave" class="layui-btn layui-btn-sm" data-type="save">保存</a>
+                <a type="reset" name="btnReset" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layer_close()">取消</a>
+            </div>
+        </div>
+    </div>
+    <div class="layui-card"  style="margin: 15px">
+        <div class="layui-card-header">编码规则预览</div>
+        <div class="layui-card-body layui-text">
+            <blockquote class="layui-elem-quote layui-quote-nm">
+                <pre id="Result"><span class="layui-word-aux">输入规则后，此处可预览</span></pre>
+            </blockquote>
+        </div>
+    </div>
+{include file='common/footer' /}
+<script type="text/javascript" src="/static/work/workflow.5.0.js?v=11" ></script>
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script type="text/javascript">
+    //准备视图对象
+    window.viewObj = {
+        tbData: {$billno|raw},
+        typeData:{$data|raw},
+        renderSelectOptions: function(data, settings){
+            settings =  settings || {};
+            var valueField = settings.valueField || 'value',
+                textField = settings.textField || 'text',
+                selectedValue = settings.selectedValue || "";
+            var html = [];
+            for(var i=0, item; i < data.length; i++){
+                item = data[i];
+                html.push('<option value="');
+                html.push(item[valueField]);
+                html.push('"');
+                if(selectedValue && item[valueField] == selectedValue ){
+                    html.push('selected="selected"');
+                }
+                html.push('>');
+                html.push(item[textField]);
+                html.push('</option>');
+            }
+            return html.join('');
+        }
+    };
+    layui.use(['jquery', 'table', 'layer'], function(){
+        var $ = layui.$, table = layui.table, form = layui.form, layer = layui.layer;
+        var TableId = "layTable";
+        var tableData = table.render({
+            elem: '#dataTable',
+            id: TableId,
+            data: viewObj.tbData,
+            height: 'full-300',
+            loading: true,
+            even: false,
+            escape:false,
+            cols: [[
+                {title: '序号', type: 'numbers'},
+                {field: 'type', title: '业务名称（name）', templet: function(d){
+                        var options = viewObj.renderSelectOptions(viewObj.typeData, {valueField: "id", textField: "name", selectedValue: d.type});
+                        return '<a lay-event="type"></a><select name="type" lay-filter="type"><option value="">请选择业务</option>' + options + '</select>';
+                    }},
+                {field: 'name', title: '编码规则（rule）', edit: 'text', event: 'name'},
+                {field: 'lenth', title: '流水号（lenth）', edit: 'text', event: 'lenth'},
+                {field: 'state', title: '是否启用（state）', event: 'state', templet: function(d){
+                        var html = ['<input type="checkbox" name="state" lay-skin="switch" lay-text="是|否"'];
+                        html.push(d.state > 0 ? ' checked' : '');
+                        html.push('>');
+                        return html.join('');
+                    }},
+                {field: 'tempId', title: '操作', templet: function(d){
+                        return '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="'+ d.tempId +'"><i class="layui-icon layui-icon-delete"></i>移除</a>';
+                    }}
+            ]],
+            done: function(res, curr, count){
+                viewObj.tbData = res.data;
+            }
+        });
+        var active = {
+            addRow: function(){	//添加一行
+                var oldData = table.cache[TableId];
+                var newRow = {tempId: new Date().valueOf(), type: null, name: 'BH$YMD$', lenth:3, state: 0};
+                oldData.push(newRow);
+                tableData.reload({
+                    data : oldData
+                });
+            },
+            updateRow: function(obj){
+                var oldData = table.cache[TableId];
+                for(var i=0, row; i < oldData.length; i++){
+                    row = oldData[i];
+                    if(row.tempId == obj.tempId){
+                        $.extend(oldData[i], obj);
+                        return;
+                    }
+                }
+                tableData.reload({
+                    data : oldData
+                });
+            },
+            removeEmptyTableCache: function(){
+                var oldData = table.cache[TableId];
+                for(var i=0, row; i < oldData.length; i++){
+                    row = oldData[i];
+                    if(!row || !row.tempId){
+                        oldData.splice(i, 1);    //删除一项
+                    }
+                    continue;
+                }
+                tableData.reload({
+                    data : oldData
+                });
+            },
+            save: function(){
+                var oldData = table.cache[TableId];
+                for(var i=0, row; i < oldData.length; i++){
+                    row = oldData[i];
+                    if(!row.type){
+                        layer.msg("检查每一行，都必须填写！", { icon: 5 }); //提示
+                        return;
+                    }
+                }
+                g_ajax('{:url('no')}','post',{json:JSON.stringify(table.cache[TableId])});
+            }
+        }
+        //激活事件
+        var activeByType = function (type, arg) {
+            if(arguments.length === 2){
+                active[type] ? active[type].call(this, arg) : '';
+            }else{
+                active[type] ? active[type].call(this) : '';
+            }
+        }
+        $('.layui-btn[data-type]').on('click', function () {
+            var type = $(this).data('type');
+            activeByType(type);
+        });
+        form.on('select(type)', function(data){
+            var elem = data.elem; //得到select原始DOM对象
+            $(elem).prev("a[lay-event='type']").trigger("click");
+        });
+        table.on('edit(dataTable)', function(obj){
+            if(obj.field=='name' || obj.field=='lenth'){
+                var BH = obj.name.split("$");
+                document.getElementById("Result").innerHTML = BH[0]+g_billno(BH[1])+BH[2]+g_PrefixZero(1,parseInt(obj.data.lenth));
+            }
+        });
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data, event = obj.event, tr = obj.tr; //获得当前行 tr 的DOM对象;
+            var BH = data.name.split("$");
+            switch(event){
+                case "name":
+                    document.getElementById("Result").innerHTML = BH[0]+g_billno(BH[1])+BH[2]+g_PrefixZero(1,parseInt(data.lenth));
+                    break;
+                case "lenth":
+                    document.getElementById("Result").innerHTML = BH[0]+g_billno(BH[1])+BH[2]+g_PrefixZero(1,parseInt(data.lenth));
+                    break;
+                case "type":
+                    var oldData = table.cache[TableId];
+                    var select = tr.find("select[name='type']");
+                    if(select){
+                        var selectedVal = select.val();
+                        if(!selectedVal){
+                            layer.tips("请选择一个分类", select.next('.layui-form-select'), { tips: [3, '#FF5722'] }); //吸附提示
+                        }
+                        for(var i=0, row; i < oldData.length; i++){
+                            row = oldData[i];
+                            if(selectedVal == row.type){
+                                layer.tips("对不起已有该类别,请重新选择！", select.next('.layui-form-select'), { tips: [3, '#FF5722'] }); //吸附提示
+                                select.val('');
+                                tableData.reload({
+                                    data : oldData
+                                });
+                                return;
+                            }
+                        }
+                        $.extend(obj.data, {'type': selectedVal});
+                        activeByType('updateRow', obj.data);	//更新行记录对象
+                    }
+                    break;
+                case "state":
+                    var stateVal = tr.find("input[name='state']").prop('checked') ? 1 : 0;
+                    $.extend(obj.data, {'state': stateVal})
+                    activeByType('updateRow', obj.data);	//更新行记录对象
+                    break;
+                case "del":
+                    layer.confirm('真的删除行么？', function(index){
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        if(data.type)
+                        layer.close(index);
+                        activeByType('removeEmptyTableCache');
+                        if(data.id){
+                            g_ajax('{:url('no')}','post',{act:'del',id:data.id});
+                        }
+
+                    });
+                    break;
+            }
+        });
+    });
+    function g_billno(type) {
+        var myDate = new Date;
+        var year = myDate.getFullYear();
+        var mon = myDate.getMonth() + 1;
+        var date = myDate.getDate();
+        var h = myDate.getHours();
+        var m = myDate.getMinutes();
+        var s = myDate.getSeconds();
+        if(type == 'YMD'){
+            return year+g_Appendzero(mon)+g_Appendzero(date);
+        }
+        if(type == 'YM'){
+            return year+g_Appendzero(mon);
+        }
+        if(type == 'Y'){
+            return year;
+        }
+        if(type == 'YMDhis'){
+            return year+g_Appendzero(mon)+g_Appendzero(date)+g_Appendzero(h)+g_Appendzero(m)+g_Appendzero(s);
+        }
+    }
+</script>
+</html>

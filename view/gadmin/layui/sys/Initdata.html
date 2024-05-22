@@ -1,0 +1,222 @@
+{include file='common/head' /}
+<style>
+    #steps {
+        margin-left: 25%;
+    }
+    .step-item {
+        display: inline-block;
+        line-height: 26px;
+        position: relative;
+        background: #ffffff;
+    }
+
+    .step-item-tail {
+        width: 100%;
+        padding: 0 10px;
+        position: absolute;
+        left: 0;
+        top: 13px;
+    }
+    .step-item-tail i {
+        display: inline-block;
+        width: 100%;
+        height: 1px;
+        vertical-align: top;
+        background: #c2c2c2;
+        position: relative;
+    }
+    .step-item-tail-done {
+        background: #009688 !important;
+    }
+    .step-item-head {
+        position: relative;
+        display: inline-block;
+        height: 26px;
+        width: 26px;
+        text-align: center;
+        vertical-align: top;
+        color: #009688;
+        border: 1px solid #009688;
+        border-radius: 50%;
+        background: #ffffff;
+    }
+
+    .step-item-head.step-item-head-active {
+        background: #009688;
+        color: #ffffff;
+    }
+
+    .step-item-main {
+        background: #ffffff;
+        display: block;
+        position: relative;
+    }
+
+    .step-item-main-title {
+        font-weight: bolder;
+        color: #555555;
+    }
+    .step-item-main-desc {
+        color: #aaaaaa;
+    }
+</style>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div id="steps">
+                        <div class="step-item" style="width: 20%;">
+                            <div class="step-item-tail"><i class=""></i></div>
+                            <div class="step-item-head step-item-head-active"><i class="layui-icon">1</i></div>
+                            <div class="step-item-main">
+                                <div class="step-item-main-title">第一步</div>
+                                <div class="step-item-main-desc">选择初始化的数据内容</div>
+                            </div>
+                        </div>
+                        <div class="step-item" style="width: 20%;">
+                            <div class="step-item-tail"><i class=""></i></div>
+                            <div class="step-item-head step-item-head-active"><i class="layui-icon">2</i></div>
+                            <div class="step-item-main">
+                                <div class="step-item-main-title">第二步</div>
+                                <div class="step-item-main-desc">导出CSV文件</div>
+                            </div>
+                        </div>
+                        <div class="step-item" style="width: 20%;">
+                            <div class="step-item-tail"><i class=""></i></div>
+                            <div class="step-item-head step-item-head-active"><i class="layui-icon">3</i></div>
+                            <div class="step-item-main">
+                                <div class="step-item-main-title">第三步</div>
+                                <div class="step-item-main-desc">填充CSV内容</div>
+                            </div>
+                        </div>
+                        <div class="step-item" style="width: 20%;">
+                            <div class="step-item-head step-item-head-active"><i class="layui-icon">4</i></div>
+                            <div class="step-item-main">
+                                <div class="step-item-main-title">第四步</div>
+                                <div class="step-item-main-desc">导入数据</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>获取CSV模板信息</legend>
+                        </fieldset>
+                        <table class="layui-table">
+                            <tr class="tr rt">
+                                <td width="80">数据类型</td>
+                                <td class="lt">
+                                    <select id='table' class="layui-input" onchange='get_field()' lay-ignore>
+                                        <option value="">请选择</option>
+                                        <option value="sys_user">[系统]用户信息</option>
+                                        <option value="sys_role">[系统]角色信息</option>
+                                        {volist name='table' id='k'}
+                                        <option value="{$k.id}">[业务]{$k.s_title}</option>
+                                        {/volist}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="tr rt">
+                                <td width="80">模板下载</td>
+                                <td class="lt">
+
+                                    <input id='name'  type="text" value="" class="layui-input">
+                                </td>
+                            </tr>
+                            <tr class="tr rt">
+                                <td width="80">开始下载</td>
+                                <td class="lt">
+                                    <a id="down" class="layui-btn" target="_blank">下载</a>
+                                </td>
+                            </tr>
+                            <tr class="tr rt">
+                            <td colspan='2'>
+                                <blockquote class="layui-elem-quote layui-text">
+                                    <p>提示：</p>
+                                    <p>1、选择你要初始化的数据类型,</p>
+                                    <p>2、确定导出数据模板</p>
+                                    <p>3、<b style="color: #A60000">请不要修改模板，不然会导致导入数据失败！</b></p>
+                                </blockquote>
+                            </td>
+                            </tr>
+                        </table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <form class="layui-form" action="" method="post" id="form">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>数据初始化中心</legend>
+                        </fieldset>
+                        <table class="layui-table">
+                            <tr class="tr rt">
+                                <td width="80">导入数据</td>
+                                <td class="lt">
+                                    <select id='table' name="type" class="layui-input"  lay-ignore>
+                                        <option value="">请选择</option>
+                                        <option value="sys_user">[系统]用户信息</option>
+                                        <option value="sys_role">[系统]角色信息</option>
+                                        {volist name='table' id='k'}
+                                        <option value="{$k.id}">[业务]{$k.s_title}</option>
+                                        {/volist}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="tr rt">
+                                <td width="80">上传数据</td>
+                                <td class="lt">
+                                    <div class="layui-input-block flex-center" style="margin-left:0px;">
+                                        <input id='logimg' name="file" type="text" value="" class="layui-input">
+                                        <a onclick="layer_show('上传','{:url('common/upload',['id'=>'logimg'])}','14','15')" href="javascript:" class="layui-btn">
+                                            <i class="layui-icon layui-icon-upload"></i> 上传
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="tr rt">
+                                <td colspan='2'>
+                                    <button type="submit" class="layui-btn">&nbsp;&nbsp;提交&nbsp;&nbsp;</button>
+                                </td>
+                            </tr>
+                            <tr class="tr rt">
+                                <td colspan='2'>
+                                    <blockquote class="layui-elem-quote layui-text" style="border-left: 5px solid #960000;">
+                                        <p>提示：</p>
+                                        <p>1、选择你要初始化的数据类型,</p>
+                                        <p>2、上传Csv文件</p>
+                                        <p>3、系统识别，并导入数据</p>
+                                        <p>4、<b style="color: #A60000">字段数据必须符合系统</b></p>
+                                    </blockquote>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{include file='common/footer' /}
+<script type="text/javascript">
+    g_checkForm($("#form"));
+    $('#down').hide();
+    function get_field() {
+        $('#down').show();
+        var val = $('#table').val();
+        var val_text = $('#table').find("option:selected").text();
+        $('#down').html(val_text);
+        $('#name').val(val_text);
+        let url = '{:url("initdata")}?act=down&id='+val;
+        $('#down').attr('href',url);
+    }
+</script>

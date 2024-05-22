@@ -1,0 +1,56 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+                <form action="" class="layui-form" id="form" method="post" name="form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字典类型：</label>
+                        <div class="layui-input-block">
+                            <select class="select"  name='dict_type' >
+                                <option value="1">系统</option>
+                                <option value="2">用户</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字典代码：</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" datatype="*" name="dict_code"
+                                   nullmsg="代码不能为空~" placeholder="请输入代码名称" type="text" value="{$info.dict_code ?? ''}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字典名称：</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" datatype="*" placeholder="请填写字典名称" name="dict_name" nullmsg="字典名称不能为空" type="text" value="{$info.dict_name ?? ''}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备注说明：</label>
+                        <div class="layui-input-block" >
+                            <textarea class="layui-textarea" name="content" placeholder="备注说明">{$info.content ?? ''}</textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-sm" type="submit">立即提交</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" type="reset">重置</button>
+                        </div>
+                    </div>
+                </form>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script>
+    layui.use('form', function () {
+        var form = layui.form;
+    });
+</script>
+<script type="text/javascript">
+    $("[name='dict_type']").find("[value='{$info.dict_type ?? ''}']").attr("selected", true);
+    g_checkForm($("#form"));
+</script>
+
+					
+

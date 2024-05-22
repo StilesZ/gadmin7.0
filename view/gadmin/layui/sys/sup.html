@@ -1,0 +1,383 @@
+{include file='common/head' /}
+<link href="/static/list/sup.css" rel="stylesheet" type="text/css" >
+</head>
+<div class="app-wrapper">
+    <section class="ant-layout" id="page">
+        <section class="ant-layout">
+            <main class="ant-layout-content welcome">
+                <div class="dashboard">
+                    <div class="dc">
+                        <div class="flex">
+                            <div class="flex-item" style="padding-right: 8px;">
+                                <div class="item">
+                                    <div class="CompanyBox"
+                                         style="width: 50%; display: flex; margin-right: 8px;">
+                                        <div class="company-info card">
+                                            <div class="infos">
+                                                <div >
+                                                    <div><span class="infos__status">{:get_common_val('soft_role',session('sfotRoleId'),'name')}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="info_name" style="margin-top: 20px;font-size: 18px;font-weight: 700;color: #fff;overflow: hidden;"> 你好，<br>　{:session('sfotUserName')}欢迎使用超级开发中心！</div>
+                                            </div>
+                                        </div>
+                                        <div class="days card">
+                                            <div class="infos">
+                                                <div >
+                                                    <div>
+                                                        <span class="infos__status">{eq name=":g_cache('waf_open')" value='1'}防火墙已开启{else/}未开启防火墙{/eq}</span>
+                                                        <span class="infos__status">{eq name=":g_cache('verify')" value='1'}验证码防护未开启{else/}验证码防护开启{/eq}</span>
+                                                        <span class="infos__status">{eq name=":g_cache('watermark')" value='1'}水印防护已开启{else/}水印防护未开启{/eq}</span>
+                                                        <span class="infos__status">{eq name=":g_cache('is_api')" value='2'}Api接口已关闭{else/}Api接口已开启{/eq}</span>
+                                                        <span class="infos__status">{eq name=":g_cache('is_login')" value='2'}单一登入已关闭{else/}单一登入已开启{/eq}</span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!---->
+                                    <div class="aq card">
+                                        <div class="risk">
+                                            <div class="label"><span>快捷开发</span>
+                                                <span class="processing  "><span class="aq-p"></span><span class="aq-t">Fast Design</span></span></div>
+                                            <div>
+                                                <style>
+                                                    .kzt .layui-icon {
+                                                        display: inline-block;
+                                                        width: 100%;
+                                                        height: 60px;
+                                                        line-height: 60px;
+                                                        text-align: center;
+                                                        border-radius: 2px;
+                                                        font-size: 30px;
+                                                        background-color: #f8f8f800;
+                                                        color: #333;
+                                                        transition: all .3s;
+                                                        -webkit-transition: all .3s;
+                                                    }
+                                                    .kzt li cite {
+                                                        text-align: center;
+                                                        position: relative;
+                                                        top: 2px;
+                                                        display: block;
+                                                        color: #666;
+                                                        text-overflow: ellipsis;
+                                                        overflow: hidden;
+                                                        white-space: nowrap;
+                                                        font-size: 14px;
+                                                    }
+                                                </style>
+
+                                                <ul class="kzt layui-row layui-col-space10 layui-this">
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=int()>
+                                                            <i class="layui-icon layui-icon-vercode"></i>
+                                                            <cite>文件安全</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('业务开发中心','{:url("Sfdp/sfdpList")}')>
+                                                            <i class="layui-icon layui-icon-console"></i>
+                                                            <cite>业务开发</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('流程开发中心','{:url("wf/index")}')>
+                                                            <i class="layui-icon layui-icon-chart"></i>
+                                                            <cite>流程开发</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('数据交互中心','{:url("source/index")}')>
+                                                            <i class="layui-icon layui-icon-template-1"></i>
+                                                            <cite>数据交互</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('企业授权中心','{:url("access/index")}')>
+                                                            <i class="layui-icon layui-icon-chat"></i>
+                                                            <cite>企业授权</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('版本管理中心','{:url("sys/up")}')>
+                                                            <i class="layui-icon layui-icon-find-fill"></i>
+                                                            <cite>版本管理</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('自定义开发','{:url("sys/custom")}')>
+                                                            <i class="layui-icon layui-icon-survey"></i>
+                                                            <cite>自定义开发</cite>
+                                                        </a>
+                                                    </li>
+                                                    <li class="layui-col-xs3">
+                                                        <a onclick=window.parent.openUrl('帮助中心','//gadmin8.com/index/study')>
+                                                            <i class="layui-icon layui-icon-set"></i>
+                                                            <cite>帮助中心</cite>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div><!---->
+                                <div class="terminal-overview card">
+                                    <div style="margin: 24px 32px;">
+                                        <div class="label"><span>系统用户</span><a class="detail">User info </a>
+                                        </div>
+                                        <div class="count">
+                                            <div class="count-left count-item">
+                                                <div class="item deploy">
+                                                    <div class="card" id="deploy_card">
+                                                        <div class="card-label"> 注册用户</div>
+                                                        <span style="position: absolute; z-index: 9999;">
+                                                            <div style="margin-top: 8px; cursor: pointer;">
+                                                                <span class="card-num">{$u['user']}</span><span class="card-num-unit">人 <span>&gt;</span></span></div></span>
+                                                    </div>
+                                                    <div class="card" id="num_card" style="margin-left: 5px;">
+                                                        <div class="card-label"> 注册角色 </div>
+                                                        <span><div
+                                                                style="margin-top: 8px;"><span
+                                                                class="card-num">{$u['role']}</span><span
+                                                                class="card-num-unit">组</span></div></span></div>
+                                                </div>
+                                            </div>
+                                            <div class="count--right count-item">
+                                                <h2 style="padding-top: 30px;font-weight: 700;">当前系统版本：v{:GadminVer}</h2>
+                                            </div>
+                                        </div>
+                                        <div class="border"></div>
+                                        <div class="download">
+                                            <div class="xz"><span class="type" onclick="layer_show('新增管理员','{:url('user/add')}',50,80)">添加用户</span></div>
+                                            <div class="xz"><span class="type" onclick="layer_show('新增管理员','{:url('role/add')}',50,80)">添加角色</span></div>
+                                            <div class="xz"><span class="type" onclick="layer_show('新增管理员','{:url('Node/saas_add')}',50,80)">添加层级</span></div>
+                                            <div class="xz"><span class="type" onclick="layer_show('新增管理员','{:url('Node/add')}',50,80)">添加菜单</span></div>
+                                        </div>
+                                    </div></div>
+                            </div>
+                            <div class="flex-item" style="padding-left: 8px;">
+                                <div class="manage-log card">
+                                    <div class="card">
+                                        <div class="card__top">
+                                            <div class="card_tl"> 管理日志</div>
+                                        </div>
+                                        <div class="card__content" style="padding-top: 0px;padding-right: 10px;padding-bottom: 10px;padding-left: 10px;">
+                                            <table class="layui-table layuiadmin-page-table" lay-skin="line" style="margin: 0px">
+                                                <thead>
+                                                <tr>
+                                                    <th>用户名</th>
+                                                    <th>最后登录时间</th>
+                                                    <th>登入IP</th>
+                                                    <th>登入类型</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {volist name='u.data' id='k'}
+                                                <tr>
+                                                    <td><span
+                                                            {eq name="$key" value="0"} class="first" {/eq}
+                                                        {eq name="$key" value="1"} class="second" {/eq}
+                                                        {eq name="$key" value="2"} class="third" {/eq}
+                                                    >{$k.username}</span></td>
+                                                    <td><i class="layui-icon layui-icon-log"> {$k.login_time|date='Y-m-d H:i:s'}</i></td>
+                                                    <td><span>{$k.login_ip}</span></td>
+                                                    <td>{$k.login_browser}({$k.login_os})</td>
+                                                </tr>
+                                                {/volist}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="team-pwd card22" ><!---->
+                                    <div class="card22">
+                                        <div class="card__top2" >
+                                            <div class="card_tl2"> 系统累计开发状态</div>
+                                             <i class="layui-icon layui-icon-senior"></i>
+                                        </div>
+                                        <div class="card__content2">
+                                            <div  style="display: flex; width: 100%;" class="card2">
+                                                <div class="card_ci card_cil">
+                                                    <div class="card_t_2">
+                                                        设计开发流程
+                                                    </div>
+                                                    <div class="card_cp_2"><span>{$u['wf']}条</span></div>
+                                                </div>
+                                                <div class="card_ci card_ci__right">
+                                                    <div class="card_t_2">
+                                                        设计业务总数
+                                                    </div>
+                                                    <div class="card_cp_2"><span class="card-num">{$u['sfdp']}组</span></div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; width: 100%;" class="card2">
+                                                <div class="card_ci  card_cil">
+                                                    <div class="card_t_2">
+                                                        元数设计总数
+                                                    </div>
+                                                    <div class="card_cp_2"><span>{$u['ys']}条</span></div>
+                                                </div>
+                                                <div class="card_ci  card_ci__right">
+                                                    <div class="card_t_2">
+                                                        报表开发总数
+                                                    </div>
+                                                    <div class="card_cp_2">
+                                                        <span>{$u['ys']}个</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card safe-status card">
+                            <div class="card__top">
+                                <div class="card_tl"> 系统感知</div>
+                                <i class="layui-icon layui-icon-about"></i>
+                                <div class="card_tmark">
+                                    <div class="card_tmark__spin"></div>
+                                    <span>数据感知中</span></div>
+                            </div>
+                                <div class="card__content">
+                                    <div class="card_ci1">
+                                        <div style="margin-left: 48px;">
+                                            <div class="card_t"> 文件安全</div>
+                                            <div style="display: flex;" onclick="show_err()">
+                                                <div class="card_mark s-yellow"><i class="layui-icon layui-icon-vercode"  style="font-size: 30px; color: #ffffff;"></i></div>
+                                                <div class="card_s">
+                                                    <div class="card_left">
+                                                        <div class="t-bage t-red"></div>
+                                                    </div>
+                                                    <div class="card_right">
+                                                        <div class="card_top"> 文件修改</div>
+                                                        <div class="card_con"><span>{$u.f.e}</span><span>项 &gt;</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card_s">
+                                                    <div class="card_left">
+                                                        <div class="t-bage t-yellow"></div>
+                                                    </div>
+                                                    <div class="card_right">
+                                                        <div class="card_top"> 文件删除|错误</div>
+                                                        <div class="card_con"><span>{$u.f.d+$u.f.r}</span><span>项 &gt;</span></div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card_2">
+                                        <div style="margin-left: 48px;">
+                                            <div class="card_t"> 运行日志</div>
+                                            <div style="display: flex;">
+                                                <div class="card_mark s-red"><i class="layui-icon layui-icon-app"  style="font-size: 30px; color: #ffffff;"></i></div>
+                                                <div class="card_s">
+                                                    <div class="card_left">
+                                                        <div class="t-bage t-red"></div>
+                                                    </div>
+                                                    <div class="card_right">
+                                                        <div class="card_top"> 操作日志</div>
+                                                        <div class="card_con"><span>{$u.log}</span><span>项 &gt;</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card_s">
+                                                    <div class="card_left">
+                                                        <div class="t-bage t-yellow"></div>
+                                                    </div>
+                                                    <div class="card_right">
+                                                        <div class="card_top"> 运行Api日志</div>
+                                                        <div class="card_con"><span>{$u.api}</span><span>项 &gt;</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card_3">
+                                        <div style="margin-left: 48px;">
+                                            <div class="card_t"> 流程态势</div>
+                                            <div style="display: flex;">
+                                                <div class="card_mark s-success"><i class="layui-icon layui-icon-senior"  style="font-size: 30px; color: #ffffff;"></i></div>
+                                                <div class="card_s">
+                                                    <div class="card_left">
+                                                        <div class="t-bage t-red"></div>
+                                                    </div>
+                                                    <div class="card_right">
+                                                        <div class="card_top"> 累计总流程</div>
+                                                        <div class="card_con"><span>{$u.run}</span><span>条 &gt;</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card_s">
+                                                <div class="card_left">
+                                                    <div class="t-bage t-yellow"></div>
+                                                </div>
+                                                <div class="card_right">
+                                                    <div class="card_top"> 累计总办理</div>
+                                                    <div class="card_con"><span>{$u.runc}</span><span>个 &gt;</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     </div>
+                                    <div class="card_4">
+                                        <div>
+                                            <div class="card_t"> 错误日志</div>
+                                            <div style="display: flex;">
+                                                <div class="card_mark s-yellow"><i class="layui-icon layui-icon-face-cry"  style="font-size: 30px; color: #ffffff;"></i></div>
+                                                <div class="card_s">
+                                                    <div class="card_left">
+                                                        <div class="t-bage t-red"></div>
+                                                    </div>
+                                                    <div class="card_right">
+                                                        <div class="card_top"> 累计错误总数</div>
+                                                        <div class="card_con"><span>{$u['err']}</span><span>次 &gt;</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+</div>
+</main>
+{include file='common/footer' /}
+<script>
+    function show_err(){
+        layer.open({
+            type: 1,
+            title:'错误信息',
+            shadeClose:true ,
+            area: ['420px', '540px'],
+            content: `<div style="padding: 10px"> <table class="layui-table">{volist name="u.f.msg" id="k"}<tr><td>{$k}</td></tr>{/volist}</table></div>`
+        });
+    }
+    function int() {
+        layer.confirm('您确定重新生成文件参数库？<font color="red">请确保Extend/SecurityData有目录写入权限！</font>',function(index){
+            var loding = layer.msg('系统检查中..', {icon: 16,shade: 0.3,time: false});
+            $.ajax({
+                url:'{:url("sys/sup")}?act=check',
+                type:'post',
+                dataType:'json',
+                success:function(ret) {
+                    if (ret.code == -1) {
+                        layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                    }else{
+                        layer.close(loding);
+                        layer.msg(ret.msg,{icon:1,time: 3000},function(){
+                            location.reload();
+                        });
+                    }
+                },
+                error : function(ret) {
+                    console.log(ret.responseText.code);
+                }
+            });
+        });
+    }
+</script>

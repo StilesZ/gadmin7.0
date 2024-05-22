@@ -1,0 +1,140 @@
+{include file='common/head' /}
+{$config.load_file.css|raw}
+{$config.g_js|raw}
+<link rel="stylesheet" type="text/css" href="/static/layui/layuiadmin.css?v=5.0.0">
+<style>
+    .layui-btn-sm{
+        padding: 0 6px;
+    }
+    .layui-btn+.layui-btn {
+        margin-left: 0px;
+    }
+    .selected{
+        border: 1px solid #887d7d;
+    }
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row" style="display: flex;white-space: nowrap;">
+                <div style="flex: 1;display: inline-block;">
+                    <div class="">{$btns|raw}<b id='load_btn'></b></div>
+                </div>
+                <div class="align-right" style="flex: 1;display: inline-block;">
+                    <form id='searchform' method="post" action="" class="layui-form" >
+                        <div class="layui-inline" id='search'>
+                        </div>
+                        <div class="layui-inline" style="width: 161px;">
+                            <div class="layui-btn-group">
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" id='searchsubmit'  lay-submit lay-filter="search"><i class="layui-icon layui-icon-search" ></i></a>
+                                <a class="layui-btn layui-btn-sm layui-btn-primary"  onclick="exp_excle('{$config.title}',{:count($config.field)})"><i class="layui-icon layui-icon-export" ></i></a>
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" onclick="exp_print()"><i class="layui-icon layui-icon-print" ></i></a>
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" onclick="help_view({$sid})"><i class="layui-icon layui-icon-help" ></i></a>
+                                {if condition="session('softId') == 1"}
+                                <a class="layui-btn layui-btn-sm layui-btn-primary" onclick='sfdp.openpage("列表控制台","/gadmin/sfdp/sfdpApi.html?act=custom&sid={$sid}")'><i style="color: red;" class="layui-icon layui-icon-console" ></i></a>
+                                {/if}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div style="height:10px;"></div>
+            <div id="listDataCon">
+                <div class="layui-row layui-col-space30" id="listData"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var g_list_limit = 16;
+    var g_list_limit_page = [16,30,50,100,200];
+</script>
+{include file='common/footer' /}
+<script>
+    var Server_Url = '/gadmin/wf/wfdo';
+    var System_Url = '/gadmin/sfdp/';
+</script>
+<script src="__SFDP__/sfdp.plug.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.config.js?v=7.0.1"></script>
+<script type="text/javascript" src="__FLOW__/workflow.5.0.js"></script>
+<script type="text/javascript" src="__SFDP__/lib/laydate5.0.9/laydate.js"></script>
+{$config.fun|raw}
+<script>
+    $(document).ready(function() {
+        sfdp.generateFilterGroup({$config['search']|raw});/*渲染查询数据*/
+        layui.use(['flow','form','table'],function (){
+            let form = layui.form;
+            form.render();
+            $('.layui-input').keypress(function(e){
+                if(e.keyCode==13){
+                    e.preventDefault();
+                }
+            });
+            //监听提交  搜索事件
+            form.on('submit(search)', function(data){
+                var param = {};
+                var search = $('#searchform').serializeArray();
+                var searchdata = sfdp.list_to_json(search);
+                if(searchdata != {}){
+                    param.search = searchdata;
+                }
+                $("#listData").remove();
+                $('#listDataCon').append('<div class="layui-row layui-col-space30" id="listData"></div>');
+                initLaytable(param);
+                return false;
+            });
+        })
+        try{
+            load_list_fun();//后置函数
+        }catch(e){
+            console.log('page no load end fun ~');
+        }
+        initLaytable({});
+    });
+    document.onkeydown = function (event) {
+        var e = event || window.event;
+        if (e && e.keyCode == 13) { //回车键的键值为13
+            $('#searchsubmit').trigger("click");
+        }
+    };
+    var TableData;
+    function initLaytable(param){
+        var flow = layui.flow;
+        flow.load({
+            elem: '#listData'
+            ,done: function(page, next){
+                var lis = [];
+                $.post(window.location.href,{page:page,limit:12,search:param.search||{}}, function(res){
+                    layui.each(res.data, function(index, item){
+                        var tmp = `<div class="layui-col-md2 layui-col-sm4" onclick="select(this)">
+                        <div style="display: none">${item.id}</div>
+                        <div class="cmdlist-container">
+                        <a href="javascript:;"><img src="/${item.image||'static/img/no_image.svg'}" style="height: 165px;width: 100%"></a>
+                        <div class="cmdlist-text">
+                        <p class="info">${item.title||'请配置标题'}</p>
+                        <div class="price">
+
+                        {volist name='config.field' id='k'}{notin name="$config['sql_field'][$key]" value="image,title"} <p>{$k}:${item.{$config['sql_field'][$key]}}　</p>{/notin}{/volist}
+
+                        <span class="flow" style="position: absolute;">${item.url}</span></div>
+                        </div></div></div>`
+                        lis.push(tmp);
+               });
+                    next(lis.join(''), page < res.count/12);
+                });
+            }
+        });
+    }
+    function select(obj){
+        $('.selected').removeClass('selected');
+        $(obj).find('.cmdlist-container').addClass('selected');
+        $('input:checkbox').prop('checked',false);
+        $("input[name='ids']").prop('checked',false);
+        $(obj).find('input:checkbox').prop('checked',true);
+    }
+</script>
+<script type="text/javascript" src="/static/list/js.js?v1.0"></script>

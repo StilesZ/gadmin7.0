@@ -1,0 +1,152 @@
+{include file='common/head' /}
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <form class="layui-form" action="" method="post" lay-filter="form" id="form">
+                        <input type="hidden" name="sid" value="{$data.id}">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">数据表</label>
+                                <div class="layui-input-block">
+                                    <select name="table" id="table" lay-filter="table" lay-search>
+                                        <option value="">请先选择数据表信息</option>
+                                        {volist name="$table_data" id="vo"}
+                                        <option value="{$vo}" >{$vo}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">别名设置</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="alias" id="alias" autocomplete="off" placeholder="如：table" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">Join表字段</label>
+                                <div class="layui-input-block">
+                                    <select name="link_id" id="link_id" lay-filter="link_id" lay-search>
+                                        <option value="">请选择关联字段</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">读取字段</label>
+                                <div class="layui-input-block">
+                                    <select multiple="multiple" lay-filter="test" id="link_field">
+                                    </select>
+                                    <input name="field" value="" id="m_field_val" type="hidden">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关联表名</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" name="link_alias" value="{$table}" autocomplete="off" placeholder="如：table" class="layui-input" >
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关联字段</label>
+                                <div class="layui-input-block" >
+                                    <input type="text" name="link_mid"  autocomplete="off" placeholder="如：id" class="layui-input" >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" type="submit">确认新增</button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                主表可用字段：
+                                {volist name="$data.fieldList" id="vo"}
+                                <span class="layui-badge layui-bg-orange"> {$vo.value}|{$vo.title}</span>
+                                {/volist}
+                            </div>
+                        </div>
+                    </form>
+                    <blockquote class="layui-elem-quote layui-text">
+                        <p>备注：</p>
+                        <p>　　 注意：关联表名必须是主表表名，或者Join表的别名！</p>
+                        <p>　　 注意：关联字段，如Id name 等等</p>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{include file="common/footer"/}
+<script>
+    $(function () {
+        $("#form").Validform({
+            tiptype:function(msg,o,cssctl){
+                if (o.type == 3){
+                    layer.msg(msg, {time: 800});
+                }
+            },
+            ajaxPost:true,
+            showAllError:true,
+            callback:function(ret){
+                if (ret.code == 0) {
+                    parent.location.reload(); // 父页面刷新
+                } else {
+                    layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                }
+            }
+        });
+    })
+</script>
+<script>
+    layui.config({
+        base: '/static/layui/js/',
+    })
+    layui.use(['transfer','layer','form','laydate','multiSelect'],function(){
+        var layer = layui.layer;
+        var form = layui.form,multiSelect = layui.multiSelect;
+        var $ = layui.$;
+        form.on('select(test)',function(data){
+            if($('#m_field_val').val()==''){
+                $('#m_field_val').val(data.value);
+            }else{
+                $('#m_field_val').val($('#m_field_val').val() +','+ data.value);
+            }
+        })
+        /**
+         * 当选中数据表时，显示所有可选字段
+         */
+        form.on('select(table)', function(){
+            let data = form.val("form");
+            $('#alias').val(data.table);
+            console.log(data);
+            $.ajax({
+                type:'post',
+                dataType:'json',
+                data:{connection:'{$data.conn}',table:data.table},
+                url:'{:url("getFieldList")}',
+                success:function(res){
+                    if(res.code==200){
+                        let opt = '';
+                        for (i=0;i<res.data.length;i++){
+                            opt+='<option value="'+res.data[i]['value']+'">'+res.data[i]['value']+'|'+res.data[i]['title']+'</option>';
+                        }
+                        $('#link_id').html(opt);
+                        $('#link_field').html(opt);
+                        form.render();
+                        multiSelect.render();
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

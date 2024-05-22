@@ -1,0 +1,308 @@
+﻿{include file='common/head' /}
+<link href="/static/login/css/ax.css" rel="stylesheet" type="text/css" >
+<link href="/static/login/css/ax-response.css" rel="stylesheet" type="text/css" >
+  <style>
+  @charset "utf-8";
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+  }
+  body {
+    background-image: url(/{:addslashes(g_cache('logimg'))});
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .login {
+    width: 850px;
+    background-color: #fff;
+  }
+  .login .cover {
+    background-image: url(/static/login/login-left.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .login .core {
+    padding-left: 28px;
+  }
+  .footer {
+    color: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    text-align: center;
+    padding: 1.4rem 0;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+  .footer a {
+    color:  rgb(255 255 255);
+  }
+  @media screen and (max-width: 900px) {
+    body.ax-align-origin {
+      background-image: none;
+      display: block;
+    }
+    .login {
+      width: 100%;
+      box-shadow: none;
+      border-radius: 0;
+    }
+    .login .cover {
+      height: 20rem;
+      border-radius: 0;
+    }
+    .login .core {
+      padding-left: 0;
+    }
+    .login form {
+      margin: 0;
+    }
+    .footer {
+      position: inherit;
+      color: #666666;
+    }
+    .footer a {
+      color: rgb(255 255 255);
+    }
+  }
+  </style>
+<link rel="stylesheet" type="text/css" href="/static/custom.css?v={:get_common_val('soft_custom',1,'ver')}">
+<title>用户登录 - {:g_cache('sysname')} {:g_cache('sysv')} 企业级管理平台</title>
+</head>
+<body class="ax-align-origin">
+<div class="login ax-shadow-cloud ax-radius-md">
+  <div class="ax-row ax-radius-md ax-split">
+    <div class="ax-col ax-col-10 ax-radius-left ax-radius-md cover"></div>
+    <div class="ax-col ax-col-10">
+      <div class="core">
+        <div class="ax-break"></div>
+        <div class="ax-tab" axTab>
+          <ul class="ax-lamp-group" header>
+            <li>登录账号</li>
+            {eq name='wx.is_wx' value='1'}<li onclick="wxlogin()">微信登入</li>{/eq}
+            {eq name='dd.is_dd' value='1'}<li onclick="ddlogin()">钉钉登入</li>{/eq}
+          </ul>
+          <ul body>
+            <li>
+              <form  id="form" action="{:url('checkLogin')}" method='post'>
+                <div class="ax-break"></div>
+                <div class="ax-break ax-hide-tel"></div>
+                <div class="ax-form-group">
+                  <div class="ax-flex-row">
+                    <div class="ax-form-con">
+                      <div class="ax-form-input"><span class="ax-pos-left" style="width: 2.4rem;"><i class="ax-iconfont ax-icon-me-f"></i></span>
+
+                        <input
+                              name="username" id="username" datatype="*" nullmsg="请输入账号信息" placeholder="请输入账号信息"
+                              type="text"><span class="ax-pos-right"><a href="###" class="ax-iconfont ax-icon-close ax-val-none"></a></span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ax-break-md"></div>
+                <div class="ax-form-group">
+                  <div class="ax-flex-row">
+                    <div class="ax-form-con">
+                      <div class="ax-form-input"><span class="ax-pos-left" style="width:2.4rem;"><i class="ax-iconfont ax-icon-lock-f"></i></span>
+                        <input type="password" class="layui-input" name="password" datatype="*" nullmsg="请输入密码" placeholder="请输入密码" >
+                        <span class="ax-pos-right"><a href="###" class="ax-iconfont ax-icon-close ax-val-none"></a></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {eq name='verify' value='2'}
+                <div class="ax-break-md"></div>
+                <div class="ax-form-group">
+                  <div class="ax-flex-row">
+                    <div class="ax-form-con">
+                      <div class="ax-form-input">
+                        <div class="ax-row">
+                          <div class="ax-flex-block">
+                            <span class="ax-pos-left" style="width:2.4rem;"><i class="ax-iconfont ax-icon-shield-f"></i></span>
+                            <input name="captcha"  placeholder="验证码" onblur="if(this.value==''){this.value='验证码:'}" onclick="if(this.value=='验证码:'){this.value='';}" value="" value="" type="text"><span class="ax-pos-right"><a href="###" class="ax-iconfont ax-icon-close ax-val-none"></a></span>
+                          </div>
+                          <a href="###" class="ax-form-img"><img src="{:url('verify')}" alt="captcha" id="captcha"  style="border-radius: 5px;"/></a>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                {/eq}
+                <div class="ax-break-md"></div>
+                <div class="ax-form-group">
+                  <div class="ax-flex-row">
+                    <div class="ax-form-con">
+                      <div class="ax-form-input">
+                        <div class="ax-row">
+                          <div class="ax-flex-block">
+                            <label class="ax-checkbox"><input id="remember"  value="1" checked="" type="checkbox"><u></u><i>记住密码</i></label>
+                          </div>
+                          <a href="###" class="ax-form-txt ax-color-ignore">登录帮助？</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ax-break-md"></div>
+
+                <div class="ax-form-group">
+                  <div class="ax-flex-row">
+                    <div class="ax-flex-block">
+                      <div class="ax-form-input"><button type="submit" class="ax-btn ax-primary ax-full">登录</button></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ax-break"></div>
+                <div class="ax-break ax-hide-tel"></div>
+                <div class="ax-break ax-hide-tel"></div>
+
+              </form>
+            </li>
+            {eq name='wx.is_wx' value='1'}
+            <li>
+                <div class="ax-break-md" id="wx" style="height: 290px;"></div>
+                <div class="ax-break ax-hide-tel"></div>
+                <div class="ax-break ax-hide-tel"></div>
+            </li>
+            {/eq}
+            {eq name='dd.is_dd' value='1'}
+            <li>
+              <div class="ax-break-md" id="dd" style="height: 290px;"></div>
+              <div class="ax-break ax-hide-tel"></div>
+              <div class="ax-break ax-hide-tel"></div>
+            </li>
+            {/eq}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  &#xa9; <a href="##" target="_self">{:g_cache('copy')}</a> <a href="#" target="_self" rel="nofollow">{:g_cache('icp')}</a>
+</div>
+<script src="/static/login/ax.min.js" type="text/javascript"></script>
+</body>
+</html>
+{include file='common/footer' /}
+<script src="/static/lib/jquery.cookie.min.js"></script>
+<script>
+  if(window.top !== window.self){
+    g_notice('已退出登入，正在刷新页面！',{time:90000*900000*9000000,skin:'error',offset: 'auto'})
+    setTimeout("window.top.location = window.location;", 1500);
+  }
+</script>
+<script>
+  $(document).ready(function(){
+    var rem = $.cookie('remember');
+    if(rem){
+      $("#remember").prop("checked",true);
+      $("#username").val($.cookie("username"));
+    }
+  });
+</script>
+<script>
+  var layerLoader =  layer.load(2, {
+    shade: [0.2,'#fff'],
+    content: '加载中....',
+    success: function (layero) {
+      layero.find('.layui-layer-content').css({
+        'paddingTop': '40px',
+        'width': '60px',
+        'textAlign': 'center',
+        'backgroundPositionX': 'center'
+      });
+    }
+  });
+$("#captcha").click(function () {
+    $(this).attr("src","{:url('verify')}?t="+new Date().getTime());
+ });
+$(function () {
+        $("#form").Validform({
+            tiptype:function(msg,o,cssctl){
+				if (o.type == 3){
+                  g_toast(msg,{skin:'warning'});
+				}
+			},
+            ajaxPost:true,
+            showAllError:true,
+            callback:function(ret){
+                if (ret.code!=0){
+                    if (ret.code == -1){
+                        $("#captcha").click();
+						$("[name='captcha']").val('');
+                      g_toast(ret.msg,{skin:'warning'});
+                    } else {
+                      $("#captcha").click();
+                        g_toast(ret.msg,{skin:'warning'});
+                    }
+                } else {
+                    save_cookies();
+                    layer.msg("登录成功！");
+                    location.href = '/';
+                }
+            }
+        });
+      //保存到cookie
+      function save_cookies(){
+        if($("#remember").prop("checked")){
+          var username = $("#username").val();
+          $.cookie("remember","true",{expires:7});
+          $.cookie("username",username,{expires:7 });
+        }else{
+          $.cookie("remember","false",{expires:-1});
+          $.cookie("username","",{ expires:-1 });
+        }
+      };
+    })
+  $(document).ready(function(){
+    layer.close(layerLoader);
+  });
+</script>
+{eq name='wx.is_wx' value='1'}
+<script src="//wwcdn.weixin.qq.com/node/wework/wwopen/js/wwLogin-1.2.4.js"></script>
+<script type="text/javascript">
+  new WwLogin({
+    "id": "wx",
+    "appid": "{$wx.appid}",
+    "agentid": "{$wx.agentid}",
+    "redirect_uri": "{$wx.url}",
+    "state": "",
+    "href": "",
+    "lang": "zh",
+  });
+  }
+</script>
+{/eq}
+
+{eq name='dd.is_dd' value='1'}
+<script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+<script type="text/javascript">
+  var obj = DDLogin({
+    id: "dd",
+    goto: encodeURIComponent('https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid={$dd["key"]}&response_type=code&scope=snsapi_login&state=STATE&redirect_uri={$dd["url"]}'), //请参考注释里的方式
+    style: "border:none;background-color:#FFFFFF;",
+    width: "365",
+    height: "310"
+  });
+
+  var handleMessage = function (event) {
+      var origin = event.origin;
+      if (origin == "https://login.dingtalk.com") {
+        var loginTmpCode = event.data;
+        let url = 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid={$dd["key"]}&response_type=code&scope=snsapi_login&state=STATE&redirect_uri={$dd["url"]}&loginTmpCode='+ loginTmpCode;
+        window.location.href = url;
+      }
+    };
+  if (typeof window.addEventListener != 'undefined') {
+    window.addEventListener('message', handleMessage, false);
+  } else if (typeof window.attachEvent != 'undefined') {
+    window.attachEvent('onmessage', handleMessage);
+  }
+</script>
+{/eq}
+</body>
+</html>

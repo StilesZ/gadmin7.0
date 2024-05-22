@@ -1,0 +1,60 @@
+﻿{include file='common/head' /}
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card" style="padding: 10px;min-height: 600px;">
+            <fieldset class="layui-elem-field" style="min-height: 600px;">
+                <legend>欢迎使用，流程设计中心....</legend>
+                <div class="layui-field-box">
+                    <div class="layui-fluid">
+                        <div class="layui-row layui-col-space15">
+                            {volist name='data.rows' id='k'}
+                            <div class="layui-col-md4 layui-col-sm6" style="height: 150px" >
+                                    <div class="layui-col-md4 layui-col-sm6">
+                                        <div style="text-align: center;vertical-align: middle;">
+                                            <i class="layui-icon layui-icon-chart" style="font-size: 90px; color: #1E9FFF;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-md8  layui-col-sm6" style="height: 110px">
+                                        <h3><strong>{$k.flow_name}</strong></h3>
+                                        <div>
+                                            状态：{eq name='k.edit' value=""}<span class="layui-badge layui-bg-blue">流程未发起....</span>{else/}<span class="layui-badge layui-bg-green">运行中....</span>{/eq}
+                                            <br>
+                                            类别：{$k.type}
+                                            <br>
+                                            描述：{$k.flow_desc}
+                                            <br>
+                                            时间：{$k.add_time|date='Y-m-d'}
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-md12 layui-col-sm12" style="margin-top:15px">
+                                        {eq name='k.edit' value=""}
+                                        <a class="layui-btn layui-btn-sm btn-26" onclick=Tpflow.lopen('修改',"{$url['edit']}{$k.id}",'55','60')>修改流程</a>
+                                        <a class="layui-btn layui-btn-sm btn-25" target="_blank" href="{$url['desc']}{$k.id}">设计流程</a>
+                                        {eq name='k.status' value="0"}
+                                        <a class="layui-btn layui-btn-sm btn-23" onclick=Tpflow.wfconfirm('{$url["status"]}',{'id':"{$k['id']}",'status':1},'您确定要禁用该工作流吗？')>禁用流程</a>
+                                        {else/}
+                                        <a class="layui-btn layui-btn-sm btn-23" onclick=Tpflow.wfconfirm('{$url["status"]}',{'id':"{$k['id']}",'status':0},'您确定要启用该工作流吗？')>启用流程</a>
+                                        {/eq}
+                                        <a class="layui-btn layui-btn-sm btn-3" onclick=Tpflow.wfconfirm('{$url["del"]}',{'id':"{$k['id']}"},'您确定要删除该工作流吗？')>删除工作流</a>
+                                        {else/}
+                                        <span class="layui-btn layui-btn-sm layui-bg-blue">当前流程已经在运行中....</span>
+                                        {/eq}
+                                    </div>
+                            </div>
+                            {/volist}
+                            <div class="layui-col-md4 layui-col-sm6" style="height: 150px" onclick=layer_show('新增','{$url["edit"]}')>
+                                <i class="layui-icon layui-icon-add-circle" style="font-size: 90px; color: #1E9FFF;" ></i>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+    </div>
+</div>
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script type="text/javascript" src="/static/work/workflow.5.0.js?v=11" ></script>
+</body>
+</html>

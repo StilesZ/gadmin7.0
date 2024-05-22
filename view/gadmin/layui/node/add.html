@@ -1,0 +1,167 @@
+﻿{include file='common/head' /}
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+				{present name="info.id"}
+					<form action="{:url('edit')}" method="post" name="form" id="form" class='layui-form'>
+					<input type="hidden" name="id" value="{:isset($info.id)?$info.id:''}">
+				{else /}
+					<form action="{:url('add')}" method="post" name="form" id="form" class='layui-form'>
+				{/present}
+					<table class="layui-table">
+					<tr >
+						<th width="80">上级菜单：</th>
+						<td class="lt">
+							<select name="pid"  class="select">
+								{$select_categorys|raw}
+							</select>
+						</td>
+						<td >节点状态：</td>
+						<td class="lt">
+							<input type="radio" class="radio" value="1" name="status" title='启用' >
+							<input type="radio" class="radio" value="0" name="status"  title='关闭'>
+						</td>
+					</tr>
+				<tr >
+					<td >菜单名称：</td>
+					<td  class="lt">
+						<input type="text" name="title" placeholder="中文名称" class='layui-input' value="{$info.title ?? ''}">
+					</td>
+					<td >节点名称：</td>
+					<td  class="lt">
+						<input type="text" name="name" placeholder="英文名称" class="layui-input" value="{$info.name ?? ''}">
+					</td>
+				</tr>
+				<tr >
+					<td >链接参数：</td>
+					<td class="lt">
+						<input type="text" name="data" placeholder="Url网址信息" class="layui-input" value="{$info.data ?? ''}" style="width: 45%;display: initial;">
+						<input type="text" name="sid" placeholder="sfdp关联id" class="layui-input" value="{$info.sid ?? ''}" style="width: 45%;display: initial;">
+					</td>
+					<td >手机功能：</td>
+					<td  class="lt">
+						<input type="radio" class="radio" value="1" name="mobile"  title='启用'>
+						<input type="radio" class="radio" value="0" name="mobile"  title='关闭'>
+					</td>
+				</tr>
+
+				<tr >
+					<td width="100">节点图标：</td>
+					<td class="lt">
+						<input type="hidden" name="lay_icon" class="layui-input" value="{$info.lay_icon ?? ''}" id="lay_icon" >
+						<input type="text" id="iconPicker" lay-filter="iconPicker" class="hide">
+					</td>
+					<td width="100">手机ICO：</td>
+					<td  class="lt">
+						<input type="text" name="mobile_ico" class="layui-input" value="{$info.mobile_ico ?? ''}">
+					</td>
+				</tr>
+				<tr >
+					<td >菜单类型：</td>
+					<td  class="lt">
+						<select name="display"  class="select">
+							<option value="1"  >主菜单</option>
+							<option value="2"  >子菜单</option>
+							<option value="0"  >不显示</option>
+						</select>
+					</td>
+					<td >节点类型：</td>
+					<td class="lt">
+						<select name="level"  class="select">
+							<option value="2"  >模块</option>
+							<option value="3"  >方法</option>
+							<option value="1"  >应用</option>
+							<option value="0"  >非节点</option>
+						</select>
+					</td>
+				</tr>
+				<tr >
+					<td >打开方式：</td>
+					<td  class="lt">
+						<select name="opentype"  class="select">
+							<option value="0">Tab标签中打开 - 会在Tab得标签中直接打开该页面</option>
+							<option value="1">新网页中中打开 - 在浏览器中弹出新页面打开</option>
+							<option value="2">弹窗全屏打开 - 弹出一个全屏打开的连接</option>
+						</select>
+					</td>
+					<td >一级页面：</td>
+					<td  class="lt">
+						<input type="radio" class="radio" value="0" name="is_page"  title='启用'>
+						<input type="radio" class="radio" value="1" name="is_page"  title='关闭'>
+					</td>
+				</tr>
+				<tr >
+					<td >菜单展开：</td>
+					<td  class="lt" colspan="3">
+						<input type="radio" class="radio" value="0" name="is_open"  title='启用'>
+						<input type="radio" class="radio" value="1" name="is_open"  title='关闭'>
+					</td>
+				</tr>
+				<tr>
+					<td >备注说明：</td>
+					<td colspan="3" class="lt">
+						<textarea  name="remark"  class='layui-textarea' >{$info.remark ?? ''}</textarea>
+					</td>
+				</tr>
+		<tr style="text-align: center">
+		<td colspan="4">
+			{present name="info.id"}
+				<input  class='layui-btn layui-btn-sm' type="submit" name="dosubmit" value="修 改" >
+				{else /}
+				<input  class='layui-btn layui-btn-sm' type="submit" name="dosubmit" value="添 加">{/present}
+			<input  class='layui-btn layui-btn-primary layui-btn-sm' type="button" onclick="layer_close()" value="关 闭" ></td>
+	</tr>
+</table>
+		</form>
+	</div>
+	</div>
+</body>
+	{include file='common/footer' /}
+	<script>
+		layui.use('form', function(){
+		});
+		layui.extend({
+			iconPicker: "{/}/static/layui/lay/layui_ext/iconPicker/iconPicker"   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+		}).use(['iconPicker','layer','jquery'], function() {
+			var iconPicker = layui.iconPicker;
+			iconPicker.render({
+				elem: '#iconPicker',
+				type: 'fontClass',
+				search: true,
+				page: true,
+				escape:false,
+				limit: 12,
+				click: function (data) {
+					$('#lay_icon').val(data.icon.replace(/layui-icon-/ig, ''));
+				},
+				success: function(d) {
+					//console.log(d);
+				}
+			});
+			iconPicker.checkIcon('iconPicker', 'layui-icon-{$info.lay_icon ?? 'star-fill'}');
+		})
+	</script>
+	<script>
+	$(function () {
+		$("[name='pid']").find("[value='{$info.pid ?? '0'}']").attr("selected",true);
+		$("[name='mobile'][value='{$info.mobile ?? '0'}']").attr("checked",true);
+		$("[name='status'][value='{$info.status ?? '1'}']").attr("checked",true);
+		$("[name='display']").find("[value='{$info.display ?? '0'}']").attr("selected",true);
+		$("[name='opentype']").find("[value='{$info.opentype ?? '0'}']").attr("selected",true);
+		$("[name='level']").find("[value='{$info.level ?? '0'}']").attr("selected",true);
+		$("[name='is_page'][value='{$info.is_page ?? '1'}']").attr("checked",true);
+		$("[name='is_open'][value='{$info.is_open ?? '1'}']").attr("checked",true);
+
+		if(`{$_GET['is_sfdp'] ?? 0}` == 1){
+			$("[name='display']").find("[value='1']").attr("selected",true);
+			$("[name='level']").find("[value='1']").attr("selected",true);
+			g_toast(`Tip:填写菜单名称、节点图标，直接提交即可`)
+		}
+
+		layui.form.render();
+		g_checkForm($("#form"));
+	})
+	</script>
+	</body>
+	</html>

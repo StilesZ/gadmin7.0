@@ -1,0 +1,81 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="/static/sfdp/lib/codemirror/dracula.css" />
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<style>
+    .layui-input-block {
+        display: contents;
+    }
+    .layui-form-select dl{
+        z-index:999999;
+    }
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        border: 1px solid rgb(204, 204, 204);
+        border-radius: 0px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form action="" method="post" name="form" id="form" class="layui-form">
+                <div class="layui-form-item" style='overflow:visible'>
+                    <label class="layui-form-label">事件代码：</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="" name='code' type="text/plain" style="width:100%;height:450px;display:inline-block;" id='codedata' >
+{eq name='con' value=''}
+/**
+ * 添加前事件
+ * @param   $data [Post传递参数]
+ */
+public function login_before($params = []){
+
+
+
+	return ["code"=>0,"msg"=>"success"];
+}
+/**
+ * 添加前事件
+ * @param   $data [Post传递参数]
+ */
+public function login_after($params = []){
+
+
+
+	return ["code"=>0,"msg"=>"success"];
+}
+{else/}
+{$con}
+{/eq}
+</textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+
+{include file='common/footer' /}
+<script src="/static/sfdp/lib/codemirror/codemirror.js"></script>
+<script src="/static/sfdp/lib/codemirror/javascript.js"></script>
+<script>
+    $(function () {
+        g_checkForm($("#form"));
+    })
+</script>
+<script type="text/javascript">
+    var editor = CodeMirror.fromTextArea(document.getElementById("codedata"), {
+        lineNumbers: true,
+        lineWrapping: true,
+        mode: "text/typescript",
+        theme: "dracula",	//设置主题
+        matchBrackets: true,
+    });
+    editor.setSize('auto',document.body.clientHeight - 10 +"px");
+</script>

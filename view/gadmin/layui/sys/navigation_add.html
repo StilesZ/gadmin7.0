@@ -1,0 +1,63 @@
+{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<div class="layui-fluid">
+    <div class="layui-card" >
+        <div class="layui-card-body">
+				<form action="" method="post" name="form" id="form" class="layui-form">
+			   <div class="layui-form-item">
+				<label class="layui-form-label">添加节点：</label>
+				<div class="layui-input-block" >
+					<input type="hidden" name="pid" value="{$tid}">
+					{volist name='node' id='k'}
+						<input type="checkbox" name="ids[]" value="{$k.id}" title="{$k.title}">
+					{/volist}
+				</div>
+			  </div>
+			  <div class="layui-form-item">
+				<div class="layui-input-block">
+				  <button type="submit" class="layui-btn">立即提交</button>
+				</div>
+			  </div>
+			</form>
+			</div>
+		</div>
+	</div>
+	{include file='common/footer' /}
+	<script src="__SFDP__/lib/laydate5.0.9/laydate.js"></script>
+	<script src="__LIB__/select2/select2.min.js?v=7.0.1"></script>
+	<script>
+	$(function () {
+		$(function() {
+			$('.this-select').select2({width:'100%'});
+			$('body').on('input propertychange', ".this-select", function(event) {
+				var is_dx = $(this).attr("multiple");
+				if(is_dx !=undefined){
+					var o=document.getElementById($(this).attr("id")).getElementsByTagName('option');
+					var all="";
+					for(var i=0;i<o.length;i++){
+						if(o[i].selected){
+							all+=o[i].value+",";
+						}
+					}
+					document.getElementById('t').value = all.substr(0, all.length - 1);
+				}
+			});
+		});
+			laydate.render({
+				elem: '#start'
+				,type: 'datetime'
+			});
+			laydate.render({
+				elem: '#end'
+				,type: 'datetime'
+			});
+			layui.use('form', function(){
+				var form = layui.form;
+				$("[name='theme']").find("[value='{$info.theme ?? '0'}']").attr("selected",true);
+				form.render();
+			});
+			g_checkForm($("#form"));
+		})
+	</script>
+</body>
+</html>

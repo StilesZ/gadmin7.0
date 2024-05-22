@@ -1,0 +1,328 @@
+﻿{include file='common/head' /}
+<link href="/static/common.css?v=3.0.6" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+<style>
+    .selected {
+        background: #e2e2e2;
+        color: #666666;
+    }
+
+    #subIframe {
+        width: 100%;
+        min-height: 590px;
+        height: calc(100vh - 50px);
+    }
+
+    .layui-table-page {
+        border-width: 0px 0 0;
+        margin-top: 10px;
+    }
+
+    .tree-txt-active {
+        color: red;
+    }
+</style>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md2">
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">企业组织</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <div id="access-tree"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md10">
+                    <div class="layui-row">
+                        <div class="layui-col-md8">
+                            <a class=" layui-btn layui-btn-sm layui-btn-primary"
+                               onclick="layer_show('新增管理员','{:url('add')}',50,80)">添加</a>
+                            <a class=" layui-btn layui-btn-sm" id="edit">修改</a>
+                            <a class=" layui-btn layui-btn-sm layui-bg-cyan" id="lock">解锁</a>
+                            <ul class="layui-nav  layui-inline " lay-filter="demo"
+                                style="margin-left:10px;padding-left: 10px">
+                                <li class="layui-nav-item">
+                                    <a class="layui-btn-sm" href="javascript:;">同步系统</a>
+                                    <dl class="layui-nav-child" style="top:35px">
+                                        {neq name='dd' value="2"}
+                                        <dd><a onclick="dep_link(1)"> 钉钉同步组织</a></dd>
+                                        <dd><a onclick="user_link(1)"> 钉钉同步用户</a></dd>
+                                        {/neq}
+                                        {eq name='wx' value="1"}
+                                        <dd><a onclick="dep_link(2)"> 微信同步组织</a></dd>
+                                        <dd><a onclick="user_link(2)"> 微信同步用户</a></dd>
+                                        {/eq}
+                                    </dl>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="layui-col-md4 align-right">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input autocomplete="off" class="layui-input" id="tel" placeholder="输入手机号码"
+                                           type="text">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input autocomplete="off" class="layui-input" id="username" placeholder="输入管理员名称"
+                                           type="text">
+                                    <input autocomplete="off" class="layui-input" id="role" type="hidden">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm" id='reloadBtn'><i
+                                        class="layui-icon layui-icon-search"></i></button>
+                            </div>
+                            <div class="layui-inline">
+                                {if condition="session('softId') == 1"}
+                                <a class="layui-btn layui-btn-sm layui-btn-warm"
+                                   onclick="layer_show('用户事件','{:url('event')}',50,80)"><i
+                                        class="layui-icon layui-icon-light"></i></a>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-row" style='margin:5px'>
+                        <table class="layui-hide" id="myList" lay-filter="data" lay-size="sm"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script id="barDemo" type="text/html">
+            {{#  if(d.id > 1){ }}
+            {{#  if(d.status == 1){ }}
+            <span class="layui-btn layui-btn-xs" onClick=admin_stop(this,{{ d.id }})>停用</span>
+            {{#  } else { }}
+            <span class="layui-btn layui-btn-normal layui-btn-xs" onClick=admin_start(this,{{ d.id }})>启用</span>
+            {{#  } }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" onClick=admin_del(this,{{ d.id }})>删除</a>
+            {{#  } }}
+        </script>
+        {include file='common/footer' /}
+        <script type="text/javascript">
+            $(document).click(function (e) { // 在页面任意位置点击而触发此事件
+                if ($(e.target).attr('class') === "layui-tree-txt") { // 防止因为点击展开按钮把已选中的样式取消
+                    $(".layui-tree-txt").removeClass("tree-txt-active"); // 移除点击样式
+                    $(e.target).addClass("tree-txt-active"); // e.target表示被点击的目标
+                }
+            });
+            function itemClicked(obj) {
+                $('#role').val(obj.data.id);
+                $('#reloadBtn').click();
+            }
+            $(document).ready(function () {
+                var tree = layui.tree
+                tree.render({
+                    elem: '#access-tree',
+                    click: itemClicked,
+                    showCheckbox: false,
+                    spread: true,
+                    data: {$tree|raw}
+            })
+            });
+            layui.use('table', function () {
+                var table = layui.table;
+                table.render({
+                    elem: '#myList'
+                    , url: "{:url('index')}"
+                    , method: 'post', id: 'idData'
+                    ,escape:false
+                    , height: 'full-90', page: true
+                    , cols: [[
+                        {type: 'radio', width: '3%'}, {field: 'id', title: '编号', width: '4%',align:'center'}
+                        , {field: 'username', title: '登入账号', width: '8%',align:'center'}
+                        , {field: 'realname', title: '真实姓名', width: '8%',align:'center'}
+                        , {field: 'tel', title: '手机', width: '10%',align:'center'}
+                        , {field: 'mail', title: '邮箱', width: '10%',align:'center'},
+                        {field: 'roleName', title: '角色', width: '8%',align:'center'},
+                        {field: 'deptName', title: '部门', width: '8%',align:'center'},
+						{field: 'last_login_time', title: '上次登入', width: '13%',align:'center'},
+                        {field: 'stv', title: '状态', width: '7%',align:'center'},
+                        {field: 'lock', title: '锁定', width: '7%',align:'center'},
+                        {toolbar: '#barDemo', title: '操作'}
+                    ]]
+                });
+                table.on('row(data)', function (obj) {
+                    //动态添加背景色
+                    obj.tr.siblings().removeClass('selected')
+                    obj.tr.addClass('selected');
+                    obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+                });
+                $("#edit").click(function (ev) {
+                    var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('请选择您要操作的单据~~');
+                        return;
+                    }
+                    if (data[0].id <= 1) {
+                        layer.msg('管理员禁止修改~~');
+                        return;
+                    }
+                    layer_show('修改管理员', '/gadmin/user/edit?id=' + data[0].id + '', '50', '80')
+                })
+                $("#lock").click(function (ev) {
+                    var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg('请选择您要操作的单据~~');
+                        return;
+                    }
+                    if (data[0].is_lock == 0) {
+                        layer.msg('当前账号未被锁定~~');
+                        return;
+                    }
+                    layer.confirm('解除账号锁定吗？', function (index) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '{:url("lock")}?id=' + data[0].id,
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.code == 0) {
+                                    layer.msg('已启用!', {icon: 6, time: 1000});
+                                    layui.table.reload('idData');
+                                }
+                            },
+                            error: function (data) {
+                                console.log(data.msg);
+                            },
+                        });
+                    });
+                })
+
+
+                $("#reloadBtn").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('index')}"
+                        , where: {
+                            role: $("#role").val(),
+                            tel: $("#tel").val(),
+                            username: $("#username").val()
+                        } //设定异步数据接口的额外参数
+                    });
+                })
+            });
+
+            function dep_link(type) {
+                layer.confirm('您确定将组织同步给钉钉吗？', function (index) {
+                    var loding = layer.msg('同步中..', {icon: 16, shade: 0.3, time: false});
+                    if (type == 1) {
+                        var url = '{:url("dep_link")}';
+                    } else {
+                        var url = '{:url("wxdep_link")}';
+                    }
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (ret) {
+                            layer.close(loding);
+                            if (ret.code == 0) {
+                                layer.msg(ret.msg);
+                            } else {
+                                layer.alert(ret, {title: "错误信息", icon: 2});
+                            }
+                        },
+                        error: function (ret) {
+                            console.log(ret.responseText.code);
+                        }
+                    });
+                });
+            }
+
+            function user_link(type) {
+                layer.confirm('您确定将用户信息同步给钉钉组织吗？', function (index) {
+                    var loding = layer.msg('同步中..', {icon: 16, shade: 0.3, time: false});
+                    if (type == 1) {
+                        var url = '{:url("user_link")}';
+                    } else {
+                        var url = '{:url("wx_link")}';
+                    }
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (ret) {
+                            layer.close(loding);
+                            if (ret.code == 0) {
+                                layer.msg(ret.msg);
+                            } else {
+                                layer.alert(ret, {title: "错误信息", icon: 2});
+                            }
+                        },
+                        error: function (ret) {
+                            console.log(ret.responseText.code);
+                        }
+                    });
+                });
+            }
+
+            /*管理员-删除*/
+            function admin_del(obj, id) {
+                layer.confirm('请确认删除？删除后关联业务会出问题，建议采用禁用！', function (index) {
+                    layer.confirm('确认要删除吗？', function (index) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '{:url("del")}?id=' + id,
+                            dataType: 'json',
+                            success: function (data) {
+                                window.location.reload()
+                                layer.msg('已删除!', {icon: 1, time: 1000});
+                            },
+                            error: function (data) {
+                                console.log(data.msg);
+                            },
+                        });
+                    });
+                });
+            }
+
+            /*管理员-停用*/
+            function admin_stop(obj, id) {
+                layer.confirm('确认要停用吗？', function (index) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("change")}?id=' + id + '&status=0',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 0) {
+                                window.location.reload()
+                                layer.msg('已停用!', {icon: 5, time: 1000});
+                            } else {
+                                layer.msg('系统出错!', {icon: 5, time: 1000});
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.msg);
+                        },
+                    });
+                });
+            }
+
+            /*管理员-启用*/
+            function admin_start(obj, id) {
+                layer.confirm('确认要启用吗？', function (index) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("change")}?id=' + id + '&status=1',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 0) {
+                                layer.msg('已启用!', {icon: 6, time: 1000});
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.msg);
+                        },
+                    });
+                });
+            }
+        </script>
+</body>
+</html>

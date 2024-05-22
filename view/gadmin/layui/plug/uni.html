@@ -1,0 +1,52 @@
+{include file='common/head' /}
+<title>基本设置</title>
+</head>
+<body>
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-card-body">
+        <table class="layui-table" style="padding: 30px">
+          <colgroup>
+            <col width="90%">
+          </colgroup>
+          <thead>
+          <tr>
+            <th>内容</th>
+          </tr>
+          </thead>
+          <tr>
+            <th>
+              <b>卸载会执行以下操作：</b><br/>
+              1、删除 设计库中 sid={$info.id} 及设计版本库，设计字段库<br/>
+              3、删除 目录下 sid={$info.id} 关联值<br/>
+              <br/>
+              <b><font color="#a52a2a">鉴于数据安全，我们不敢直接删除您的数据库，建议手动删除。同时执行之前，请务必做好备份！</font> </b><br/>
+              <b>需要手动删除的：</b><br/>
+              0、删除 表[{$info.s_db}] [{$info.s_db}_bak]信息<br/>
+              1、工作流信息<br/>
+              2、报表信息<br/>
+              3、APP设计信息<br/>
+              4、桌面信息<br/>
+              5、其他用到此版本的信息<br/>
+            </th>
+          </tr>
+        </table>
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <button  class="layui-btn layui-btn-normal" onclick="uni_check({$info.id})">执行卸载</button>
+            <button   class="layui-btn layui-btn-warm">取消</button>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+  function uni_check(sid){
+    sfdp.Askshow("{:url('uni_check')}?sid="+sid,"您确定已经执行<font color='red'>备份</font>了吗?该操作无法撤销！")
+  }
+</script>

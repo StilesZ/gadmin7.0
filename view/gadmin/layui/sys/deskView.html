@@ -1,0 +1,21 @@
+﻿{include file='common/head' /}
+
+<link href="__LIB__/sdashboard/sDashboard.css" rel="stylesheet">
+<div class="wap-container" style='width: 99.5%;'>
+<div class='Hui-admin-content clearfix' id="myDashboard" style='width:98%'>
+{$widgetContent|raw}
+</div>
+</div>
+</body>
+</html>
+ {include file='common/footer' /}
+ <script src="__LIB__/sdashboard/jquery-ui.js" type="text/javascript"> </script>
+<script src="__LIB__/echarts/4.1.0.rc2/echarts.min.js" type="text/javascript"></script>
+<script src="/static/desk.js" type="text/javascript"></script>
+ <script type="text/javascript">
+	$(function() {
+		{$Js|raw}	
+	});
+    layer.msg(`Tip:部分组件可能无法预览`);
+	
+</script>

@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>跳转提示</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            height: 100%;
+            color: #232323;
+        }
+        #error {
+            display: block;
+            width: 96%;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 3px 3px 0 0;
+            position: fixed;
+            left: 0;
+            top: -50px;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            height: 280px;
+            border-bottom: 4px #f2a59a solid;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, .15);
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .icon {
+            margin: 10px auto 15px;
+        }
+        .msg {
+            font-size: 14px;
+            color: #888;
+        }
+        .waitclass {
+            margin: 25px auto 0;
+            padding: 10px 0;
+            width: 220px;
+            font-size: 14px;
+            text-align: center;
+            background-color: #dedede;
+            border-radius: 3px;
+        }
+        .waitclass a {
+            text-decoration: none;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div id="error"style="border-color: #2d6dcc !important;">
+<div class="icon">
+    <svg t="1616749699510" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2966" xmlns:xlink="http://www.w3.org/1999/xlink" width="110" height="110"><defs><style type="text/css"></style></defs><path d="M121.792 529.984c-11.008-9.728-12.416-26.944-3.072-38.528l24.512-30.464c9.28-11.52 27.264-15.232 40.384-8.128l210.624 114.176c12.992 7.04 32.768 5.248 44.16-4.096l476.544-389.504c11.392-9.28 28.416-7.936 38.272 3.2l-0.832-0.896c9.728 11.072 10.112 29.376 0.896 40.768l-478.848 590.72c-9.28 11.392-25.728 12.736-36.672 3.008L121.792 529.984z" p-id="2967" fill="#2d6dcc"></path></svg>
+</div>
+<div class="waitclass">{$info ?? '系统出错'}</div>
+</div>
+</body>
+</html>

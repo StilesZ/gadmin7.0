@@ -1,0 +1,135 @@
+{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/select2/select2.min.css" />
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			{present name="info.id"}
+			<form action="" method="post" name="form" id="form" class="layui-form">
+				<input type="hidden" name="id" value="{$info.id}">
+				{else /}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+					{/present}
+					<div class="layui-form-item">
+						<label class="layui-form-label">标题：</label>
+						<div class="layui-input-block">
+							<textarea name="title" class="layui-textarea" datatype="*">{$info.title ?? ''}</textarea>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">开始：</label>
+						<div class="layui-input-block">
+							<input type="text" name="start_time"class='layui-input datetime' datatype="*" data-format="yyyy-MM-dd HH:mm:ss" data-type="datetime" value="{$info.start_time ?? date('Y-m-d H:i:s')}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">结束：</label>
+						<div class="layui-input-block">
+							<input type="text" name="end_time" class='layui-input datetime' datatype="*" data-format="yyyy-MM-dd HH:mm:ss" data-type="datetime" value="{$info.end_time ?? date('Y-m-d 12:00:00')}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">标签：</label>
+						<div class="layui-input-block">
+							<select name="theme">
+								{volist name='type' id='k'}
+								<option value="{$k.id}">{$k.title}</option>
+								{/volist}
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">关联：</label>
+						<div class="layui-input-block" style="display: flex;">
+							<select multiple="multiple" class="this-select" multiple lay-ignore="" id="t_select">
+								{volist name='uids' id='k'}
+								<option value="{$k.id}" {in name="k.id" value="$uids_val"}selected="selected" {/in} >{$k.realname ?? ''}</option>
+								{/volist}
+							</select>
+							<input type="hidden" name="uids" id='t'>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button type="submit" class="layui-btn layui-btn-sm">立即提交</button>
+							{notpresent name="info.id"}
+							<button type="reset" class="layui-btn layui-btn-primary  layui-btn-sm">重置</button>
+							{/notpresent}
+						</div>
+					</div>
+				</form>
+		</div>
+	</div>
+</div>
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script src="__LIB__/select2/select2.min.js?v=7.0.1"></script>
+<script>
+	layui.use(function(){
+		var form = layui.form;
+	});
+	$(function () {
+		$(function() {
+			$('.this-select').select2({width:'100%'});
+			$('body').on('input propertychange', ".this-select", function(event) {
+				var is_dx = $(this).attr("multiple");
+				if(is_dx !=undefined){
+					var o=document.getElementById($(this).attr("id")).getElementsByTagName('option');
+					var all="";
+					for(var i=0;i<o.length;i++){
+						if(o[i].selected){
+							all+=o[i].value+",";
+						}
+					}
+					document.getElementById('t').value = all.substr(0, all.length - 1);
+				}
+			});
+		});
+		setDate();
+		function setDate() {
+			$(".datetime").click(function () {
+				var type = $(this).attr('data-type');
+				var format = $(this).attr('data-format');
+				var keyid = $(this).attr('id');
+				if (type != 'date' && type != 'datetime') {
+					var fs = {
+						'yyyy': 'year',
+						'yyyy-MM': 'month',
+						'yyyy-MM-dd': 'date',
+						'yyyyMMdd': 'date',
+						'yyyy-MM-dd': 'date',
+						'MM-dd': 'date',
+						'yyyy-MM-dd HH:mm:ss': 'datetime'
+					}
+					type = fs[format];
+				}
+				if ($(this).attr('readonly') == 'readonly') {
+					return;
+				}
+				$(this).removeAttr("lay-key");
+				layui.laydate.render({
+					elem: this,
+					format: format,
+					show: true,
+					type: type,
+					zIndex: 99999999,
+					trigger: 'click',
+					done: function (value, date, endDate) {
+						if ($.isFunction(window.load_end_time_done)) {
+							load_end_time_done(keyid, value);
+						}
+					}
+				});
+			});
+		}
+
+		layui.use('form', function(){
+			var form = layui.form;
+			$("[name='theme']").find("[value='{$info.theme ?? '0'}']").attr("selected",true);
+			form.render();
+		});
+		g_checkForm($("#form"));
+	})
+
+</script>
+</body>
+</html>

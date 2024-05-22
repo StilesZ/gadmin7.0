@@ -1,0 +1,144 @@
+﻿﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+<style>
+    .selected{
+        background:#e2e2e2; color:#666666;
+    }
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-col-md5">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row flex-center">
+                    <div class="layui-col-md6">
+                        <a class="layui-btn layui-btn-sm  layui-btn-primary" onclick="layer_show('新增','{:url('add')}',40,80)"> 新增</a>
+                        <a class="layui-btn layui-btn-sm "onclick="edit()">修改</a>
+                        <a class="layui-btn layui-btn-sm layui-bg-cyan " onclick="status_ok(2,'核准')">核准</a>
+                        <a class="layui-btn layui-btn-sm layui-bg-gray" onclick="status_ok(0,'去审')">去审</a>
+                    </div>
+                    <div class="layui-col-md6 align-right">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" id="name" placeholder="角色名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-primary" id='searchsubmit'><i class="layui-icon layui-icon-search layuiadmin-button-btn"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <table id='tabledata' class="layui-table layui-table-box">
+                    <thead>
+                    <tr class="text-c">
+                        <th width="25">id</th>
+                        <th>组织名称</th>
+                        <th>上级组织</th>
+                        <th width="45">状态</th>
+                        <th>备注</th>
+                    </tr>
+                    </thead>
+                </table>
+                <br/>
+                <br/>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md7">
+        <div class="layui-card">
+            <div class="layui-card-body" style="height: calc(100vh - 56px)" >
+                <iframe  src="{:url('show')}" id="iframepage" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" onLoad="Tpflow.SetHeight()"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{include file='common/footer' /}
+<script type="text/javascript" src="/static/work/workflow.5.0.js?v=6.0.0" ></script>
+<script type="text/javascript" src="__SFDP__/sfdp.7.0.js?v=6.0.0"></script>
+<script type="text/javascript" src="_LAY_UI_ROOT_/layui-v2.8.4/layui.js"></script>
+<script>
+    window.onresize = function (){
+        adjustButtons()
+    }
+    $(document).ready(function () {
+        var dataTable = $('#tabledata').DataTable({
+            deferRender: true,
+            bFilter: false,
+            bLengthChange: false,
+            processing: true,
+            sScrollY: 'calc(100vh - 180px)',
+            order: [],
+            serverSide: true,iDisplayLength:20,
+            ordering: false,
+            ajax: function (data, callback, settings) {
+                var param = {};
+                param.limit = data.length;
+                param.start = data.start;
+                param.page = (data.start / data.length) + 1;
+                param.draw = data.draw;
+                var name = $("#name").val();
+                if (name != '') {
+                    param.name = name;
+                }
+                $.ajax({
+                    type: "post",
+                    url: "{:url('index')}",
+                    cache: false,  //禁用缓存
+                    data: param,  //传入组装的参数
+                    dataType: "json",
+                    success: function (result) {
+                        callback(result);
+                    }
+                });
+            },
+        });
+        $("#searchsubmit").bind("click", function () { //按钮 点击事件触发table重新请求服务器
+            $("#tabledata").dataTable().fnDraw(true);
+        });
+        $('#tabledata tbody').on( 'click', 'tr', function(){
+            var trs = $(this).parent('tbody').find('tr');
+            $.each(trs, function (index, item) {
+                $(item).find('td:eq(0) input').prop('checked', false);
+            });
+            $(this).find('td:eq(0) input').prop('checked', true)
+            if ( $(this).hasClass('selected') ) {
+                $(this).removeClass('selected');
+            }else {
+                dataTable.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+    /*修改功能*/
+    function edit() {
+        var Param = getParam();
+        if (!Param) {
+            return false;
+        }
+        var id = Param[0];
+        var status = Param[1];
+        if (status == 1 || status == 2) {
+            layer.msg('流程审批中，或者已被审批通过~~');
+            return false;
+        }
+        layer_show("修改", "{:url('edit')}?id=" + id, "40", "80");
+    }
+    function status_ok(st, msg) {
+        var Param = getParam();
+        if (!Param) {
+            return false;
+        }
+        var id = Param[0];
+        var status = Param[1];
+        if (status == st) {
+            layer.msg('该单据已被' + msg);
+            return false;
+        }
+        sfdp.Askshow("{:url('status')}?id=" + id + '&status=' + st, "您确定要执行【" + msg + "】吗?该操作无法撤销！")
+    }
+</script>
+</body>
+</html>

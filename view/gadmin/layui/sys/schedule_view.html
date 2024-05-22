@@ -1,0 +1,77 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题：</label>
+                <div class="layui-input-block">
+                    {$info.title}
+                    {eq name='info.uid' value=":session('softId')"}
+                    <a onclick=edit('{:url('schedule_add')}?id={$info.id}') class="layui-btn layui-btn-xs">修改</a>
+
+                    <a onclick=del('{$info.id}') class="layui-btn layui-btn-xs layui-btn-danger">删除</a>
+                    {/eq}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">开始：</label>
+                <div class="layui-input-block">
+                    {$info.start_time}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">结束：</label>
+                <div class="layui-input-block">
+                    {$info.end_time}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标签：</label>
+                <div class="layui-input-block">
+                    <span class="layui-badge layui-bg-{:get_common_val('soft_day_type',$info.theme,'color')}">{:get_common_val('soft_day_type',$info.theme,'color')}</span>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">关联：</label>
+                <div class="layui-input-block">
+                    {$info.uids_val}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script>
+    function edit(url){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        //打开新弹窗
+        parent.layer.open({
+            type: 2,
+            title: '修改日程',
+            shade: 0.1,
+            area: ['80%', '600px'],
+            content: url
+        });
+    }
+    function del(id) {
+        layer.confirm('确认要删除吗？', function (index) {
+            $.ajax({
+                type: 'POST',
+                url: '{:url("schedule_add")}?id=' + id + '&type=del',
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg('删除成功！',{icon:1,time: 1500},function(){
+                        parent.location.reload(); // 父页面刷新
+                    });
+                },
+                error: function (data) {
+                    console.log(data.msg);
+                },
+            });
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+{include file='common/head' /}
+<title>{:config('sys.sysname')} {:config('sys.sysv')}</title>
+</head>
+<body style="padding: 10px">
+<div class="page-container">
+  <table class="layui-table">
+    <thead>
+    <tr class="tr rt">
+      <th>用户</th>
+      <th>进入时间</th>
+      <th>在线时长</th>
+      <th>IP地址</th>
+      <th>进入IP地址</th>
+      <th>鉴别信息</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    {volist name='u' id='k'}
+    <tr class="tr rt">
+      <th>{$k.username}({$k.realname})</th>
+      <th>{$k.last_login_time|date='Y-m-d H:i:s'}</th>
+      <th>{$k.dt}(分钟)</th>
+      <th>{$k.last_login_ip}</th>
+      <th>{$k.last_location}</th>
+      <th>{$k.os}</th>
+      <th><a class="layui-btn layui-btn-xs" onclick="x_online({$k.id})">下线</a></th>
+    </tr>
+    {/volist}
+  </table>
+</div>
+</body>
+{include file='common/footer' /}
+<script>
+  function x_online(id) {
+    layer.confirm('您确定强制该用户下线吗？【无论对方是否在编辑，都将强制退出！】', function (index) {
+      var loding = layer.msg('强制中..', {icon: 16, shade: 0.3, time: false});
+      $.ajax({
+        url: window.location.href+'?id='+id,
+        type: 'post',
+        dataType: 'json',
+        success: function (ret) {
+          layer.close(loding);
+          if (ret.code == 0) {
+            layer.msg(ret.msg);
+          } else {
+            layer.alert(ret, {title: "错误信息", icon: 2});
+          }
+        },
+        error: function (ret) {
+          console.log(ret.responseText.code);
+        }
+      });
+    });
+  }
+  function Xload()
+  {
+    layer.msg('10秒刷新一次在线用户！');
+    var sw = setInterval(function()
+    {
+      location.reload(true);
+    }, 1000*10);
+  }
+  // 自动开始
+  Xload();
+
+</script>

@@ -1,0 +1,77 @@
+{include file='common/head' /}
+<style>
+    #sortable1, #sortable2 {
+        min-height: 30px;
+        height: 100%;
+        list-style-type: none;
+        display: inline-block;
+        width: 100%;
+    }
+    #sortable1 li, #sortable2 li {
+        margin: 0px;
+        padding: 5px;
+        float: left;
+        font-size: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 5px;
+    }
+    #sortable1 li div, #sortable2 li div{
+        padding: 10px;
+        background: rgb(255, 250, 144);
+    }
+    .ui-state-highlight {
+        color: rgb(119, 118, 32);
+    }
+</style>
+<a style="float: right;z-index: 99999;position: relative;margin-right: 10px;margin-top: 10px;" class="layui-btn layui-btn-sm"  onclick="save()">保存列表布局</a>
+<div class="layui-fluid">
+    <div class="layui-card" style="height: calc(45vh)">
+        <ul id="sortable1" class="connectedSortable">
+            {volist name='widgets' id='k'}
+            {notin name="k.id" value="$WidgetUser"}
+            <li class="ui-state-highlight {$k.widgetWidth}"  data-id="{$k.id}" >
+                <div>{$k.title}({$k.widgetWidth})</div></li>
+            {/notin}
+            {/volist}
+        </ul>
+    </div>
+    <div class="layui-card" style="height: calc(45vh)">
+        <ul id="sortable2" class="connectedSortable">
+            {if condition='$WidgetUser <>""'}
+            {volist name='selected' id='k2'}
+            <li class="ui-state-highlight {$widgets[$k2]['widgetWidth']}"  data-id="{$k2}" >
+                <div>{$widgets[$k2]['title']}({$widgets[$k2]['widgetWidth']})</div></li>
+            {/volist}
+            {/if}
+        </ul>
+    </div>
+</div>
+{include file='common/footer' /}
+<script src="__LIB__/Sortable.min.js" type="text/javascript"></script>
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script type="text/javascript">
+    $(function () {
+        Sortable.create(document.getElementById('sortable1'), {
+            group: "words",
+            animation: 150
+        });
+        Sortable.create(document.getElementById('sortable2'), {
+            group: "words",
+            animation: 150,
+        });
+    });
+    function save(){
+        var ids = [];
+        $( "#sortable2 li" ).each( function (i){
+            ids.push($(this).attr("data-id"));
+        });
+        if(ids.length==0){
+            g_toast('布局取消，正在保存！');
+        }
+        sfdp.sAjax('{:url("sfdp_container")}?sid={$sid}',{data:ids});
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/work/app.css?v7.0"/>
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<style>
+    .selected{
+        background:#e2e2e2; color:#666666;
+    }
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md9">
+                    <div class="layui-inline" >
+                        <div class="layui-input-inline">
+                            <input id="table" type="text"  placeholder="数据表名" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm layui-btn-primary" id='reloadBtn'><i class="layui-icon layui-icon-search" ></i></button>
+                    </div>
+					<a class="layui-btn layui-btn-sm layui-btn-primary" onclick=layer_show('新增','{$url["wfapi"]}?act=add','45','60')> 新增</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-warm" id="shijian"> 事件</a>
+                    <a class="layui-btn layui-btn-sm " onclick="location.reload();">刷新</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" onclick="verUpdate();">更新版本</a>
+                </div>
+                <div class="layui-col-md3 align-right" >
+                    <div class="layui-inline" style="display: none">
+                        <a class="layui-btn layui-btn-sm "onClick=g_help('wf')><i class="layui-icon layui-icon-help"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row" style='margin:5px'>
+                <table class="layui-hide" id="myList" lay-filter="data" lay-size="sm"></table>
+            </div>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script type="text/javascript" src="/static/work/workflow.5.0.js?v=11" ></script>
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script>
+    window.onresize = function (){
+        adjustButtons()
+    }
+    $(document).ready(function () {
+        layui.use('table', function () {
+            var table = layui.table;
+            table.render({
+                elem: '#myList'
+                , url: "{:url('index')}"
+                , method: 'post', id: 'idData'
+                ,escape:false
+                , height: 'full-90', page: true
+                , cols: [[
+                    {type: 'radio', width: '3%'}, {field: 'id', title: '编号', width: '4%',align: 'center'}
+                    , {field: 'type', title: '流程类型-数据库表名', width: '12%'}
+                    , {field: 'flow_name', title: '流程名称', width: '12%'}
+                    ,{field: 'tmp', title: '业务模板', width: '13%'}
+                    , {field: 'flow_desc', title: '流程描述', width: '12%'}
+                    , {field: 'status', title: '状态', width: '5%',align: 'center'},
+                    {field: 'add_time', title: '添加时间', width: '7%',align: 'center'},
+                    {field: 'is_field', title: '条件', width: '5%',align: 'center'},
+                    {field: 'btn', title: '操作'}
+                ]]
+            });
+            table.on('row(data)', function (obj) {
+                //动态添加背景色
+                obj.tr.siblings().removeClass('selected')
+                obj.tr.addClass('selected');
+                obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+            });
+            $("#shijian").click(function (ev) {
+                var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+                if (data.length == 0) {
+                    layer.msg('请选择要创建事件的流程~~');
+                    return;
+                }
+                layer_show('流程事件','{$url["wfapi"]}?act=event&id='+data[0].id,'85','95');
+            })
+            $("#reloadBtn").click(function (ev) {
+                table.reload('idData', {
+                    url: "{:url('index')}"
+                    , where: {
+                        type: $("#table").val()
+                    } //设定异步数据接口的额外参数
+                });
+            })
+        });
+    });
+
+    function verUpdate(){
+        Tpflow.wfconfirm('{$url["wfapi"]}?act=verUpdate','','您确定要更新版本参数吗？')
+    }
+
+</script>
+</body>
+</html>

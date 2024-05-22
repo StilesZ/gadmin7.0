@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>{$data.data.title}</title></head>
+<body>
+<link href="/static/layui/css/layui.css" rel="stylesheet">
+<link href="/static/fk/plugins/css/pluginsCss.css" rel="stylesheet"/>
+<link href="/static/fk/plugins/plugins.css" rel="stylesheet"/>
+<link href="/static/fk/css/luckysheet.css" rel="stylesheet"/>
+<link href="/static/fk/css/app.css" rel="stylesheet"/>
+<link href="/static/fk/css/iconfont/iconfont.css" rel="stylesheet"/>
+<script src="/static/fk/jquery-2.1.0.min.js"></script>
+<script src="/static/fk/plugins/js/plugin.js"></script>
+<script src="/static/fk/luckysheet.umd.js"></script>
+<script src="/static/layui/layui.js"></script>
+<h2 class="titles">
+    {$data.data.title}
+</h2>
+<div class="all-content">
+    <div id="luckysheet">
+
+    </div>
+</div>
+<div class="textmove"></div>
+<script>
+    const Fk_id = {$id};
+    const server_url = "{:url('fk/api')}?act=viewdata&id="+Fk_id;
+    const server_data = {$data.data.data|raw};
+    $(function () {
+        var movelock = false
+        var options = {
+            container: 'luckysheet',
+            lang: 'zh',
+            allowEdit: false,
+            celldata:server_data,
+            showinfobar: false,
+            data:server_data,
+            showtoolbar:false,
+            enableAddRow:false,
+            enableAddBackTop:false,sheetFormulaBar:false,
+            loadUrl:server_url,
+            forceCalculation:true //刷新公式
+        }
+        luckysheet.create(options)
+        $("body").mousemove(function (e) {  //
+            if (!movelock) {
+                return
+            }
+            var x = e.pageX
+            var y = e.pageY
+            $(".textmove").css({
+                top: y - 10 + 'px',
+                left: x - 10 + 'px'
+            })
+        })
+        $(".textmove").mouseup(function () { //鼠标松开
+            movelock = false
+            $(".textmove").hide()
+
+        })
+        $("#field").on("mousedown", ".choose-text", function () {
+            movelock = true
+            $(".textmove").show().text($(this).html())
+        });
+    })
+    function save(){
+        var excel = luckysheet.getAllSheets();
+        $.ajax({
+            url: server_url,
+            data: {data: JSON.stringify(excel)},
+            type: 'post',
+            cache: true,
+            dataType: 'json',
+            success: function (ret) {
+                if (ret.code !== 0) {
+                    layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                }else{
+                    layer.msg('保存成功！');
+                }
+            },
+            error: function () {
+                layer.alert('请求出错！', {title: "错误信息", icon: 2});
+            }
+        });
+
+    }
+</script>
+</body>
+
+</html>

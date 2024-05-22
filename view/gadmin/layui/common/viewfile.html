@@ -1,0 +1,62 @@
+{include file='common/head' /}
+<style>
+.pdfobject-container { height: 60rem; border: 1rem solid rgba(0,0,0,.1); }
+	html, body {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		background-color: #FFFFFF;
+		color: #FFFFFF;
+	}
+	.iframe_div, .frameId {
+		width: 100%;
+		border: 0;
+	}
+		</style>
+<body>
+<div class="layui-fluid" style="padding: 0px;">
+<div class="layui-card">
+<div class="layui-card-body" style="padding: 0px;">
+		{if condition='$mode == 1'}
+			<div id="pdf"></div>
+		{else/}
+			<iframe class="frameId" src="{$url}" name="iframeId" id="iframeId"></iframe>
+		{/if}
+</div>
+</div>
+</div>
+{include file='common/footer' /}
+<script src="/static/lib/pdfobject.min.js"></script>
+<script>
+	var mode ="{$mode}";
+	if(mode==1){
+		PDFObject.embed("{$url}", "#pdf",{
+			pdfOpenParams: {
+				view: 'FitV',
+				pagemode: 'fullscreen',
+				search: 'lorem ipsum'
+			}
+		});
+	}else{
+		
+	}
+	$(function() {
+		//改变iframe高度
+		setHeight();
+		/*监听浏览器窗口变化=改变iframe高度*/
+		window.addEventListener("resize", function() {
+			setHeight();
+		});
+
+		//设置iframe高度
+		function setHeight() {
+			$('body').height($(window).height());
+			var $content = $("#iframeId");
+			$content.height($(this).height() - 30); //减去30   调整iframe大小
+			$content.find('iframe').each(function() {
+				$(this).height($content.height());
+			})
+		}
+	})
+</script>
+

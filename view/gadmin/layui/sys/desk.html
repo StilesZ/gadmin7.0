@@ -1,0 +1,117 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<div class="layui-row">
+				<div class="layui-col-md8">
+					<a class="layui-btn layui-btn-sm  layui-btn-primary" onclick="layer_show('开发','{:url('deskAdd')}','95','95')">组件开发</a>
+					<a class="layui-btn layui-btn-sm" id="edit">组件修改</a>
+					<a class="layui-btn layui-btn-sm layui-btn-danger" id="del">组件删除</a>
+					<a class="layui-btn layui-btn-sm layui-bg-cyan" onclick="layer_show('方案管理','{:url('deskMain')}','95','95')">方案管理</a>
+					<a class="layui-btn layui-btn-sm layui-bg-black" onclick="layer_show('门户设计','{:url('deskHome')}','95','95')">门户设计</a>
+				</div>
+				<div class="layui-col-md4 align-right">
+					<div class="layui-inline">
+						<div class="layui-input-inline">
+							<input id="title" type="text" name="content" placeholder="标题" autocomplete="off"  class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<a class="layui-btn layui-btn-sm layui-btn-primary" id='reloadBtn'>
+							<i class="layui-icon layui-icon-search " ></i>
+						</a>
+						<a class="layui-btn layui-btn-warm layui-btn-sm" style="display: none" onclick="g_help('desk')"><i class="layui-icon layui-icon-chat"></i></a>
+					</div>
+				</div>
+			</div>
+			<div class="layui-row" style='margin:5px'>
+				<table class="layui-hide" id="myList" lay-filter="data" lay-size="sm"></table>
+			</div>
+		</div>
+	</div>
+</div>
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script id="barDemo" type="text/html">
+	{{#  if(d.status == 0){ }}
+	<span style="color: #52c41a;" onClick=status_ok(2,{{ d.id }},"发布")>发布</span>
+	{{#  } else { }}
+	<span style="color: #fa9841;" onClick=status_ok(0,{{ d.id }},"禁用")>禁用</span>
+	{{#  } }}
+	<span style="color: #5e7ce0;" onClick=view({{ d.id }})>预览</span>
+</script>
+<script type="text/javascript">
+	layui.use('table', function () {
+		var table = layui.table;
+		table.render({
+			elem: '#myList'
+			,limit: 16,
+			limits:[16,30,50,100,200]
+			, url: "{:url('desk')}"
+			,escape:false
+			, method: 'post', id: 'idData'
+			, height: 'full-85', page: true
+			, cols: [[
+				{type: 'radio', width: '3%'}, {field: 'id', title: '编号', width: '4%',align:'center'}
+				, {field: 'title', title: '标题', width: '18%'}
+				, {field: 'widgetType', title: '桌面类型', width: '8%',align:'center'}
+				, {field: 'widgetWidth', title: '组件长度', width: '8%',align:'center'}
+				, {field: 'widgetHeight', title: '桌面高度', width: '8%',align:'center'},
+				{field: 'widgetData', title: '数据方法', width: '15%',align:'center'},
+				{field: 'status_val', title: '标识状态', width: '8%',align:'center'},
+				{field: 'type_val', title: '组件类别', width: '7%',align:'center'},
+				{toolbar: '#barDemo', title: '操作'}
+			]]
+		});
+		table.on('row(data)', function (obj) {
+			//动态添加背景色
+			obj.tr.siblings().removeClass('selected')
+			obj.tr.addClass('selected');
+			obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+		});
+		$("#edit").click(function (ev) {
+			var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+			if (data.length == 0) {
+				layer.msg('请选择您要操作的单据~~');
+				return;
+			}
+			if(data[0].status==1 || data[0].status==2 ){
+				layer.msg('已被审批通过~~');
+				return  false;
+			}
+			layer_show("修改","{:url('deskEdit')}?id="+data[0].id,95,95);
+		})
+		$("#del").click(function (ev) {
+			var checkStatus = table.checkStatus('idData'), data = checkStatus.data;
+			if (data.length == 0) {
+				layer.msg('请选择您要操作的单据~~');
+				return;
+			}
+			if(data[0].status==2 ){
+				layer.msg('已被审批通过~~');
+				return  false;
+			}
+			sfdp.Askshow("{:url('del')}?id="+data[0].id,"删除须谨慎，确认要删除吗?")
+		})
+		$("#reloadBtn").click(function (ev) {
+			table.reload('idData', {
+				url: "{:url('desk')}"
+				, where: {
+					title: $("#title").val()
+				}
+			});
+		})
+	});
+	function status_ok(st,id,msg){
+		sfdp.Askshow("{:url('status')}?id="+id+'&status='+st,"您确定要执行【"+msg+"】吗?该操作无法撤销！")
+	}
+	function view(id){
+		layer_show("预览","{:url('deskView')}?id="+id,40,50);
+	}
+</script>
+</body>
+</html>

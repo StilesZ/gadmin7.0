@@ -1,0 +1,121 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md9">
+                    <a onclick="layer_show('新增','{:url('add')}',40,60)" class=" layui-btn layui-btn-sm layui-btn-primary"><i class="layui-icon layui-icon-addition"></i> 添加</a>
+                    <a id="status"></a>
+                    <a class="layui-btn layui-btn-sm "onClick=g_help('crontab') style="display: none"><i class="layui-icon layui-icon-help"></i></a>
+                </div>
+                <div class="layui-col-md3 align-right">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input type="text" id="name" placeholder="任务名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" id='reloadBtn'><i class="layui-icon layui-icon-search layuiadmin-button-btn"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row"  style='margin:5px'>
+                <table class="layui-hide" id="myList" lay-size="sm"  lay-filter="data"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox"  lay-skin="switch" {{ d.status == 1 ? 'checked' : '' }} readonly>
+</script>
+<script type="text/html" id="barDemo">
+    <a class=" layui-btn layui-btn-primary layui-btn-xs" onclick="layer_show('编辑','/gadmin/crontab/edit?id={{ d.id }}','50','80')">编辑</a>
+    {{#  if(d.status == 1){ }}
+    <span class="layui-btn layui-btn-xs" onClick=change({{ d.id }},0,'确认要停用吗?')>停用</span>
+    {{#  } else { }}
+    <span class="layui-btn layui-btn-normal layui-btn-xs" onClick=change({{ d.id }},1,'确认要启用吗?')>启用</span>
+    {{#  } }}
+    <a class=" layui-btn layui-btn-primary layui-btn-xs" onclick="layer_show('日志','/gadmin/crontab/logs?id={{ d.id }}','80','90')">日志</a>
+</script>
+{include file='common/footer' /}
+<script type="text/javascript">
+    layui.use('table', function(){
+        var table = layui.table;
+        table.render({
+            elem: '#myList'
+            ,url:"{:url('index')}"
+            ,method:'post'
+            ,escape:false,height:'full-90',page: true
+            ,cols: [[
+                {field:'id',  title: 'id',width: 45}
+                ,{field:'title', title: '标题'}
+                ,{field:'type',  title: '类型'},
+                {field:'rule',  title: '规则'},
+                {field:'shell',  title: '方法'},
+                {field:'remark',  title: '备注'},
+                {field:'last_time',  title: '上次运行'},
+                {field:'status',  title: '状态' ,templet: '#switchTpl',width: 80},
+                {toolbar: '#barDemo',width: 240}
+            ]]
+        });
+        table.on('row(data)', function(obj){
+            //动态添加背景色
+            obj.tr.siblings().removeClass('selected')
+            obj.tr.addClass('selected');
+        });
+        $("#reloadBtn").click(function (ev) {
+            table.reload('myList', {
+                url: "{:url('index')}"
+                , where: {
+                    name: $("#name").val()
+                } //设定异步数据接口的额外参数
+            });
+        })
+    });
+    /*管理员-停用*/
+    function change(id,status=0,msg='确认要停用吗?') {
+        layer.confirm(msg, function () {
+            $.ajax({
+                type: 'POST',
+                url: '{:url("change")}?id=' + id + '&status='+status,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code == 0) {
+                        window.location.reload()
+                        layer.msg('已停用!', {icon: 5, time: 1000});
+                    } else {
+                        layer.msg('系统出错!', {icon: 5, time: 1000});
+                    }
+                },
+                error: function (data) {
+                    console.log(data.msg);
+                },
+            });
+        });
+    }
+    g_toast('任务进程状态查询中......',{skin:'warning'})
+    setTimeout("get_status()", 3000);
+    function get_status(){
+        $.ajax({
+            url: '{:url("run")}?act=/status',
+            type: 'get',
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            dataType: "json",
+            data: {},
+            async:false,
+            timeout: 3000,
+            success: function (res) {
+                if (res.code === 200) {
+                    $('#status').html('<a class="layui-btn layui-btn-sm layui-bg-green">运行中</a><a class=" layui-btn layui-btn-sm">[注意]：添加或者修改，需要手动重启进程才会生效！</a>');
+                } else {
+                    $('#status').html('<span class="layui-btn layui-btn-sm layui-bg-red">已停用</span> 根目录执行命令 <b>php crontab.php</b>')
+                }
+            }
+        });
+    }
+
+
+</script>
+
+</body>
+</html>

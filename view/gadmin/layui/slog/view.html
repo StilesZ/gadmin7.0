@@ -1,0 +1,47 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="__LIB__/json-viewer/json-viewer.css?v=3.0.6">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <table class="layui-table">
+                    {neq name='type' value='login'}
+                    <tr class="tr rt"><td width="80">编号：</td><td class="lt">{$row.id}</td></tr>
+                    <tr class="tr rt"><td width="80">类别：</td><td class="lt">{$row.type}</td></tr>
+                    <tr class="tr rt"><td width="80">控制器：</td><td class="lt">{$row.controller}</td></tr>
+                    <tr class="tr rt"><td width="80">Url：</td><td class="lt">{$row.uri}</td></tr>
+                    <tr class="tr rt"><td width="80">参数：</td><td class="lt">{$row.params}</td></tr>
+                    <tr class="tr rt"><td width="80">地址：</td><td class="lt">{$row.ip}</td></tr>
+                    <tr class="tr rt"><td width="80">数据库：</td><td class="lt">
+                        <pre id="json-renderer"></pre>
+                    </td></tr>
+                    <tr class="tr rt"><td width="80">创建时间：</td><td class="lt">{$row.create_time|date='Y-m-d'}</td></tr>
+                    {else/}
+                    <tr class="tr rt"><td width="80">用户名：</td><td class="lt">{$row.username}</td></tr>
+                    <tr class="tr rt"><td width="80">用户id</td><td class="lt">{$row.uid}</td></tr>
+                    <tr class="tr rt"><td width="80">登入ip：</td><td class="lt">{$row.login_ip}</td></tr>
+                    <tr class="tr rt"><td width="80">登入地点：</td><td class="lt">{$row.login_location}</td></tr>
+                    <tr class="tr rt"><td width="80">登入浏览器：</td><td class="lt">{$row.login_browser}</td></tr>
+
+                    <tr class="tr rt"><td width="80">创建时间：</td><td class="lt">{$row.login_time|date='Y-m-d'}</td></tr>
+                    {/neq}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+</body>
+</html>
+<script type="text/javascript">
+    $(function() {
+           var input = eval('({$row.sql|raw})');
+            var options = {
+                collapsed: $('#collapsed').is(':checked'),
+                withQuotes: $('#with-quotes').is(':checked')
+            };
+            $('#json-renderer').jsonViewer(input, options);
+    });
+</script>

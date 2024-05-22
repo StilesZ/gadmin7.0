@@ -1,0 +1,181 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md2" style="width: 10%">
+                    <span style="float: right;z-index: 500;position: inherit;" onclick="layer_show('添加类别','/gadmin/App/app_tag')"> 【新增】</span>
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">模块类别</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <div id="access-tree"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md10" style="width: 90%">
+                    <div class="layui-row">
+                        <div class="layui-col-md8">
+                            <a class="layui-btn layui-btn-sm  layui-btn-primary" onclick="layer_show('新增','{:url('add')}',40)"> 新增</a>
+
+                            <a class="layui-btn layui-btn-sm " onclick="layer_show('新增','{:url('config')}',40)"> 移动端配置</a>
+                        </div>
+                        <div class="layui-col-md4 align-right">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input autocomplete="off" class="layui-input" id="title" placeholder="名称"
+                                           type="text">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input autocomplete="off" class="layui-input" id="table" placeholder="数据表"
+                                           type="text">
+                                    <input autocomplete="off" class="layui-input" id="sid" type="hidden">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm layui-btn-primary" id='reloadBtn'><i
+                                        class="layui-icon layui-icon-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-row" style='margin:5px'>
+                        <table class="layui-hide" id="myList" lay-filter="data" lay-size="sm"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script id="barDemo" type="text/html">
+            {{#  if(d.status == 2){ }}
+            <span class="layui-btn layui-btn-xs layui-btn-primary" onClick=check(this,{{ d.id }},0)>去审</span>
+                 <a class="layui-btn layui-btn-normal layui-btn-xs" onClick=design({{ d.id }})>页面设计</a>
+            {{#  } else { }}
+                <span class="layui-btn layui-btn-normal layui-btn-xs" onClick=check(this,{{ d.id }},2)>核准</span>
+                <a class="layui-btn layui-btn-warm layui-btn-xs" onClick=edit({{ d.id }})>修改</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" onClick=del(this,{{ d.id }})>删除</a>
+            {{#  } }}
+        </script>
+        {include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script>
+    window.onresize = function (){
+        adjustButtons()
+    }
+     $(document).click(function (e) { // 在页面任意位置点击而触发此事件
+                if ($(e.target).attr('class') === "layui-tree-txt") { // 防止因为点击展开按钮把已选中的样式取消
+                    $(".layui-tree-txt").removeClass("tree-txt-active"); // 移除点击样式
+                    $(e.target).addClass("tree-txt-active"); // e.target表示被点击的目标
+                }
+            });
+            function itemClicked(obj) {
+                $('#sid').val(obj.data.id);
+                $('#reloadBtn').click();
+            }
+            $(document).ready(function () {
+                var tree = layui.tree
+                tree.render({
+                    elem: '#access-tree',
+                    click: itemClicked,
+                    showCheckbox: false,
+                    spread: true,
+                    data: {$tree|raw}
+            })
+            });
+            layui.use('table', function () {
+                var table = layui.table;
+                table.render({
+                    elem: '#myList'
+                    , url: "{:url('base')}"
+                    , method: 'post', id: 'idData'
+
+                    ,escape:false, height: 'full-90', page: true
+                    , cols: [[
+                        {type: 'radio', width: '3%'}, {field: 'id', title: '编号', width: '4%',align:'center'}
+                        ,{field: 'title', title: '标题', width: '18%'}
+                        ,{field: 'table', title: '数据表', width: '8%',align:'center'},
+                        {field: 'sid', title: '关联业务', width: '8%',align:'center'},
+                        {field: 'add_time', title: '录入时间', width: '12%',align:'center'},
+                        {field: 'type', title: '类别', width: '10%',align:'center'},
+                        {field: 'stv', title: '状态', width: '6%',align:'center'},
+                        {toolbar: '#barDemo', title: '操作'}
+                    ]]
+                });
+                table.on('row(data)', function (obj) {
+                    //动态添加背景色
+                    obj.tr.siblings().removeClass('selected')
+                    obj.tr.addClass('selected');
+                    obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+                });
+                $("#reloadBtn").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('base')}"
+                        , where: {
+                            sid: $("#sid").val(),
+                            table: $("#table").val(),
+                            title: $("#title").val()
+                        } //设定异步数据接口的额外参数
+                    });
+                })
+            });
+
+            /*删除*/
+            function del(obj, id) {
+                layer.confirm('请确认删除？删除后关联业务会出问题，建议采用禁用！', function (index) {
+                    layer.confirm('确认要删除吗？', function (index) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "{:url('del')}?id=" + id,
+                            dataType: 'json',
+                            success: function (data) {
+                                window.location.reload()
+                                layer.msg('已删除!', {icon: 1, time: 1000});
+                            },
+                            error: function (data) {
+                                console.log(data.msg);
+                            },
+                        });
+                    });
+                });
+            }
+
+            function design(id) {
+                layer_show("页面设计", "{:url('add_view')}?id=" + id, "98", "98");
+            }
+            function edit(id) {
+                layer_show("修改", "{:url('edit')}?id=" + id, "85", "65");
+            }
+            function check(obj, id,st) {
+                if(st==0){
+                    var msg = '您确定要去掉审核嘛？';
+                }else{
+                    var msg = '审核通过';
+                }
+                layer.confirm(msg, function (index) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("status")}?id=' + id + '&status='+st,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 0) {
+                                window.location.reload()
+                                layer.msg('已停用!', {icon: 5, time: 1000});
+                            } else {
+                                layer.msg('系统出错!', {icon: 5, time: 1000});
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.msg);
+                        },
+                    });
+                });
+            }
+        </script>
+</body>
+</html>

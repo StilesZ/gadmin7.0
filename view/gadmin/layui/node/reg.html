@@ -1,0 +1,52 @@
+{include file='common/head' /}
+</head>
+<body style="background-color:#fff">
+<div class="layui-fluid" >
+    <div class="layui-card">
+            <form action="" method="post" name="form" id="form" class='layui-form'>
+                <table class="layui-table">
+                    <tr class="tr rt">
+                        <td width="80">主节点：</td>
+                        <td class="lt">
+                            {$pid.id}|{$pid.title}
+                        </td>
+                        <td >模块名称：</td>
+                        <td class="lt">
+                            {$control}
+                        </td>
+                    </tr>
+                    {volist name='node' id='k'}
+                    <tr class="tr rt">
+                        <td>链接名称：</td>
+                        <td  class="lt">
+                            <input type="text" name="title[]" placeholder="如添加，列表" class='layui-input' value="{$common_node[$k] ?? ''}">
+                        </td>
+                        <td>链接属性：</td>
+                        <td  class="lt">
+                            <input type="text" name="name[]" placeholder="英文名称" class="layui-input" value="{$k}" readonly>
+                        </td>
+                    </tr>
+                    {/volist}
+                    <tr style="text-align: center">
+                        <td colspan="4">
+                            <input type="hidden" name="pid" value="{$pid.id}">
+                            <input  class='layui-btn' type="submit" name="dosubmit" value="批量注册" >
+                          </td>
+                    </tr>
+                </table>
+            </form>
+    </div>
+</div>
+</body>
+{include file='common/footer' /}
+<script>
+    layui.use('form', function(){
+    });
+</script>
+<script>
+    $(function () {
+        g_checkForm($("#form"));
+    })
+</script>
+</body>
+</html>

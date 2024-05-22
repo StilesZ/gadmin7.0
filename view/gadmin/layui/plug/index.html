@@ -1,0 +1,203 @@
+{include file='common/head' /}
+<title>基本设置</title>
+<style>
+	.layui-card{
+	    border: 1px solid #f2f2f2;
+		border-radius: 5px;
+		box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+	}
+</style>
+<style>
+    #steps {
+        margin-left: 25%;
+    }
+    .step-item {
+        display: inline-block;
+        line-height: 26px;
+        position: relative;
+        background: #ffffff;
+    }
+    .step-item-tail {
+        width: 100%;
+        padding: 0 10px;
+        position: absolute;
+        left: 0;
+        top: 13px;
+    }
+    .step-item-tail i {
+        display: inline-block;
+        width: 100%;
+        height: 1px;
+        vertical-align: top;
+        background: #c2c2c2;
+        position: relative;
+    }
+    .step-item-head {
+        position: relative;
+        display: inline-block;
+        height: 26px;
+        width: 26px;
+        text-align: center;
+        vertical-align: top;
+        color: #009688;
+        border: 1px solid #009688;
+        border-radius: 50%;
+        background: #ffffff;
+    }
+    .step-item-head.step-item-head-active {
+        background: #009688;
+        color: #ffffff;
+    }
+    .step-item-main {
+        background: #ffffff;
+        display: block;
+        position: relative;
+    }
+    .step-item-main-title {
+        font-weight: bolder;
+        color: #555555;
+    }
+    .step-item-main-desc {
+        color: #aaaaaa;
+    }
+</style>
+</head>
+<body style='background: #ffff;'>
+  <div class="layui-fluid">
+	<div class="layui-row layui-col-space15">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div id="steps">
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-tail"><i class=""></i></div>
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">1</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">第一步</div>
+                            <div class="step-item-main-desc">安装功能</div>
+                        </div>
+                    </div>
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-tail"><i class=""></i></div>
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">2</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">第二步</div>
+                            <div class="step-item-main-desc">业务平台设计</div>
+                        </div>
+                    </div>
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-tail"><i class=""></i></div>
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">3</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">第三步</div>
+                            <div class="step-item-main-desc">流程设计</div>
+                        </div>
+                    </div>
+                    <div class="step-item" style="width: 20%;">
+                        <div class="step-item-head step-item-head-active"><i class="layui-icon">4</i></div>
+                        <div class="step-item-main">
+                            <div class="step-item-main-title">第四步</div>
+                            <div class="step-item-main-desc">业务上线</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row flex-center" style="padding: 10px">
+                <div class="layui-col-md9">
+                    <div class="layui-input-inline">
+                        <input id="keyword" type="text"  placeholder="应用简称" autocomplete="off" class="layui-input" style="height: 31px;">
+                    </div>
+                    <a class="layui-btn layui-btn-sm btn-22" id="reloadBtn">查询插件</a>
+                    <a class="layui-btn layui-btn-sm btn-23" onClick=sfdp.openfullpage('官网','//gadmin8.com') >贡献插件</a>
+                </div>
+                <div class="layui-col-md3 align-right">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm"onClick=sfdp.openfullpage('官网','//gadmin8.com')><i class="layui-icon layui-icon-help"></i></button>
+                    </div>
+                </div>
+                </div>
+
+
+			<table class="layui-hide" id="myList" lay-size="sm"></table>
+		 </div>
+		</div>
+	   </div>
+</div>
+
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script type="text/html" id="switchTpl">
+  <input type="checkbox"  lay-skin="switch" {{ {$plug}.indexOf(d.id) >= 0 ? 'checked' : '' }} readonly>
+</script>
+<script type="text/javascript">
+	function view(url){
+		layer.open({
+            type: 2,
+            title: '查看',
+            shadeClose: true,
+            offset: '10%',
+            area: ['900px', '700px'],
+            content: url
+        });
+	}
+	function uni(id){
+        layer_show("卸载","{:url('uni')}?id="+id);
+    }
+	function ins(id){
+        var loding = layer.msg('功能安装中..', {icon: 16,shade: 0.3,time: false});
+        $.ajax({
+			 url:'{:url("Plug/add_plug")}?id='+id, 
+			 type:'post',
+			 dataType:'json',			 
+			 success:function(ret) {
+                 layer.close(loding);
+				 if (ret.code == 0) {
+						location.reload();
+						layer.msg('功能安装成功！',{icon:1,time: 1500});
+					}else{
+						layer.alert(ret.msg, {title: "错误信息", icon: 2});
+					}
+			  },
+			  error : function(ret) {  
+				console.log(ret);
+			  }  
+		 });
+    }
+	var token = '{:session("gadmin_up_token")}';
+	if(token == ''){
+		layer.msg('授权登入信息失败~');
+	}
+    layui.use('table', function(){
+        var table = layui.table;
+        table.render({
+            elem: '#myList',
+			url:"{:url('index')}",
+			headers:{'Content-Type':'application/x-www-form-urlencoded','authentication':token},
+			method:'post',
+		    page:true,
+            escape:false,
+            limit:10,
+            cols: [[
+                {field:'title', width:'8%', title: '软件名称'},
+                {field:'ver', width:'4%', title: '版本号'},
+                {field:'icon', width:'4%', title: 'ico'},
+				{field:'user', width:'8%', title: '开发商'},
+                {field:'con', width:'40%', title: '说明'},
+                {field:'time', width:'15%', title: '发布时间'},
+				{field:'id', width:'7%', title: '状态',templet: '#switchTpl'},
+				{field: 'op',title:'操作',  }
+            ]]
+        });
+        $("#reloadBtn").click(function (ev) {
+            var keyword = $("#keyword").val();
+            table.reload('myList', {
+                url: "{:url('index')}"
+                , where: {
+                    keyword: keyword
+                } //设定异步数据接口的额外参数
+
+            });
+
+        })
+    });
+</script>
+</body>
+</html>

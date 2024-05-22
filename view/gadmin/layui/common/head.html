@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit" />
+  <meta name="force-rendering" content="webkit" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <title>{:g_cache('sysname')} {:g_cache('sysv')}</title>
+  <link rel="stylesheet" type="text/css" href="_LAY_UI_ROOT_/layui-v2.8.4/css/layui.css">
+  <link rel="stylesheet" type="text/css" href="_LAY_UI_ROOT_/css/customer.css?v=6.0.0">
+  <link rel="stylesheet" type="text/css" href="/static/common.css?v=6.0.0">
+  <link rel="stylesheet" type="text/css" href="/static/custom.css?v={:get_common_val('soft_custom',1,'ver')}">
+  <script>
+    var g_soft_uid = `{:session('softId')}`
+    var g_soft_username = `{:session('sfotUserName')}`
+    var g_soft_realname = `{:session('sfotRealName')}`
+    var g_soft_rolename = `{:session('sfotRoleName')}`
+    var g_soft_roleid = `{:session('sfotRoleId')}`
+  </script>

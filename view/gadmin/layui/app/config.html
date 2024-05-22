@@ -1,0 +1,52 @@
+{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/multiple-select/multiple-select.css" />
+<title>基本设置</title>
+</head>
+<body>
+<div class="layui-fluid">
+  <div class="layui-card">
+    <form class="layui-form" action='' method="post" id="form-article-add">
+      <div class="layui-card-body">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+          <legend>移动端配置</legend>
+        </fieldset>
+        <div class="layui-tab-item layui-show">
+          <div class="layui-form-item">
+            <label class="layui-form-label">APP系统名称</label>
+            <div class="layui-input-block">
+              <input type="text" name='app_name' value="{$sys.app_name ?? ''}" required  lay-verify="required" placeholder="APP系统名称" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">APP登入页版本</label>
+            <div class="layui-input-block">
+              <input type="text" name='app_ver' value="{$sys.app_ver ?? ''}" required  lay-verify="required" placeholder="APP登入页版本" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">APP首页滚动文字</label>
+            <div class="layui-input-block">
+              <input type="text" name='app_ad' value="{$sys.app_ad ?? ''}" required  lay-verify="required" placeholder="APP首页滚动文字" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+        </div>
+        <button class="layui-btn " type="submit">保存</button>
+    </form>
+  </div>
+</div>
+</div>
+</div>
+{include file='common/footer' /}
+<script src="__LIB__/multiple-select/multiple-select.js"></script>
+<script>
+  layui.use('element', function(){
+    var $ = layui.jquery,element = layui.element;
+  });
+  layui.use('form', function(){
+
+  });
+
+
+</script>
+</body>
+</html>

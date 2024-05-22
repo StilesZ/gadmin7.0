@@ -1,0 +1,66 @@
+.selected{
+    background:#e2e2e2; color:#666666;
+}
+.layui-table thead tr{
+    background-color: #ededed;
+    color: #303133;
+}
+.layui-table td, .layui-table th {
+    border-bottom: 1px solid #ededed;
+}
+table tr:nth-child(odd){
+    background: rgba(204, 204, 204, 0.18);
+}
+.layui-table-view .layui-table[lay-size=lg] .layui-table-cell {
+    height: 28px;
+    line-height: 28px;
+}
+.layui-table-cell {
+    padding: 0 8px;
+}
+.layui-btn-sm{
+    padding: 0 6px;
+}
+.layui-btn+.layui-btn {
+    margin-left: 0px;
+}
+.scrollBar {
+    width: 100%;
+    padding-left: 20px;
+}
+#progressBar {
+    width: 100%;
+    height: 10px;
+    background-color: #ccc;
+    margin: 0 auto;
+    margin-top: 10px;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+    min-width: 160px;
+}
+#progressBar_Track {
+    width: 80%;
+    height: 10px;
+    background-color: #3963bc;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+}
+.slider-range .action-value,#progressBar .action-value{
+    display: inline-block;
+    padding: 2px 15px;
+    line-height: 30px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    border-radius: 5px;
+    font-size: 14px;
+    position: absolute;
+    height: 30px;
+    left: -18px;
+    top: -15px;
+}
+.layui-badge-dot {
+    width: 10px;
+    height: 10px;
+}

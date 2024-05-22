@@ -1,0 +1,57 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-card-body">
+      {present name="info.id"}
+      <form action="" method="post" name="form" id="form" class="layui-form">
+        <input type="hidden" name="id" value="{$info.id}">
+        {else /}
+        <form action="" method="post" name="form" id="form" class="layui-form">
+          {/present}
+          <table>
+            <tr>
+              <td>　名称：</td>
+              <td><input type="text" name="title" class='layui-input' datatype="*" value="{$info.title ?? ''}" datatype="*"></td>
+              <td>　图标：</td>
+              <td>
+                <input type="text" name="color" class='layui-input' datatype="*" value="{$info.color ?? ''}" datatype="*">
+              </td>
+              <td>
+                <button type="submit" class="layui-btn layui-btn-sm" style="margin-left: 10px">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+              </td>
+            </tr>
+          </table>
+        </form>
+    </div>
+    <div class="layui-card-body">
+      <table class="layui-table">
+        <thead>
+        <tr>
+          <th>id</th>
+          <th>标题</th>
+          <th>图标</th>
+          <th>操作</th>
+        </tr>
+        </thead>
+        {volist name='type' id='k'}
+        <tr>
+          <td>{$key + 1}</td>
+          <td>{$k.title}</td>
+          <td>{$k.color}</td>
+          <td><a href="{:url('app_tag')}?id={$k.id}" class="layui-btn layui-btn-sm">修改</a></td>
+        </tr>
+        {/volist}
+      </table>
+
+    </div>
+  </div>
+</div>
+{include file='common/footer' /}
+<script>
+  $(function () {
+    g_checkForm($("#form"));
+  })
+</script>
+</body>
+</html>

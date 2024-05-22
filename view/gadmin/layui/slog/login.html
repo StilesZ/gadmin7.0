@@ -1,0 +1,109 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<style>
+	.selected{
+		background:#e2e2e2; color:#666666;
+	}
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<div class="layui-row">
+				<div class="layui-inline">
+					<div class="layui-input-inline">
+						<input id="name" type="text" name="content" placeholder="用户名" autocomplete="off"
+							   class="layui-input">
+					</div>
+
+				</div>
+				<div class="layui-inline">
+					<button class="layui-btn layui-btn-sm btn-15" data-type="reload"  id='searchsubmit'>查询</button>
+					<button  id='view' class="layui-btn layui-btn-sm btn-23">查看</button>
+					<button onclick="del()" class="layui-btn layui-btn-sm btn-13">清空</button>
+				</div>
+			</div>
+			<table id='table_id' class="layui-table table-sort ">
+				<thead>
+				<tr class="text-c">
+					<th width="25">id</th>
+					<th>用户信息</th>
+					<th>用户id</th>
+					<th>登入IP</th>
+					<th>登入位置</th>
+					<th>浏览器</th>
+					<th>登入时间</th>
+					<th>操作系统</th>
+				</tr>
+				</thead>
+			</table>
+			<br/><br/>
+		</div>
+	</div>
+</div>
+{include file='common/footer' /}
+
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script>
+$(document).ready(function() {
+  
+	var dataTable = $('#table_id').DataTable( {
+		deferRender: true,
+		bFilter: false,  
+        bLengthChange: false, 
+        processing: true,
+		order: [],
+        serverSide: true,
+		ordering: false,
+		pageLength: 15,
+		ajax: function (data, callback, settings) {
+                var param = {};
+                param.limit = data.length;
+                param.start = data.start;
+				param.page = (data.start / data.length)+1;
+                param.draw = data.draw;			
+				var username = $("#name").val();
+				if(username != ''){
+					param.username = username;
+				}
+                $.ajax({
+                    type: "post",
+                    url: "{:url('login')}",
+                    cache: false,  
+                    data: param,  
+                    dataType: "json",
+                    success: function (result) {
+						callback(result);
+                    }
+                });
+		},
+    });
+	$('#table_id tbody').on( 'click', 'tr', function () {
+		if ( $(this).hasClass('selected') ) {
+			$(this).removeClass('selected');
+		}else {
+			dataTable.$('tr.selected').removeClass('selected');
+			$(this).addClass('selected');
+		}
+	} );
+	$('#view').click( function () {
+		let count = dataTable.rows('.selected').data().length;
+		if(count==0){
+			layer.msg('请选中您要查看的日志！');
+		}else{
+			layer_show('查看日志',"{:url('view')}?type=login&id="+dataTable.rows('.selected').data()[0][0]);
+		}
+	} );
+	$("#searchsubmit").bind("click", function () { //按钮 点击事件触发table重新请求服务器
+		$("#table_id").dataTable().fnDraw(true);
+	});
+
+ });
+ function del(){
+	sfdp.Askshow("{:url('del')}?table=login","删除须谨慎，确认要删除吗?")
+}
+</script>
+	
+</body>
+</html>

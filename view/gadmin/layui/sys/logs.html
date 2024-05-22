@@ -1,0 +1,42 @@
+{include file='pub/base' /}
+<nav class="breadcrumb">
+<i class="Hui-iconfont">&#xe67f;</i> 首页 
+<span class="c-gray en">&gt;</span> 系统设定
+<span class="c-gray en">&gt;</span> 系统日志 
+<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" >
+<i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+	<table class="table table-border table-bordered table-hover table-bg">
+		<thead>
+			<tr>
+				<td scope="col" colspan="7" class='text-c'>系统日志</td>
+			</tr>
+			<tr class="text-c">
+				<th width="40">ID</th>
+				<th width="50">操作人</th>
+				<th width="80">IP地址</th>
+				<th width="80">操作系统</th>
+				<th width="170">url</th>
+				<th width="300">data</th>
+				<th width="100">操作时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name='list' id='k'}
+			<tr class="text-c">
+				<td>{$k.id}</td>
+				<td>{$k.uid|get_username}</td>
+				<td>{$k.ip}</td>
+				<td>{$k.os}</td>
+				<td>{$k.url}</td>
+				<td>{$k.data}</td>
+				<td>{$k.utime|date='Y-m-d H:i'}</td>
+			</tr>
+			{/volist}
+		</tbody>
+	</table>
+	<div class="page-bootstrap">{$list|raw}</div>
+	
+</div>
+</body>
+</html>

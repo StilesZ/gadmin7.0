@@ -1,0 +1,82 @@
+.left-content {
+    width: 200px;
+    height: 95vh;
+    background-color: #ffffff;
+}
+
+.right-content {
+    width: 200px;
+    height: 95vh;
+    background-color: #ffffff;
+}
+
+#luckysheet {
+    height: 95vh;
+    flex-grow: 1;
+}
+
+body {
+    margin: 0;
+    background-color: #ffffff;
+}
+
+.all-content {
+    display: flex;
+}
+
+.choose-text {
+    padding-left: 12px;
+    cursor: pointer;
+    user-select: none;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.textmove {
+    background-color: #eeeeee;
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    display: none;
+    cursor: pointer;
+    z-index: 10000;
+    padding: 3px 12px;
+    border-radius: 5px;
+    max-width: 200px;
+}
+
+.layui-nav {
+    background-color: unset;
+}
+
+.layui-nav a {
+    color: #1E9FFF !important;
+    background-color: #fafafc;
+    height: 30px !important;
+    line-height: 30px !important;
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.layui-nav-itemed>a {
+    background-color: #fafafc;
+}
+.layui-nav-itemed > .layui-nav-child {
+    background-color: unset !important;
+    color: #000;
+}
+
+.titles {
+    line-height: 5vh;
+    padding-left: 20px;
+    font-weight: 600;
+    color: #f55056;
+}
+
+body::-webkit-scrollbar {
+    display: none
+}

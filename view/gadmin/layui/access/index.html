@@ -1,0 +1,101 @@
+﻿{include file='common/head' /}
+<style>
+    #subIframe{
+        width: 100%;
+        min-height: 590px;
+        height: calc(100vh - 50px);
+    }
+    .layui-table-page{
+        border-width: 0px 0 0;
+        margin-top: 10px;
+    }
+    .tree-txt-active{
+        color :red;
+    }
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md3">
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">角色授权</li>
+                            <li>用户授权</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <div id="access-tree"> </div>
+                            </div>
+                            <div class="layui-tab-item">
+                                <table class="layui-table" lay-filter="table-user">
+                                    <thead>
+                                    <tr>
+                                        <th lay-data="{field:'id',type:'radio'}"></th>
+                                        <th lay-data="{field:'id',width:55}">id</th>
+                                        <th lay-data="{field:'username'}">姓名</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {volist name='user' id='k'}
+                                    <tr>
+                                        <td>{$k.id}</td>
+                                        <td>{$k.id}</td>
+                                        <td>{$k.username}({$k.realname})</td>
+                                    </tr>
+                                    {/volist}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md9">
+                    <iframe id="subIframe" name="testIframe" frameborder="0" src="{:url('data')}"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script type="text/javascript">
+    $(document).click(function(e) { // 在页面任意位置点击而触发此事件
+        if($(e.target).attr('class') === "layui-tree-txt"){ // 防止因为点击展开按钮把已选中的样式取消
+            $(".layui-tree-txt").removeClass("tree-txt-active"); // 移除点击样式
+            $(e.target).addClass("tree-txt-active"); // e.target表示被点击的目标
+        }
+    });
+    function itemClicked(obj){
+        var url = '{:url("data")}';
+        $("#subIframe").attr("src",url + "?roleid=" + obj.data.id);
+    }
+    $(document).ready(function () {
+        var tree = layui.tree
+        var renderedTree = tree.render({
+            elem: '#access-tree',
+            click: itemClicked,
+            showCheckbox: false,
+			spread: true,
+            data: {$data|raw}
+        })
+    });
+    layui.use('table', function(){
+        var table = layui.table;
+        //转换静态表格
+        table.init('table-user', { //转化静态表格
+            limit:15,
+            page: true,
+            height: 'full-180' //高度最大化减去差值
+        });
+        table.on('row(table-user)', function(obj){
+            var url = '{:url("data2")}';
+            $("#subIframe").attr("src",url + "?userid=" + obj.data.id);
+            obj.tr.find('i[class="layui-anim layui-icon"]').trigger("click");
+        });
+    });
+</script>
+</body>
+</html>

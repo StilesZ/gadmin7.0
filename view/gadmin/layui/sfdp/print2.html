@@ -1,0 +1,233 @@
+{include file='common/head' /}
+<link href="__LIB__/hiprint/css/hiprint.css" rel="stylesheet" />
+<link href="__LIB__/hiprint/css/print-lock.css" rel="stylesheet" />
+<style>
+    .layui-form-select dl{
+        z-index:999999;
+    }
+    .rect-printElement-types .hiprint-printElement-type > li > ul > li > a{
+        height: auto;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+                    <div class="layui-form-item" style='overflow:visible'>
+                            <div class="layui-col-md1" style="padding-right:30px;">
+                                <div class="rect-printElement-types hiprintEpContainer">
+                                    <ul class="hiprint-printElement-type">
+                                        <li>
+                                            <span class="title"><code>系统控制</code></span>
+                                            <ul>
+                                                <li>
+                                                    <a>
+                                                        <span class="glyphicon-class" id="savedata">保存</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a>
+                                                        <span class="glyphicon-class">帮助</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a>
+                                                        <span class="glyphicon-class" id="A4_preview">预览</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a>
+                                                        <span class="glyphicon-class" id="A4_directPrint" >打印</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <span class="title"><code>基础组件</code></span>
+                                            <ul>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.text" style="">
+                                                        <span class="glyphicon-class">文本</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.image" style="">
+                                                        <span class="glyphicon-class">图片</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.longText">
+                                                        <span class="glyphicon-class">长文</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.tableCustom" style="">
+                                                        <span class="glyphicon-class">表格</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <span class="title">辅助组件</span>
+                                            <ul>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.hline" style="">
+                                                        <span class="glyphicon-class">横线</span>
+                                                    </a>
+                                                </li>
+
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.vline" style="">
+                                                        <span class="glyphicon-class">竖线</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.rect">
+                                                        <span class="glyphicon-class">矩形</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="ep-draggable-item" tid="testModule.oval">
+                                                        <span class="glyphicon-class">椭圆</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <span class="title"><code>系统元素</code></span>
+                                            <ul>
+                                                <li style="width: 100%;max-width: 200px;">
+                                                    <input  class="layui-input" id="fundata">
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <span class="title"><code>Json数据</code></span>
+                                            <ul>
+                                                <li style="width: 100%;max-width: 200px;">
+                                                    <textarea  class="layui-textarea" id="json" style="height: 202px;"></textarea>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <span class="title"><code>版权声明</code></span>
+                                            <ul>
+                                                <li style="width: 100%;max-width: 200px;">
+                                                   Gadmin软件已获得官方正版授权许可，如您应用在其他平台，请获得hiprint商业授权！
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="" style="float: left">
+                                <div class="hiprint-toolbar" style="margin-top:15px;">
+                                <ul>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper('A3')">A3</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper('A4')">A4</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper('A5')">A5</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper('B3')">B3</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper('B4')">B4</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper('B5')">B5</a></li>
+                                    <li><a class="hiprint-toolbar-item"><input type="text" id="customWidth" style="width: 50px;height: 19px;border: 0px;" placeholder="宽/mm" /></a></li>
+                                    <li><a class="hiprint-toolbar-item"><input type="text" id="customHeight" style="width: 50px;height: 19px;border: 0px;" placeholder="高/mm" /></a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="setPaper($('#customWidth').val(),$('#customHeight').val())">自定义</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="rotatePaper()">旋转</a></li>
+                                    <li><a class="hiprint-toolbar-item" onclick="clearTemplate()">清空</a></li>
+                                </ul>
+                                <div style="clear:both;"></div>
+                            </div>
+                                <div id="hiprint-printTemplate" class="hiprint-printTemplate" style="margin-top:20px;"></div>
+                            </div>
+                        <div class="layui-col-md2">
+                            <div id="PrintElementOptionSetting"></div></div>
+                    </div>
+        </div>
+    </div>
+</div>
+
+                {include file='common/footer' /}
+            <script src="__LIB__/hiprint/custom-etype-provider.js"></script>
+            <script src="__LIB__/hiprint/custom-print-json.js"></script>
+            <script src="__LIB__/hiprint/print-data.js"></script>
+            <script src="__LIB__/hiprint/plugins/jq-3.31.js"></script>
+            <script src="__LIB__/hiprint/polyfill.min.js"></script>
+            <!-- polyfill.min.js解决浏览器兼容性问题v6.26.0-->
+            <script src="__LIB__/hiprint/plugins/jquery.minicolors.min.js"></script>
+            <!-- hiprint 核心js-->
+            <script src="__LIB__/hiprint/hiprint.bundle.js"></script>
+            <!-- 条形码生成组件-->
+            <script src="__LIB__/hiprint/plugins/JsBarcode.all.min.js"></script>
+            <!-- 二维码生成组件-->
+            <script src="__LIB__/hiprint/plugins/qrcode.js"></script>
+            <!-- 调用浏览器打印窗口helper类，可自行替换-->
+            <script src="__LIB__/hiprint/plugins/jquery.hiwprint.js"></script>
+
+
+            <script>
+                var hiprintTemplate;
+                var customPrintJson = {$con.con|raw};
+                $('#json').val('{$con.con|raw}')
+                $(document).ready(function () {
+                    //初始化打印插件
+                    hiprint.init({
+                        providers: [new customElementTypeProvider()]
+                    });
+                    //设置左侧拖拽事件
+                    hiprint.PrintElementTypeManager.buildByHtml($('.ep-draggable-item'));
+                    hiprintTemplate = new hiprint.PrintTemplate({
+                        template: customPrintJson,
+                        settingContainer: '#PrintElementOptionSetting',
+                        paginationContainer: '.hiprint-printPagination'
+                    });
+                    //打印设计
+                    hiprintTemplate.design('#hiprint-printTemplate');
+                    $('#A4_preview').click(function () {
+                        console.log(hiprintTemplate.getHtml(printData));
+                    });
+                    $('#A4_directPrint').click(function () {
+                        hiprintTemplate.print(printData);
+                    });
+                    $('#savedata').click(function () {
+                        var sid = {$sid};
+                        var url = "{:url('print')}";
+                        $('#json').val(JSON.stringify(hiprintTemplate.getJson()))
+                        $.ajax({
+                            url:url,
+                            data:{sid:sid,fun:$('#fundata').val(),con:JSON.stringify(hiprintTemplate.getJson())},
+                            type:'post',
+                            cache:true,
+                            dataType:'json',
+                            success:function(ret) {
+                                if (ret.code == 0) {
+                                    g_toast('保存成功');
+                                    setTimeout("location.reload()", 3000);
+                                }else{
+                                    layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                                }
+                            },
+                            error : function() {
+                                layer.alert('请求出错！', {title: "错误信息", icon: 2});
+                            }
+                        });
+
+
+                    })
+
+
+                });
+
+                //调整纸张
+                var setPaper = function (paperTypeOrWidth, height) {
+                    hiprintTemplate.setPaper(paperTypeOrWidth, height);
+                }
+
+                //旋转
+                var rotatePaper = function () {
+                    hiprintTemplate.rotatePaper();
+                }
+                var clearTemplate = function () {
+                    hiprintTemplate.clear();
+                }
+
+            </script>

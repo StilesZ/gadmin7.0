@@ -1,0 +1,150 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md12">
+                    <div class="layui-row">
+                        <div class="layui-col-md8">
+                            <a class="layui-btn layui-btn-sm  layui-btn-primary" onclick="layer_show('新增','{:url('add')}',40,60)"> 新增</a>
+                            <a class="layui-btn layui-btn-sm " onclick=sfdp.Askshow("{:url('config')}","您确定要执行刷新缓存吗！")> 缓存更新</a>
+                        </div>
+                        <div class="layui-col-md4 align-right">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <input autocomplete="off" class="layui-input" id="dict_name" placeholder="名称"
+                                           type="text">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input autocomplete="off" class="layui-input" id="dict_code" placeholder="代码"
+                                           type="text">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm layui-btn-primary" id='reloadBtn'><i
+                                        class="layui-icon layui-icon-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-row" style='margin:5px'>
+                        <table class="layui-hide" id="myList" lay-filter="data" lay-size="sm"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script id="barDemo" type="text/html">
+            {{#  if(d.status == 2){ }}
+            <span class="layui-btn layui-btn-xs layui-btn-primary" onClick=check(this,{{ d.id }},0)>去审</span>
+            <a class="layui-btn layui-btn-normal layui-btn-xs" onClick=design({{ d.id }})>配置</a>
+            {{#  } else { }}
+            <span class="layui-btn layui-btn-normal layui-btn-xs" onClick=check(this,{{ d.id }},2)>核准</span>
+            <a class="layui-btn layui-btn-warm layui-btn-xs" onClick=edit({{ d.id }})>修改</a>
+            {{#  } }}
+        </script>
+        {include file='common/footer' /}
+        <script src="__SFDP__/sfdp.7.0.js"></script>
+        <script>
+            var InitTabl;
+            window.onresize = function (){
+                adjustButtons()
+            }
+            $(document).click(function (e) { // 在页面任意位置点击而触发此事件
+                if ($(e.target).attr('class') === "layui-tree-txt") { // 防止因为点击展开按钮把已选中的样式取消
+                    $(".layui-tree-txt").removeClass("tree-txt-active"); // 移除点击样式
+                    $(e.target).addClass("tree-txt-active"); // e.target表示被点击的目标
+                }
+            });
+            layui.use('table', function () {
+                var table = layui.table;
+                table.render({
+                    elem: '#myList'
+                    , url: "{:url('index')}",
+                        limit: 16,
+                        limits:[16,30,50,100,200]
+                    , method: 'post', id: 'idData'
+                    ,escape:false, height: 'full-90', page: true
+                    , cols: [[
+                        {type: 'radio', width: '3%'}, {field: 'id', title: '编号', width: '4%',align:'center'}
+                        ,{field: 'dict_code', title: '字典代码', width: '8%'}
+                        ,{field: 'dict_name', title: '字典名称', width: '8%',align:'center'},
+                        {field: 'dict_type', title: '字典类型', width: '8%',align:'center'},
+                        {field: 'content', title: '备  注', align:'center'},
+                        {field: 'stv', title: '状态', width: '10%',align:'center'},
+                        {field: 'add_name', title: '操作人员', width: '6%',align:'center'},
+                        {field: 'add_time', title: '操作时间', width: '6%',align:'center'},
+                        {toolbar: '#barDemo', width: '8%', title: '操作',align:'center'}
+                    ]]
+                });
+                table.on('row(data)', function (obj) {
+                    //动态添加背景色
+                    obj.tr.siblings().removeClass('selected')
+                    obj.tr.addClass('selected');
+                    obj.tr.find('i[class="layui-anim layui-icon layui-icon-circle"]').trigger("click");
+                });
+                $("#reloadBtn").click(function (ev) {
+                    table.reload('idData', {
+                        url: "{:url('index')}"
+                        , where: {
+                            dict_code: $("#dict_code").val(),dict_name: $("#dict_name").val()
+                        }
+                    });
+                })
+            });
+
+            /*删除*/
+            function del(obj, id) {
+                layer.confirm('请确认删除？删除后关联业务会出问题，建议采用禁用！', function (index) {
+                    layer.confirm('确认要删除吗？', function (index) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "{:url('del')}?id=" + id,
+                            dataType: 'json',
+                            success: function (data) {
+                                window.location.reload()
+                                layer.msg('已删除!', {icon: 1, time: 1000});
+                            },
+                            error: function (data) {
+                                console.log(data.msg);
+                            },
+                        });
+                    });
+                });
+            }
+            function design(id) {
+                layer_show("配置项目", "{:url('app_tag')}?id=" + id, "98", "98");
+            }
+            function edit(id) {
+                layer_show("修改", "{:url('edit')}?id=" + id, "40", "60");
+            }
+            function check(obj, id,st) {
+                if(st==0){
+                    var msg = '您确定要去掉审核嘛？';
+                }else{
+                    var msg = '审核通过';
+                }
+                layer.confirm(msg, function (index) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{:url("status")}?id=' + id + '&status='+st,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.code == 0) {
+                                window.location.reload()
+                                layer.msg('已停用!', {icon: 5, time: 1000});
+                            } else {
+                                layer.msg('系统出错!', {icon: 5, time: 1000});
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data.msg);
+                        },
+                    });
+                });
+            }
+        </script>
+</body>
+</html>

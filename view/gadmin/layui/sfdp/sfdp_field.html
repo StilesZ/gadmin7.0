@@ -1,0 +1,49 @@
+{include file='common/head' /}
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table lay-filter="parse-table-demo" class="layui-table" lay-data="{id: 'idData'}" id="tabledata">
+                <thead>
+                <tr class="text-c">
+                    <th lay-data="{field:'id',width:55,fixed:'left'}">id</th>
+                    <th lay-data="{field:'name',width:100,fixed:'left'}">字段中文</th>
+                    <th lay-data="{field:'fid',width:250}">字段标识</th>
+                    <th lay-data="{field:'field',width:110}">字段英文</th>
+                    <th lay-data="{field:'name_type',width:100}">字段属性</th>
+                    <th lay-data="{field:'function',width:100}">字段方法</th>
+
+                    <th lay-data="{field:'table_type',width:100}">是否子表</th>
+                    <th lay-data="{field:'table_id',width:150}">子表id</th>
+                </tr>
+                </thead>
+
+                {volist name='data' id='k'}
+                {notin name="k.field" value="id,uid,status,status,create_time,update_time"}
+                <tr class="text-c">
+                    <td >{$k.id}</td>
+                    <td >{$k.name}</td>
+                    <td >{$k.fid}</td><td >{$k.field}({$k.length})</td><td >{$k.name_type}</td><td >{$k.function}</td><td >
+                    {eq name="k.table_type" value='0'}
+                    <span class="layui-badge layui-bg-green">主表</span>
+                    {else/}
+                    <span class="layui-badge layui-bg-yeelow">子表</span>
+                    {/eq}</td>
+                    <td >{$k.table_id}</td>
+                </tr>
+                {/notin}
+
+
+                {/volist}
+            </table>
+        </div>
+        <div class="layui-col-md12">
+
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script src="__SFDP__/sfdp.7.0.js"></script>
+</body>
+</html>

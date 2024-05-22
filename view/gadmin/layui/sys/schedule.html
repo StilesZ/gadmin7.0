@@ -1,0 +1,191 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="__LIB__/schedule/css/fullcalendar.css"/>
+<style>
+    .fc-day-number {
+        font-size: 16px;
+        font-family: Arial;
+        padding: 12px 12px 0px 12px;
+        line-height: 23px;
+        height: 23px;
+    }
+    .fc-sun, .fc-sat {
+        color: #ED6D23;
+    }
+    .fc-today .fc-day-number {
+        width: 34px;
+        height: 30px;
+        overflow: hidden;
+        display: inline-block;
+        margin-top: 2px;
+        margin-right: 2px;
+        text-align: center;
+        color: #fff;
+        background-color: #3963bc;
+        border-radius: 4px;
+    }
+    .layui-laydate-footer {
+        display: none;
+    }
+    .layui-this {
+        background-color: #3963bc !important;
+    }
+    html, body {
+        position: relative;
+    }
+    #calendar {
+        max-width: 1200px;
+        padding: 20px;
+    }
+    .green {
+        color: #FFFFFF;
+        background-color: #369a5f;
+        border: 1px solid #257e4a;
+    }
+    .yellow {
+        color: #FFFFFF;
+        background-color: #f3b20f;
+        border: 1px solid #af7d00;
+    }
+    .red {
+        color: #FFFFFF;
+        background-color: #ea5454;
+        border: 1px solid #b11616;
+    }
+
+</style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15 custom-table-content">
+        <div style="width: 280px;float: left;border-radius: 4px;">
+            <div class="layui-card" style="padding: 10px;">
+                <style>
+                    .layui-laydate-main {
+                        width: auto;
+                    }
+                    .layui-card-body {
+                        padding: 5px
+                    }
+                    .layui-laydate, .layui-laydate-hint {
+                        border: 0px solid #d2d2d2;
+                        box-shadow: 0 0px 0px rgb(0 0 0 / 12%);
+                        background-color: #fff;
+                        color: #666;
+                    }
+                    .layui-laydate-header {
+                        font-weight: 700;
+                    }
+                    .layui-card-header {
+                        font-weight: 700;
+                    }
+                </style>
+                <div class="layui-card-header">
+                  我的日程<a style="float: right;" class="layui-btn layui-btn-sm" onclick="add()">新建日程</a></div>
+                <div class="layui-card-body">
+                    <div id="days"></div>
+                    <div class="layui-card-header">
+                        日程标签<a style="float: right;" class="layui-btn layui-btn-sm" onclick="tag()">管理标签</a></div>
+                    <ul style="padding: 10px;">
+                        {volist name='type' id='k'}
+                             <li><span class="layui-badge-dot layui-bg-{$k.color}"></span> {$k.title}</li>
+                        {/volist}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 0px;float: left;border-radius: 4px;width: calc(100% - 310px);">
+            <div class="layui-card">
+                <div class="main">
+                    <div id="calendar" style="padding: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{include file='common/footer' /}
+
+<script type="text/javascript" src="__LIB__/schedule/js/moment.min.js"></script><!-- 日期处理时间工具 -->
+<script type="text/javascript" src="__LIB__/schedule/js/fullcalendar.js"></script>
+<script>
+    $(function () {
+        layui.laydate.render({
+            elem: '#days',position: 'static',
+            change: function(value, date){
+                $('#calendar').fullCalendar('gotoDate',value);
+                $(".fc-day-top").removeClass('fc-today');
+                $("td[data-date='"+value+"']").addClass('fc-today');
+            }
+        });
+        var calendar = $('#calendar').fullCalendar({
+            header: {													//设置日历头部信息，false，则不显示头部信息。包括left，center,right左中右三个位置
+                left: 'prev,next, today',								//上一个、下一个、今天
+                center: 'title',										//标题
+                right: 'month,agendaWeek,agendaDay,listMonth'			//月、周、日、日程列表
+            },
+            locale: 'zh-cn',
+            timeFormat: 'HH:mm',										//日程事件的时间格式
+            buttonText: {    											//各按钮的显示文本信息
+                today: '今天', month: '月', agendaWeek: '周', agendaDay: '日', listMonth: '日程',
+            },
+            isRTL: false,
+            firstDay: 0,
+            monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],    	//月份全称
+            monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"], //月份简写
+            dayNames: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],    	//周全称
+            dayNamesShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],  //周简写
+            noEventsMessage: "当月无数据",   							//listview视图下，无数据提示
+            allDayText: "全天",											//自定义全天视图的名称
+            allDaySlot: false,  										//是否在周日历上方显示全天
+            //allDayDefault: false,										//是否为全天日程事件，显示这一天中所做的事情
+            slotDuration: "00:30:00",      							//一格时间槽代表多长时间，默认00:30:00（30分钟）
+            slotLabelFormat: "H(:mm)a",    							//日期视图左边那一列显示的每一格日期时间格式
+            slotLabelInterval: "01:00:00", 							//日期视图左边那一列多长间隔显示一条日期文字(默认跟着slotDuration走的，可自定义)
+            snapDuration: "01:00:00",      							//其实就是动态创建一个日程时，默认创建多长的时间块
+            firstDay: 0,   												//一周中显示的第一天是哪天，周日是0，周一是1，类推
+            hiddenDays: [],												//隐藏一周中的某一天或某几天，数组形式，如隐藏周二和周五：[2,5]，默认不隐藏，除非weekends设置为false。
+            weekends: true,												//是否显示周六和周日，设为false则不显示周六和周日。默认值为true
+            weekMode: 'fixed',											//月视图里显示周的模式，因每月周数不同月视图高度不定。fixed：固定显示6周高，日历高度保持不变liquid：不固定周数，高度随周数变化variable：不固定周数，但高度固定
+            weekNumbers: false,											//是否在日历中显示周次(一年中的第几周)，如果设置为true，则会在月视图的左侧、周视图和日视图的左上角显示周数。
+            weekNumberCalculation: 'iso',								//周次的显示格式。
+            height: 800,												//设置日历的高度，包括header日历头部，默认未设置，高度根据aspectRatio值自适应。
+            // contentHeight: 600,											//设置日历主体内容的高度，不包括header部分，默认未设置，高度根据aspectRatio值自适应。
+            handleWindowResize: true,									//是否随浏览器窗口大小变化而自动变化。
+            defaultView: 'month',										//初始化时默认视图，默认是月month，agendaWeek是周，agendaDay是当天
+            // slotEventOverlap: false,									//事件是否可以重叠覆盖
+            nowIndicator: true,            								//周/日视图中显示今天当前时间点（以红线标记），默认false不显示
+            eventLimit: false,       									//数据条数太多时，限制显示条数（多余的以“+2more”格式显示），默认false不限制,支持输入数字设定固定的显示条数
+            eventLimitText: "更多",       								//当一块区域内容太多以"+2 more"格式显示时，这个more的名称自定义（应该与eventLimit: true一并用）
+            dayPopoverFormat: "YYYY年M月d日", 							//点开"+2 more"弹出的小窗口标题，与eventLimitClick可以结合用
+            render: function (view) {										//method,绑定日历到id上。$('#id').fullCalendar('render');
+                console.log('render', view)
+            },
+    	    events:{
+                url: '{:url("schedule")}',
+                type: 'POST'
+            },
+            eventClick: function (event, jsEvent) {									//日程事件点击
+                layer_show('查看日程','{:url("schedule_view")}?id='+event.id,'45','50');
+
+            },
+            selectAllow: function (selectInfo) { 				//精确的控制可以选择的地方，返回true则表示可选择，false表示不可选择
+                console.log("start:" + selectInfo.start.format() + "|end:" + selectInfo.end.format() + "|resourceId:" + selectInfo.resourceId);
+                return true;
+            }
+        });
+
+//  calendar.render();
+//  calendar.refetchEvents();							//重新抓取所有事件，刷新
+    })
+    function add(){
+        layer_show('新增日程','{:url("schedule_add")}','85','70');
+    }
+    function tag(){
+        layer_show('日程标签','{:url("schedule_tag")}','85','70');
+    }
+
+
+
+</script>
+</body>
+</html>

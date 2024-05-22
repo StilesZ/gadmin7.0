@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title></title>
+    <link rel="stylesheet" href="__SFDP__/sfdp.7.0.css?v=7.0.0"/>
+    <link rel="stylesheet" href="/static/layui/layui-v2.8.4/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/common.css?v=5.0.0">
+    <link rel="stylesheet" type="text/css" href="/static/custom.css?v=5.0.0">
+    <style>
+        .table_card {margin: 5px;}
+        .table_card .tab { height:37px; font-size:14px; border-bottom:1px #e1e1e1 solid}
+        .table_card .tab li { float:left; height:36px; line-height:36px; padding:0 25px; margin-right:5px; background:#f0f0f0; border-top:1px #e1e1e1 solid; border-left:1px #e1e1e1 solid; border-right:1px #e1e1e1 solid;}
+        .table_card .tab li:hover { height:37px; background:#fff; color:#333; cursor:pointer}
+        .table_card .activ { height:37px !important; background:#fff !important; color:#333}
+        .table_card .tabCon { background:#fff; padding:8px; border-bottom:1px #e1e1e1 solid; border-left:1px #e1e1e1 solid; border-right:1px #e1e1e1 solid;}
+        .table_card .tabCon .tabdata { display:none}
+        .table_card .tabCon .on { display:block}
+        .table_card .title{background-color: #f2f2f2;}
+    </style>
+</head>
+<body>
+{$config.load_file.css|raw}
+<!--加载全局变量函数-->
+{$config.g_js|raw}
+<script src="__SFDP__/lib/jquery-3.4.1.min.js"></script>
+<script src="__SFDP__/lib/jquery-ui.js"></script>
+<script src="__SFDP__/lib/H5upload.js"></script>
+<script src="__SFDP__/lib/laydate5.0.9/laydate.js"></script>
+<script src="__SFDP__/sfdp.plug.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.editor.js?v=5.0.322222"></script>
+<script src="__SFDP__/sfdp.config.js?v=7.0.1"></script>
+<script src="/static/common.js"></script>
+<script type="text/javascript" src="_LAY_UI_ROOT_/layui-v2.8.4/layui.js"></script>
+<script src="/static/custom.js?v=3.1.4"></script>
+<script>
+    $("head").append(sfdp.ui.ui_css);
+</script>
+{$config.load_file.js|raw}
+{neq name='config.hasprint' value='0'}
+<a onclick="help_print({$sid},{$id})" style="float: right;position: absolute;right: 1%;top: 42%;z-index: 9999;" class="layui-btn layui-btn-sm">打印</a>
+{/neq}
+
+<div class="layui-fluid">
+    <div class=" wf_con">
+    </div>
+
+    <div class=" layui-col-space15 custom-table-content">
+        <div class="{eq name=":g_cache('view_is_log')" value="1"}layui-col-md12{else/}layui-col-md10{/eq}">
+
+            <div class="layui-tab layui-tab-brief" style="margin: 0;" lay-filter="content">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">单据信息</li>
+                    {volist name='linkdata' id='k'}
+                        <li  data-table="{$k[1]}" data-where="{$k[2]}" data-sid="{$k[0]}" id="linkdata{$k[0]}">{$k[3]}</li>
+                    {/volist}
+                </ul>
+                <div class="layui-tab-content" >
+                    <div class="layui-tab-item layui-show">
+                        <div class="page-container">
+                            <img src="/static/img/{$st}.png" style=" position: absolute;right: -10px;">
+                            <div class="tpfd-content" id='table'></div>
+                        </div>
+                    </div>
+                    {volist name='linkdata' id='k'}
+                        <div class="layui-tab-item" id="linkdatacon{$k[0]}"></div>
+                    {/volist}
+                </div>
+            </div>
+        </div>
+
+    <div class="layui-col-md2" style="padding-left: 0px; {eq name=":g_cache('view_is_log')" value="1"}display: none{/eq}" >
+        <div id="log_con">
+        <div class="layui-tab layui-tab-brief" style="margin: 10px;">
+            <ul class="layui-tab-title" >
+                {if condition='!empty($wf)'}
+                <li class="layui-this">审批历史</li>
+                {/if}
+                <li {if condition='empty($wf)'}class="layui-this" {/if}>操作日志</li>
+            </ul>
+            <div class="layui-tab-content" style="overflow: scroll;height:850px">
+                <div class="layui-tab-item {if condition='!empty($wf)'}layui-show{/if}">
+                    <!--tpflow log-->
+                    <ul class="layui-timeline">
+                        {volist name='wf' id='k'}
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <h3 class="layui-timeline-title">{$k.dateline|date='Y年m月d日'}</h3>
+                                <p>
+                                    审核人：{$k.user}<br>
+                                    操&emsp;作：{$k.btn}<br>
+                                    意&emsp;见：{$k.content} {eq name='k.art' value=''}{else/}<a class="btn btn-success" href="/{$k.art}" target="download">下载</a>{/eq}
+                                </p>
+                            </div>
+                        </li>
+                        {/volist}
+                    </ul>
+                </div>
+                <div class="layui-tab-item {if condition='empty($wf)'}layui-show{/if}" >
+                    <div class="g-log" >
+                        {volist name='log' id='s'}
+                        <div class="g-item g_tips" data-tips="{$s.op_ip ?? ''}|{$s.op_os ?? ''}">
+                            <div class="g-main caller-fl " >
+                                <p><strong>{$s.op_user ?? ''}({:get_common_val('soft_user',$s.op_uid,'realname')})</strong> <em>操作：{$s.op_time ?? ''}</em></p>
+                                <p class="g-adds">
+                                    <span class="layui-badge layui-bg-blue">{$s.op_type}</span> {$s.op_con}
+                                </p>
+                            </div>
+                        </div>
+                        {/volist}
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+</div>
+{eq name=":g_cache('view_is_log')" value="1"}
+<a class="layui-btn  layui-btn-sm" style="position: fixed;right: 10px;top: 55px;" onclick="show_log()">单据日志</a>
+{/eq}
+<!--动态加载用户自定义脚本-->
+{$config.fun|raw}
+<script>
+    var g_bill_id = '{$id}';
+    var g_bill_table = '{$table}';
+    var s_type = '{$config["s_type"]}';
+    var uploadurl = '{:url($config["upload_file"])}';
+    var uploadurls = '{:url($config["upload_files"])}';
+    $(function () {
+        sfdp.showview({$info|raw});
+    });
+    $(document).ready(function () {
+        try {
+            load_end_view({$info|raw});//后置函数
+        } catch (e) {
+            if (Debug) {
+                console.log('page no load end fun ~');
+            }
+        }
+    });
+    //监听鼠标移入事件
+    $(".g_tips").mouseover(function(){
+        var con = $(this).attr('data-tips');
+        layer.tips(con, this,{
+            tips: [1, '#3d3b3b']
+        });
+    });
+    //监听鼠标移入事件
+    $(".g_tips").mouseout(function(){
+        layer.close(layer.tips());
+    });
+    layui.use('element', function(){
+        var element = layui.element;
+        //一些事件
+        element.on('tab(content)', function(data){
+            var where=$(this).data('where');
+            var sid=$(this).data('sid');
+            var field=$(this).data('table');
+            $('#linkdatacon'+sid).html('');
+            var con  =`<iframe id='linkdatacon${sid}' width='100%' height='100%' src='/gadmin/Sfdp/linkdata.html?sid=${sid}&wRaw=${where}&wField=${field}&bid=${g_bill_id}' style='overflow: scroll;min-height:850px'  frameborder='no' marginheight='0' marginwidth='0' allowTransparency='true' onload="SetHeight()"></iframe>`;
+            $('#linkdatacon'+sid).append(con);
+        });
+    });
+
+    function SetHeight(){
+        var ifm= document.getElementById("linkdatacon29");
+        var subWeb = document.frames ? document.frames["linkdatacon29"].document : ifm.contentDocument;
+        if(ifm != null && subWeb != null) {
+            ifm.height = '100%';
+            ifm.width = '100%';
+        }
+    }
+    function show_log(){
+        layer.open({
+            type:1,shadeClose: true,
+            content: $('#log_con').html(),
+            area:['500px','95%'],offset:"rb"
+        })
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function(e) {
+        $(".tab li").click(function(){
+            $(this).parent(".tab").children("li").eq($(this).index()).addClass("activ").siblings().removeClass("activ");
+            $(this).parent().parent().children(".tabCon").children("div").hide().eq($(this).index()).show();
+        })
+    });
+</script>
+{eq name=":g_cache('view_is_wf')" value="1"}
+<script type="text/javascript" src="__FLOW__/workflow.5.0.js"></script>
+<script type="text/javascript">
+   var is_wf=  g_getUrlParam('is_wf') || 0;
+   if(is_wf!=1){
+        $.get('/gadmin/wf/wfdo.html?act=ajax_do&wf_type='+g_bill_table+'&wf_fid='+g_bill_id, function (data, status) {
+            if (status === 'success') {
+                $('.wf_con').html(`<div style="padding: 5px;">${data}</div>`);
+            } else {
+                layer.alert("状态: " + status, {title: "错误信息", icon: 2});
+            }
+        });
+   }
+</script>
+{/eq}
+</body>
+</html>

@@ -1,0 +1,94 @@
+﻿{include file='common/head' /}
+<link rel='stylesheet' type='text/css' href='__LIB__/treetable/css/jquery.treeTable.css'/>
+<link rel="stylesheet" type="text/css" href="/static/list/css.css?v=1.0.0">
+</head>
+<body>
+<div class="layui-fluid" >
+    <div class="layui-card">
+		 <form action="{:url('sort')}" method="post" name="form">
+		 <div class="layui-card-body">
+			 <div class="layui-row">
+				 <div class="layui-col-md8">
+				 <a class='layui-btn layui-btn-sm layui-btn-primary' onclick='layer_show("添加节点","{:url("add")}","75","85")'>添加节点</a>
+				 <a class='layui-btn layui-btn-sm layui-btn-primary' onclick='reg()'>快速注册</a>
+				 <input class='layui-btn layui-btn-sm' type="submit" value="更新排序"/>
+				 </div>
+				 <div class="layui-col-md4 align-right">
+					 <div class="layui-inline">
+
+					 </div>
+				 </div>
+			 </div>
+
+        	<table id="tree" class="layui-table">
+			<thead>
+				<tr>
+					<th width="150">排序权重</th>
+					<th width="30">ID</th>
+					<th>菜单名称</th>
+					<th width="140">URL</th>
+					<th width="70">类型</th>
+					<th width="70">状态</th>
+					<th width="70">显示</th>
+					<th width="70">手机</th>
+					<th width="200">管理操作</th>
+				</tr>
+			</thead>
+            {$html_tree|raw}
+        </table>
+		</form>
+		</div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script type="text/javascript" src="__LIB__/treetable/jquery.treetable.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tree").treeTable({
+            indent: 20,
+            expandable: true,
+        });
+        $("#node-1 a.expander").trigger('click');
+		var num = `{$int}`;
+		if(num>0){
+			layer.confirm('检测到新控制器，是否开始注册？', function (index) {
+				layer_show("批量注册","{:url("int")}","75","56");
+			});
+		}
+    });
+	function del(obj,id){
+        layer.confirm('请确认删除？', function (index) {
+            layer.confirm('确认要删除吗？', function (index) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{:url("del")}?id=' + id + '',
+                    dataType: 'json',
+                    success: function (data) {
+						if (data.code == 0) {
+                            $(obj).parents("tr").remove();
+							layer.msg('已删除!', {icon: 1, time: 1000});
+                        }else{
+							layer.msg(data.msg, {icon: 2, time: 1000});
+						}
+                    },
+                    error: function (data) {
+                        console.log(data.msg);
+                    },
+                });
+            });
+        });
+	}
+
+	function reg(){
+		layer.prompt({title: '请输入控制器名称？此方法用于手动开发的功能！'}, function(text, index){
+			if(text ==''){
+				layer.msg('控制器不能为空!', {icon: 1, time: 1000});
+				return;
+			}
+			layer.close(index);
+			layer_show("快速注册","{:url("reg")}?control="+text,"75","56");
+		});
+	}
+</script>
+</body>
+</html>

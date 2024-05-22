@@ -1,0 +1,62 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md9">
+                    <a class="layui-btn layui-btn-sm "onClick=g_help('datar') ><i class="layui-icon layui-icon-help"></i></a>
+                </div>
+                <div class="layui-col-md3 align-right">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input type="text" id="name" placeholder="数据表" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm" id='reloadBtn'><i class="layui-icon layui-icon-search layuiadmin-button-btn"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row"  style='margin:5px'>
+                <table class="layui-hide" id="myList" lay-size="sm"  lay-filter="data"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{include file='common/footer' /}
+<script type="text/javascript">
+    layui.use('table', function(){
+        var table = layui.table;
+        table.render({
+            elem: '#myList'
+            ,url:"{:url('datar')}"
+            ,method:'post'
+            ,escape:false,height:'full-90',page: true
+            ,cols: [[
+                {field:'id',  title: 'id',width: 45}
+                ,{field:'table', title: '数据表',width: 120}
+                ,{field:'table_id',  title: '数据id',width: 45},
+                {field:'table_data',  title: '数据内容'},
+                {field:'add_time',  title: '添加时间',width: 150}
+            ]]
+        });
+        table.on('row(data)', function(obj){
+            //动态添加背景色
+            obj.tr.siblings().removeClass('selected')
+            obj.tr.addClass('selected');
+        });
+        $("#reloadBtn").click(function (ev) {
+            table.reload('myList', {
+                url: "{:url('datar')}"
+                , where: {
+                    name: $("#name").val()
+                } //设定异步数据接口的额外参数
+            });
+        })
+    });
+</script>
+
+</body>
+</html>

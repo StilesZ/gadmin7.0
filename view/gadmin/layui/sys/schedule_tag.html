@@ -1,0 +1,114 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            {present name="info.id"}
+            <form action="" method="post" name="form" id="form" class="layui-form">
+                <input type="hidden" name="id" value="{$info.id}">
+                {else /}
+                <form action="" method="post" name="form" id="form" class="layui-form">
+                    {/present}
+                    <table>
+                        <tr>
+                            <td>　标题：</td>
+                            <td><input type="text" name="title" class='layui-input' datatype="*"
+                                       value="{$info.title ?? ''}" datatype="*"></td>
+                            <td>　主题：</td>
+                            <td>
+                                <select name="color">
+                                    <option value="orange">orange</option>
+                                    <option value="cyan">cyan</option>
+                                    <option value="blue">blue</option>
+                                    <option value="black">black</option>
+                                    <option value="gray">gray</option>
+                                    <option value="skyblue">skyblue</option>
+                                    <option value="slateblue">slateblue</option>
+                                    <option value="slategray">slategray</option>
+                                    <option value="springgreen">springgreen</option>
+                                    <option value="steelblue">steelblue</option>
+                                    <option value="tan">tan</option>
+                                    <option value="teal">teal</option>
+                                    <option value="thistle">thistle</option>
+                                    <option value="tomato">tomato</option>
+                                    <option value="violet">violet</option>
+                                    <option value="violetred">violetred</option>
+                                    <option value="wheat">wheat</option>
+                                    <option value="yellow">yellow</option>
+                                    <option value="yellowgreen">yellowgreen</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button type="submit" class="layui-btn layui-btn-sm" style="margin-left: 10px">立即提交</button>
+                                {notpresent name="info.id"}
+                                <button type="reset" class="layui-btn layui-btn-primary  layui-btn-sm">重置</button>
+                                {/notpresent}
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>标题</th>
+                    <th>颜色</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                {volist name='type' id='k'}
+                <tr>
+                    <td>{$key + 1}</td>
+                    <td>{$k.title}</td>
+                    <td><span class="layui-badge layui-bg-{$k.color}">{$k.color}</span></td>
+                    <td>{eq name='k.uid' value='0'}内置{else/}
+                        <a href="{:url('schedule_tag')}?id={$k.id}" class="layui-btn layui-btn-sm">修改</a>
+                        {/eq}</td>
+                </tr>
+                {/volist}
+            </table>
+
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script>
+    layui.use(function(){
+        var form = layui.form;
+        $("[name='color']").find("[value='{$info.color ?? '0'}']").attr("selected", true);
+        form.render();
+    });
+    $(function () {
+        g_checkForm($("#form"));
+    })
+</script>
+
+<script>
+    $(document).ready(function(){
+        $("dd[lay-value='orange']").css("background-color","orange");
+        $("dd[lay-value='cyan']").css("background-color","cyan");
+        $("dd[lay-value='blue']").css("background-color","blue");
+        $("dd[lay-value='black']").css("background-color","black");
+        $("dd[lay-value='gray']").css("background-color","gray");
+        $("dd[lay-value='skyblue']").css("background-color","skyblue");
+        $("dd[lay-value='slateblue']").css("background-color","slateblue");
+        $("dd[lay-value='slategray']").css("background-color","slategray");
+        $("dd[lay-value='springgreen']").css("background-color","springgreen");
+        $("dd[lay-value='steelblue']").css("background-color","steelblue");
+        $("dd[lay-value='tan']").css("background-color","tan");
+        $("dd[lay-value='teal']").css("background-color","teal");
+        $("dd[lay-value='thistle']").css("background-color","thistle");
+        $("dd[lay-value='tomato']").css("background-color","tomato");
+        $("dd[lay-value='violet']").css("background-color","violet");
+        $("dd[lay-value='violetred']").css("background-color","#D02090");
+        $("dd[lay-value='wheat']").css("background-color","wheat");
+        $("dd[lay-value='yellow']").css("background-color","yellow");
+        $("dd[lay-value='yellowgreen']").css("background-color","yellowgreen");
+        throw "end";
+        //return false;
+        //$("dd[lay-value='yellowgreen']").value("background-color");
+    });
+</script>
+</body>
+</html>

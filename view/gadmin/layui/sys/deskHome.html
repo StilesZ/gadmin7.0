@@ -1,0 +1,248 @@
+{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="__LIB__/schedule/css/fullcalendar.css"/>
+<style>
+    .fc-day-number {
+        font-size: 16px;
+        font-family: Arial;
+        padding: 12px 12px 0px 12px;
+        line-height: 23px;
+        height: 23px;
+    }
+    .fc-sun, .fc-sat {
+        color: #ED6D23;
+    }
+    .fc-today .fc-day-number {
+        width: 34px;
+        height: 30px;
+        overflow: hidden;
+        display: inline-block;
+        margin-top: 2px;
+        margin-right: 2px;
+        text-align: center;
+        color: #fff;
+        background-color: #3963bc;
+        border-radius: 4px;
+    }
+    .layui-laydate-footer {
+        display: none;
+    }
+    .layui-this {
+        background-color: #3963bc !important;
+    }
+    html, body {
+        position: relative;
+    }
+    #calendar {
+        max-width: 1200px;
+        padding: 20px;
+    }
+    .green {
+        color: #FFFFFF;
+        background-color: #369a5f;
+        border: 1px solid #257e4a;
+    }
+    .yellow {
+        color: #FFFFFF;
+        background-color: #f3b20f;
+        border: 1px solid #af7d00;
+    }
+    .red {
+        color: #FFFFFF;
+        background-color: #ea5454;
+        border: 1px solid #b11616;
+    }
+</style>
+<style>
+    #sortable1{
+        border: 1px solid #eee;
+        height: 100%;
+        list-style-type: none;
+        display: inline-block;
+        width: 100%;
+    }
+    #sortable1 span, .content span {
+        margin: 0px;
+        padding: 5px;
+        float: left;
+        font-size: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 5px;
+    }
+    #sortable1 span div,.content span div{
+        padding: 10px;
+        background: rgb(255, 250, 144);
+    }
+    .ui-state-highlight {
+        color: rgb(119, 118, 32);
+    }
+    .content{
+        border-width: 2px;  /* 边框宽度为 2 像素 */
+        border-style: dotted;  /* 点线样式 */
+        border-color: #8b8b8f;  /* 边框颜色为蓝色 */
+        min-height: 120px;
+    }
+    #sortable1 li{
+        width: 100%;
+    }
+</style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15 custom-table-content">
+        <div style="width: 280px;float: left;border-radius: 4px;">
+            <div class="layui-card" style="padding: 10px;">
+                <div class="layui-card-header"><b>门户组件</b></div>
+                <div class="layui-card-body" style="height: calc(50vh)">
+                    <ul style="padding: 0 10px 10px 10px;overflow-y: auto;" id="sortable1">
+                        {volist name='widgets' id='k'}
+                            {notin name="k.id" value="$WidgetUser"}
+                                <li style="padding: 5px;" class="ui-state-highlight {$k.widgetWidth}" data-id="{$k.id}" ><p class="layui-badge-dot"></p> {$k.title}({$k.widgetWidth})</li>
+                            {/notin}
+                        {/volist}
+                    </ul>
+                </div>
+                <div class="layui-card-header"><b>门户名称</b></div>
+                <div class="layui-card-body" style="height: calc(50vh - 210px)">
+                    <ul style="padding: 0 10px 10px 10px;border: 1px solid #eee;height: 100%; width: 100%;overflow-y: auto;">
+                        {volist name='type' id='k'}
+                        <li style="padding: 5px;{if $id==$k.id}background: antiquewhite;{/if}"><a onclick="show({$k.id})" ><span class="layui-badge-dot"></span> {$k.title}</a>
+                            <a onclick="layout({$k.id},'{$k.layout}')" style="float: right" class="layui-btn layui-btn-xs">布局</a></li>
+                        {/volist}
+                    </ul>
+                </div>
+                <div class="layui-card-header" style="text-align: center;padding: 0 5px;">
+                    <a  class="layui-btn layui-btn-sm layui-btn-primary"  onclick="add_home()">创建门户</a>
+                    <a  class="layui-btn layui-btn-sm layui-bg-cyan"  onclick="save()">保存门户</a>
+                    <a  class="layui-btn layui-btn-sm layui-btn-danger"  onclick="fenpei()">门户挂载</a>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 0px;float: left;border-radius: 4px;width: calc(100% - 310px);">
+            <div class="layui-card">
+                <div class="main">
+                    <div class="layui-fluid">
+                        <div class="layui-card" style="height: calc(100vh - 45px);overflow-y: auto;">
+                                {volist name="layout" id="kk" key="s"}
+                                        <div data-id="{$s}" class="layout">
+                                            {volist name="kk[1]" id="k2"}
+                                                 <div data-id="{$k2[0]}"  class="col-xs-{$k2[0]} content" style="height:{$kk[0]}px">
+                                                     {volist name="$k2[1]" id="k3"}
+                                                        <li style="padding: 5px;" data-id="{$k3}" class="ui-state-highlight {$widgets[$k3]['widgetWidth']}"><p class="layui-badge-dot"></p>
+                                                            {$widgets[$k3]['title']}({$widgets[$k3]['widgetWidth']})
+                                                        </li>
+                                                     {/volist}
+                                                 </div>
+                                            {/volist}
+                                        </div>
+                                {/volist}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{include file='common/footer' /}
+<script src="__LIB__/Sortable.min.js" type="text/javascript"></script>
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script type="text/javascript">
+    $(function () {
+        Sortable.create(document.getElementById('sortable1'), {
+            group: "words",
+            animation: 150
+        });
+        var contentElements = document.querySelectorAll(".content");
+        contentElements.forEach(function(element) {
+            Sortable.create(element, {
+                group: "words",
+                animation: 150,
+            });
+        });
+    });
+    function save(){
+        var id=g_getUrlParam('id');
+        if(id==undefined){
+            g_toast('对不起,您必须先选方案，在进行设计！');
+            return;
+        }
+        var resultArray = [];
+        $(".layout").each(function(index1) {
+                var contentObj = {};
+                // 遍历第二层 .content
+                $(this).find(".content").each(function(index2) {
+                    var levelArray = [];
+                    $(this).find(".ui-state-highlight").each(function(index3) {
+                        var levelId = $(this).data("id");
+                        levelArray.push(levelId);
+                    });
+                    contentObj[index2] = levelArray;
+                });
+                // 将第一层 .layout 的对象添加到结果数组中
+                resultArray.push(contentObj);
+        });
+        sfdp.sAjax('{:url("deskHome")}',{id:id,ids:resultArray,data:'save'});
+    }
+    function add_home(){
+        layer.prompt({
+            formType: 2,
+            value: '',
+            title: '请输入门户名称',
+            area: ['300px', '30px'] // 自定义文本域宽高
+        }, function(value, index, elem){
+            sfdp.sAjax('{:url("deskHome")}',{title:value,data:'add'});
+            layer.close(index); // 关闭层
+            window.location.reload()
+        });
+    }
+    function layout(id,layout){
+        layer.prompt({
+            formType: 2,
+            value: layout,
+            title: '布局格式：w,w:h;w2,w2:h2',
+            area: ['300px', '30px']
+        }, function(value, index, elem){
+            sfdp.sAjax('{:url("deskHome")}',{layout:value,data:'save_layout',id:id});
+            layer.close(index); // 关闭层
+            window.location.reload()
+        });
+    }
+
+
+    function add(){
+        layer_show('方案管理','{:url("desk_tag")}','85','70');
+    }
+    function show(id){
+        window.location.href = `/gadmin/Sys/deskHome.html?id=${id}`;
+    }
+    function fenpei(){
+        var id=g_getUrlParam('id');
+        if(id==undefined){
+            g_toast('对不起,您必须先选主页模板，在进行挂载！');
+            return;
+        }
+        var htmls = '<div style="margin:10px;">节点：<select id="nodesss" class="layui-input"  style="width: 60%;display: inline;" ><option value="">请选择挂带节点</option>{$Node['html']|raw}</select>　<a onClick=getmenu('+id+')  class="layui-btn layui-btn-sm layui-btn-danger">创建节点</a></div>';
+        layer.open({
+            title: '选择挂带节点信息',
+            type: 1,
+            area: ['520px', '150px'], //宽高
+            content: htmls
+        });
+    }
+    function getmenu(id){
+        var node = $('#nodesss').val();
+        if(node==''){
+            sfdp.ShowTip('请选择节点信息！');
+            return;
+        }
+        var url = `/gadmin/Sys/deskHomeLink.html?id=${id}&nodeid=${node}`;
+        sfdp.Askshow(url,"再次确认是否创建目录,是否执行?");
+    }
+
+</script>
+</body>
+</html>

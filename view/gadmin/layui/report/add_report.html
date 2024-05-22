@@ -1,0 +1,184 @@
+{include file='common/head' /}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+			{present name="info.id"}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+				<input type="hidden" name="id" value="{$info.id}">
+				{else /}
+				<form action="" method="post" name="form" id="form" class="layui-form">
+				{/present}
+				 <div class="layui-form-item">
+					<label class="layui-form-label">报表名称：</label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input" value="{$info.title ?? ''}" placeholder="必须使用英文！" name="title" datatype="*" nullmsg="必须使用英文~">
+					</div>
+				  </div>
+				   <div class="layui-form-item">
+					<div class="layui-inline">
+					  <label class="layui-form-label">表头设计：</label>
+					  <div class="layui-input-inline">
+							<select id='table' name='head'  class="select" lay-filter="get_field">
+										<option value="" >请选择</option>	
+										{volist name='table' id='k'}
+										<option value="{$k.id}" >{$k.title}</option>
+										{/volist}
+							</select>
+					  </div>
+					</div>
+					<div class="layui-inline">
+					  <label class="layui-form-label">报表类型：</label>
+					  <div class="layui-input-inline">
+						<select id='sql_type' name="type"  class="select" lay-filter="insert">
+										<option value="" >请选择</option>	
+										<option value="1" >Data-Excel</option>	
+										<option value="2" >ECharts-Chart</option>	
+						</select>
+						</div>
+					</div>
+				  </div>
+				   <div class="layui-form-item">
+					<label class="layui-form-label">查询条件：</label>
+					<div class="layui-input-block">
+						<div id='field'></div>
+					</div>
+				  </div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">源数据方法：</label>
+						<div class="layui-input-block">
+							<select  name='sid'  class="select" >
+								<option value="" >请选择</option>
+								{volist name='source' id='k'}
+									<option value="{$k.id}">{$k.title}</option>
+								{/volist}
+							</select>
+						</div>
+					</div>
+					<!--
+				  <div class="layui-form-item">
+					<label class="layui-form-label">报表语句：</label>
+					<div class="layui-input-block">
+					 <textarea placeholder="此为SQL语句，非专业人士请勿随意提交！" id='sql' name='sql' type="text/plain" class='layui-textarea' style="width:95%;height:80px;">{$info.sql ?? ''}</textarea>
+					</div>
+				  </div>
+				   <div class="layui-form-item">
+					<label class="layui-form-label">默认查询：</label>
+					<div class="layui-input-block">
+						<input type="text" class="layui-input" value="{$info.where ?? ''}" placeholder="默认查询条件！" name="where" >
+					</div>
+				  </div>
+				   <div class="layui-form-item">
+					<label class="layui-form-label">附加语句：</label>
+					<div class="layui-input-block">
+						<input type="text" id='fjsql' class="layui-input" value="{$info.fjsql ?? ''}" placeholder="附加语句！" name="fjsql" >
+						<input type="hidden" id="checksql" value=""  datatype="*" nullmsg="请先执行测试~">
+					</div>
+				  </div>
+				  -->
+				  <div class="layui-form-item">
+					<div class="layui-input-block">
+					  <button type="submit" class="layui-btn">立即提交</button>
+					  <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				  </div>
+				</form>
+
+</div>
+</div>
+</div>
+{include file='common/footer' /}
+<script>
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element;
+});
+layui.use('form', function(){
+	var form = layui.form;
+	form.on('select(get_field)', function(data){
+		var op ='';
+		var val = data.value;
+	    var url = "{:url('head')}";
+		$.ajax({  
+			 url:url,
+			 data:{id:val},  
+			 type:'post',  
+			 cache:true,  
+			dataType:'json',			 
+			 success:function(ret) {  
+				 if (ret.code == 0) {
+						var html = ret.data;//过滤掉数据，防止提示字段不存在
+						$('#field').html(html.replace(/name=/g,""));
+							$(".datetime").click(function(){
+								var id = $(this).attr('id');
+								  laydate.render({
+									elem: '#'+id,
+									format:'yyyy-MM-dd',
+									show: true 
+									,closeStop: '.datetime' 
+								 });
+							});
+					}else{
+					   layer.alert(ret.msg, {title: "错误信息", icon: 2});
+					}
+			  },  
+			  error : function() {
+			 	layer.alert('请求出错！', {title: "错误信息", icon: 2});
+			  }  
+		 });
+	});
+	form.on('select(insert)', function(data){
+		$("#sql").text();
+		var sql_type = $('#sql_type').val();
+		if(sql_type==1){
+			$("#sql").text('SELECT id,type as name FROM `g_news_type`');
+		}else{
+			$("#sql").text('select uid as user,count(money)as money from table');
+			$("#fjsql").val('group by uid ');
+		}
+	
+	});
+
+});
+
+</script>
+
+<script type="text/javascript">
+	$("[name='head']").find("[value='{$info.head ?? ''}']").attr("selected",true);
+	$("[name='type']").find("[value='{$info.type ?? ''}']").attr("selected",true);
+	$("[name='sid']").find("[value='{$info.sid ?? ''}']").attr("selected",true);
+
+	g_checkForm($("#form"));
+	if(`{$info.id ?? 0}` >0){
+		setTimeout(function () {
+			$('select[name="head"]').next().find('.layui-anim').children('dd[lay-value="{$info.head ?? ''}"]').click();
+
+		},500);
+	}
+	$("#forms").click(function(){
+	//checksql
+		var sql=$("#sql").val();
+		var fjsql= $("#fjsql").val();
+		if (!sql){layer.msg("SQL不能为空!!");return;}
+		$.ajax({  
+			 url:'{:url("ajax_sql")}',
+			 data:{sql:sql+fjsql},  
+			 type:'post',  
+			 cache:true,  
+			 dataType:'json',  
+			 success:function(ret) {
+				if(ret.code == '-1'){
+					layer.alert(ret.msg, {title: "错误信息", icon: 2});
+				}else{
+					$("#checksql").val(1);
+					layer.msg('测试通过', {time: 800}); 
+				}
+			  },  
+			  error : function() {  
+				  $("#result").html('错误的SQL语句！<br/>'+$("#sql").val());
+			  }  
+		 }); 
+	})
+</script>
+
+					
+

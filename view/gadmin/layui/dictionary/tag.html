@@ -1,0 +1,97 @@
+{include file='common/head' /}
+<style>
+  {volist name='c' id='k'}
+    .{$k.bg_color}{
+      background-color: {$k.content};
+    }
+  .{$k.bg_color}_f{
+    color: {$k.content};
+  }
+  {/volist}
+
+</style>
+<div class="layui-fluid">
+  <div class="layui-card">
+    <div class="layui-card-body">
+        <form action="" method="post" name="form" id="form" class="layui-form">
+          <table class="layui-table">
+            <tr>
+              <td>　内容代码：</td>
+              <td><input type="text" name="detail_value" class='layui-input' datatype="*" value="{$info.detail_value ?? ''}" datatype="*"></td>
+              <td>　内容名称：</td>
+              <td>
+                <input type="text" name="detail_name" class='layui-input' datatype="*" value="{$info.detail_name ?? ''}" datatype="*">
+              </td>
+              <td>　排序规则：</td>
+              <td>
+                <input type="text" name="detail_sort" class='layui-input' datatype="*" value="{$info.detail_sort ?? ''}" datatype="*">
+              </td>
+              <td>　字体颜色：</td>
+              <td>
+                <select name="ft_color" lay-ignore="" class="layui-input">
+                  <option value="">选择字体颜色</option>
+                  {volist name='c' id='k'}
+                  <option value="{:strtolower($k.detail_value)}" class="{$k.bg_color}_f"><a>{$k.detail_name}</a></option>
+                  {/volist}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>　背景颜色：</td>
+              <td>
+                <select name="bg_color" lay-ignore="" class="layui-input">
+                  <option value="">选择背景颜色</option>
+                  {volist name='c' id='k'}
+                     <option value="{:strtolower($k.detail_value)}" class="{$k.bg_color}"><a>{$k.detail_name}</a></option>
+                  {/volist}
+                </select>
+              </td>
+              <td >　备   注：</td>
+              <td colspan="4">
+                <input type="text" name="content" class='layui-input' value="{$info.content ?? ''}" >
+              </td>
+              <td>
+                <button type="submit" class="layui-btn layui-btn-sm" style="margin-left: 10px">提交</button>
+                <a onclick="location.reload()" class="layui-btn layui-btn-primary layui-btn-sm">刷新</a>
+              </td>
+            </tr>
+          </table>
+        </form>
+    </div>
+    <div class="layui-card-body">
+      <table class="layui-table">
+        <thead>
+        <tr>
+          <th>内容代码</th>
+          <th>内容名称</th>
+          <th>颜色样式</th>
+          <th>排序规则</th>
+          <th>备注</th>
+          <th>操作</th>
+        </tr>
+        </thead>
+        {volist name='type' id='k'}
+        <tr>
+          <td>{$k.detail_value}</td>
+          <td>{$k.detail_name}</td>
+          <td><span style="color:{$k.ft_color ?? ''};background-color:{$k.bg_color  ?? ''};">{$k.detail_name}</span></td>
+          <td>{$k.detail_sort ?? ''}</td>
+          <td>{$k.content ?? ''}</td>
+          <td><a href="{:url('app_tag')}?did={$k.id}&id={$id}" class="layui-btn layui-btn-sm">修改</a></td>
+        </tr>
+        {/volist}
+      </table>
+
+    </div>
+  </div>
+</div>
+{include file='common/footer' /}
+<script>
+  $(function () {
+    $("[name='bg_color']").find("[value='{$info.bg_color ?? ''}']").attr("selected", true);
+    $("[name='ft_color']").find("[value='{$info.ft_color ?? ''}']").attr("selected", true);
+    g_checkForm($("#form"),false);
+  })
+</script>
+</body>
+</html>

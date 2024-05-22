@@ -1,0 +1,49 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" href="/static/layui/lay/layui_ext/dtree/dtree.css">
+<link rel="stylesheet" href="/static/layui/lay/layui_ext/dtree/font/dtreefont.css">
+<style>
+    html,body{
+        background-color: white;
+    }
+</style>
+</head>
+<body>
+<div class="layui-card" >
+	<div style="height: calc(100vh - 50px);overflow: auto;" id="toolbarDiv">
+		<button type="button" class="layui-btn layui-btn-sm" id="checkbarTreea_btna">更新授权</button>
+		<div  id="ele2"></div>
+	</div>
+</div>
+{include file='common/footer' /}
+<script>
+	layui.extend({
+		dtree: "{/}/static/layui/lay/layui_ext/dtree/dtree"   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+	}).use(['dtree','layer','jquery'], function(){
+		var dtree = layui.dtree, layer = layui.layer, $ = layui.jquery;
+		// 初始化树
+		var DemoTree = dtree.render({
+			elem: "#ele2",
+			data: {$data3|raw}, // 使用data加载
+			checkbar: true
+		});
+		// 绑定节点点击
+		$("#checkbarTreea_btna").click(function(){
+			var params = DemoTree.getCheckbarNodesParam("checkbarTreea");
+			var ids = getChecked_list(params);
+			g_ajax('{:url('access_edit')}','post',{ids:ids,roleid:{$roleid}});
+		});
+		function getChecked_list(data) {
+			var id = "";
+			$.each(data, function (index, item) {
+				if (id != "") {
+					id = id + "," + item.nodeId;
+				} else {
+					id = item.nodeId;
+				}
+			});
+			return id;
+		}
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+﻿{include file='common/head' /}
+<link rel="stylesheet" type="text/css" href="/static/common.css?v=3.0.6"/>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md8">
+					<a class="layui-btn layui-btn-sm  layui-btn-primary" onclick="layer_show('创建','/gadmin/fk/api.html?act=add')"> 创建大屏</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-primary" onclick="layer_show('创建','/gadmin/fk/data')">资源库</a>
+                </div>
+                <div class="layui-col-md4 align-right">
+                    <form id='searchform' method="post" action="" class="layui-form" >
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input id="table" type="text" name="content" placeholder="数据表" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-input-inline">
+                            <input id="title" type="text" name="content" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-sm layui-btn-primary" id='searchsubmit'><i class="layui-icon layui-icon-search layuiadmin-button-btn" ></i></button>
+                    </div>
+                    </form>
+                </div>
+
+            </div>
+            <div class="layui-row layui-col-space30">
+                {volist name='data' id='k'}
+                <div class="layui-col-xs6 layui-col-sm4 layui-col-md3">
+                    <div class="addon_item">
+                        {eq name='$k.type' value='0'}
+                        <img src="/{$k.file}" style="width: 100%;height: 160px">
+                        {else/}
+                        <img src="/static/fk/fk_excel.png" style="width: 100%;height: 160px">
+                        {/eq}
+                        <h3 style="line-height: 30px;margin-top: 10px;padding: 0 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{$k.title} - {$k.add_time}</h3>
+                        <div class="layui-clear">
+                            <a class="layui-btn layui-btn-sm" href="{:url('fk/api')}?act=desc&id={$k.id}" target="_blank">设计</a>
+                            <a class="layui-btn layui-btn-sm" href="{:url('fk/api')}?act=view&id={$k.id}" target="_blank">查看</a>
+                            <a class="layui-btn layui-btn-sm" onclick="menu({$k.id})">挂载</a>
+                            <a class="layui-btn layui-btn-sm layui-btn-primary" onclick="del({$k.id})">删除</a>
+                        </div>
+                    </div>
+                </div>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</div>
+
+{include file='common/footer' /}
+<div id='menu' style='display:none'>
+    {$node['html']|raw}
+</div>
+<script src="__SFDP__/sfdp.7.0.js"></script>
+<script>
+    window.onresize = function (){
+        adjustButtons()
+    }
+    function menu(id) {
+        var htmls = '<div style="margin:10px;">节点：<span class="select-box" style="width:150px;"><select id="nodesss" class="select" ><option value="">请选择挂带节点</option>' + $('#menu').html() + '</select></span>　<a onClick=getmenu(' + id + ')  class=" layui-btn layui-btn-sm">创建节点</a></div>';
+        layer.open({
+            title: '选择挂带节点信息',
+            type: 1,
+            area: ['520px', '150px'], //宽高
+            content: htmls
+        });
+    }
+
+    function getmenu(id) {
+        var node = $('#nodesss').val();
+        if (node == '') {
+            sfdp.ShowTip('请选择节点信息！');
+            return;
+        }
+        var url = "{:url('menu2')}?id=" + id + "&node=" + node;
+        sfdp.Askshow(url, "再次确认是否创建目录，,是否执行?");
+    }
+    function del(id) {
+
+        var url = "{:url('fk/api')}?act=deldesc&id=" + id;
+        sfdp.Askshow(url, "再次确认是否删除，,是否执行?");
+    }
+</script>
+</body>
+</html>

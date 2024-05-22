@@ -1,0 +1,126 @@
+{include file='common/head' /}
+<style>
+    .layui-form-select dl{
+        z-index:999999;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form action="" method="post" name="form" id="form" class="layui-form">
+                <input type="hidden" name="sid" value="{$sid}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">业务关联：</label>
+                        <div class="layui-input-inline">
+                            {$data.s_name}
+                        </div>
+                        {eq name='opt[0]' value='1'}
+                        <label class="layui-form-label">流程数据：</label>
+                        <div class="layui-input-inline">
+                            <span onclick=ins("$wf['tr']|raw")  class="layui-badge layui-bg-blue">$wf['tr']|raw</span>
+                        </div>
+                        {/eq}
+                        {gt name='opt[1]' value='1'}
+                        <label class="layui-form-label">子表数据：</label>
+                        <div class="layui-input-inline">
+                            <span onclick=ins("$sub[0]['tr']|raw")  class="layui-badge layui-bg-blue">$sub[0]['tr']|raw</span>
+                        </div>
+                        {/gt}
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字段数据：</label>
+                        <div class="layui-input-block">
+                            <div id='fieldcon'>
+                                {volist name='field' id='k'}
+                                <span onclick=ins("$data.{$k.field}")  class="layui-badge layui-bg-blue">{$k.name}({$k.field})</span>
+                                {/volist}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="display: none">
+                        <label class="layui-form-label">附属元数：</label>
+                        <div class="layui-input-block flex-center">
+                            <input type="text" class="layui-input" value="{$con.fun ?? ''}" name="fun"  style="width: 160px">
+                            <a  href="javascript:" class="layui-btn btn-25" ><i class="layui-icon layui-icon-upload"></i>执行</a>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style='overflow:visible'>
+                        <label class="layui-form-label">模板设计：</label>
+                        <div class="layui-input-block">
+                            <script  name='con' id="articleEditor" type="text/plain" style="width:100%;height:400px;overflow:visible">{:isset($con.con) ? $con.con : ''}</script>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            <blockquote class="layui-elem-quote layui-text" style="border-left: 5px solid #960000;">
+                <p>特殊说明：</p>
+                <p>【$data】默认数据，系统会先将id转换为数据</p>
+                <p>【$info】原始数据，如果需要转换可以 使用自定义函数 get_common_val</p>
+                <p>【$wf】流程数据，$wf['tr']|raw 输出带html的审批记录；$wf['d']原始流程审批数据【数组】【若有】</p>
+                <p>【$sub】子表数据，$sub[0]['tr']|raw 输出带html的子表信息；$sub[0]['t']子表表头数据【数组】$sub[0]['d']子表内容数据【数组】；其中0为第一个，1为第二个子表【若有】</p>
+            </blockquote>
+                <script type="text/javascript" src="__LIB__/ueditor/1.4.3/ueditor.config.js"></script>
+                <script type="text/javascript" src="__LIB__/ueditor/1.4.3/ueditor.all.min.js"> </script>
+                <script type="text/javascript" src="__LIB__/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
+                {include file='common/footer' /}
+                <script>
+                    layui.use('element', function(){
+                        var $ = layui.jquery
+                            ,element = layui.element;
+                    });
+                    layui.use('form', function(){
+                        var form = layui.form;
+                        form.on('select(get_field)', function(data){
+                            var op ='';
+                            $('#fieldcon').html('');
+                            var table = data.value;
+                            var url = "{:url('getfield')}";
+                            $.ajax({
+                                url:url,
+                                data:{id:table},
+                                type:'post',
+                                cache:true,
+                                dataType:'json',
+                                success:function(ret) {
+                                    console.log(ret);
+                                    if (ret.code == 0) {
+                                        for (x in ret.msg){
+                                            op += '<span onclick=ins("$data.'+ret.msg[x]['COLUMN_NAME']+'")  class="layui-badge layui-bg-orange">\{\$data.'+ret.msg[x]['COLUMN_NAME']+'\}('+ret.msg[x]['COLUMN_COMMENT']+')</span> ';
+                                        }
+                                        $('#fieldcon').append(op);
+                                    }else{
+                                        layer.alert(ret.msg, {title: "错误信息", icon: 2});
+                                    }
+                                },
+                                error : function() {
+                                    layer.alert('请求出错！', {title: "错误信息", icon: 2});
+                                }
+                            });
+                        });
+
+                    });
+
+                </script>
+                <script type="text/javascript">
+                    var ue = UE.getEditor('articleEditor', {
+                        toolbars: [
+                            ['fullscreen','template','source','inserttable','bold','justifyleft','justifyright','justifycenter','justifyjustify','fontfamily','fontsize','paragraph','simpleupload','horizontal','link','autotypeset']
+                        ],
+                        autoHeightEnabled: true,
+                        autoFloatEnabled: true
+                    });
+                    g_checkForm($("#form"));
+
+                    function ins(funcName){
+                        UE.getEditor('articleEditor').focus();
+                        UE.getEditor('articleEditor').execCommand('inserthtml','{'+funcName+'}');
+                    }
+                </script>
+
+
+

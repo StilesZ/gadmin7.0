@@ -1,0 +1,67 @@
+{include file='common/head' /}
+<link href="__LIB__/hiprint/css/hiprint.css" rel="stylesheet" />
+<link href="__LIB__/hiprint/css/print-lock.css" rel="stylesheet" />
+<style>
+    .layui-form-select dl{
+        z-index:999999;
+    }
+    .rect-printElement-types .hiprint-printElement-type > li > ul > li > a{
+        height: auto;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+                    <div class="layui-form-item" style='overflow:visible'>
+                            <div class="" style="float: left">
+                                <div class="hiprint-toolbar" style="margin-top:15px;">
+                                <ul>
+                                    <li>
+                                        <a id="A4_directPrint" class="btn hiprint-toolbar-item " style="color: #fff;background-color: #d9534f;border-color: #d43f3a;">打印</a>
+                                    </li>
+                                </ul>
+                                <div style="clear:both;"></div>
+                            </div>
+                                <div id="hiprint-printTemplate" class="hiprint-printTemplate" style="margin-top:20px;"></div>
+                            </div>
+                    </div>
+        </div>
+    </div>
+</div>
+            {include file='common/footer' /}
+            <script src="__LIB__/hiprint/custom-etype-provider.js"></script>
+            <script src="__LIB__/hiprint/print-data.js"></script>
+            <script src="__LIB__/hiprint/plugins/jq-3.31.js"></script>
+            <script src="__LIB__/hiprint/polyfill.min.js"></script>
+            <!-- polyfill.min.js解决浏览器兼容性问题v6.26.0-->
+            <script src="__LIB__/hiprint/plugins/jquery.minicolors.min.js"></script>
+            <!-- hiprint 核心js-->
+            <script src="__LIB__/hiprint/hiprint.bundle.js"></script>
+            <!-- 条形码生成组件-->
+            <script src="__LIB__/hiprint/plugins/JsBarcode.all.min.js"></script>
+            <!-- 二维码生成组件-->
+            <script src="__LIB__/hiprint/plugins/qrcode.js"></script>
+            <!-- 调用浏览器打印窗口helper类，可自行替换-->
+            <script src="__LIB__/hiprint/plugins/jquery.hiwprint.js"></script>
+            <script>
+                var hiprintTemplate;
+                var customPrintJson = {$con.con|raw};
+                var printData = {$data|raw};
+                $(document).ready(function () {
+                    //初始化打印插件
+                    hiprint.init({
+                        providers: [new customElementTypeProvider()]
+                    });
+                    //设置左侧拖拽事件
+                    hiprint.PrintElementTypeManager.buildByHtml($('.ep-draggable-item'));
+                    hiprintTemplate = new hiprint.PrintTemplate({
+                        template: customPrintJson
+                    });
+                    //打印设计
+                    hiprintTemplate.design('#hiprint-printTemplate');
+
+                    $('#A4_directPrint').click(function () {
+                        hiprintTemplate.print(printData);
+                    });
+                });
+            </script>

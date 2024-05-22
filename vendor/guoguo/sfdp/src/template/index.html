@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="__HUI__/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="__HUIADMIN__/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="__LIB__/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="__HUIADMIN__/skin/blue/skin.css" id="blue" />
+<link rel="stylesheet" type="text/css" href="__HUIADMIN__/css/style.css" />
+<link rel="stylesheet" type="text/css" href="__HUIADMIN__/common.css" />
+<script type="text/javascript" src="__LIB__/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="__LIB__/layer/3.1.1/layer.js"></script>
+<script type="text/javascript" src="__HUI__/js/H-ui.min.js"></script>
+<script type="text/javascript" src="__HUIADMIN__/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="__SFDP__/lib/Validform/5.3.2/Validform.min.js"></script>
+<script type="text/javascript" src="__SFDP__/lib/laydate5.0.9/laydate.js"></script>
+<script type="text/javascript" src="__SFDP__/lib/datatables/1.10.15/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="__SFDP__/sfdp.7.0.css?v=7.0.0" />
+{$config.load_file.css|raw}
+<style>
+input[type=text], select,textarea {width: 150px;padding: 12px 20px;display: inline-block;border: 1px solid #ccc;border-radius: 4px;box-sizing: border-box;}
+input,select{padding: 5px 5px;display: inline-block;border: 1px solid #ccc;border-radius: 4px;box-sizing: border-box;}
+</style>
+{$config.g_js|raw}
+{$config.load_file.js|raw}
+
+<title>{$config.title ?? '超级表单开发平台'} </title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> {$title ?? '超级表单开发平台'} 
+ <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+<div class="text-l">
+	
+	<form action="" method="post" name="form" id="searchform">
+	<span class=" ml-5">
+	<span id='search'></span>
+	<a  class="btn btn-success radius"   id='searchsubmit'><i class="Hui-iconfont">&#xe665;</i> 查询</a>
+	</span>
+	</form>
+	<div class="cl pd-5 bg-1 bk-gray mt-5"> 
+				<span class="l">
+					{$btn|raw}
+				</span>  
+			</div>
+			<table id='table_id' class="table table-border table-bordered table-bg">
+			<thead>
+			<tr class="text-c">
+				<th width="25"><input type="checkbox"></th>
+				{volist name='config.field' id='k'}
+				<th>{$k}</th>
+				{/volist}
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+			</thead>
+			</table>
+</div>
+
+</div>
+
+</body>
+</html>
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script>
+  $( function() {
+	sfdp.showlist2({$config['search']|raw})
+	var dataTable = $('#table_id').DataTable( {
+		deferRender: true,
+		bFilter: false,    //去掉搜索框方法三：这种方法可以
+        bLengthChange: false,   //去掉每页显示多少条数据方法
+        processing: true,
+		order: [],
+        serverSide: true,
+		ordering: false,
+		ajax: function (data, callback, settings) {
+                //封装请求参数
+                var param = {};
+                param.limit = data.length;
+                param.start = data.start;
+				param.page = (data.start / data.length)+1;
+                param.draw = data.draw;			
+				var searchdata = {};
+				var search = $('#searchform').serializeArray();
+				$.each(search, function() {
+					var dbname = this.name;
+					if(dbname.indexOf("[]") >= 0 ) {
+						var rdbname = dbname.replace("[", "").replace("]", "");
+						if(searchdata[rdbname] == undefined){
+							searchdata[rdbname] = this.value;
+						}else{
+							searchdata[rdbname] = searchdata[rdbname] +',' + this.value;
+						}
+					}else{
+						searchdata[dbname] = this.value;
+					}
+				});
+				if(searchdata != {}){
+					param.search = searchdata;
+				}
+                $.ajax({
+                    type: "post",
+                    url: "{:url('index/sfdp/sfdpCurd',['act'=>'GetData','sid'=>$config.sid])}",
+                    cache: false,  //禁用缓存
+                    data: param,  //传入组装的参数
+                    dataType: "json",
+                    success: function (result) {
+						callback(result);
+                    }
+                });
+		},
+    });
+    $("#searchsubmit").bind("click", function () { //按钮 点击事件触发table重新请求服务器
+	  $("#table_id").dataTable().fnDraw(false);
+	});
+ });
+</script>
+<script type="text/javascript">
+/*修改功能*/
+function edit(sid){
+	var Param =  getParam();
+	if(!Param){
+		return  false;
+	}
+	var id = Param[0];
+	var status = Param[1];
+	var table = Param[2];
+	if(status==1 || status==2 ){
+		layer.msg('流程审批中，或者已被审批通过~~');
+		return  false;
+	}
+	layer_show("修改","{:url('index/sfdp/sfdpCurd',['act'=>'edit','sid'=>$config.sid])}&bid="+id,"85","50");
+}
+
+function del(sid){
+	var Param =  getParam();
+	if(!Param){
+		return  false;
+	}
+	var id = Param[0];
+	var status = Param[1];
+	var table = Param[2];
+	if(status==1 || status==2 ){
+		layer.msg('流程审批中，或者已被审批通过~~');
+		return  false;
+	}
+	sfdp.Askshow("{:url('index/sfdp/sfdpCurd',['act'=>'del','sid'=>$config.sid])}&bid="+id,"删除须谨慎，确认要删除吗?")
+}
+/*参数获取*/
+function getParam(){
+	if ($("input[name='ids']:checked").length > 1) {
+		 layer.msg('只能选择一个哟~~');
+		return  false;
+   }
+	var val=$("input:checkbox:checked").val();
+	if(val==''||val==undefined){
+		layer.msg('请选择您要操作的单据~~');return  false;
+	}
+	return val.split('/');
+}
+</script> 

@@ -1,0 +1,157 @@
+{include file='common/head' /}
+<link rel="stylesheet" href="__LIB__/jexcel/jsuites.css" type="text/css" />
+<link rel="stylesheet" href="__LIB__/jexcel/jexcel.css" type="text/css" />
+{$config.load_file.css|raw}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="min-height:calc(100vh - 50px);;">
+            <div class="layui-row flex-center ">
+                <div class="layui-btn-group">
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" onclick="$('#spreadsheet').jspreadsheet('undo')">
+                        <i class="layui-icon layui-icon-edit"></i>撤销
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" onclick="$('#spreadsheet').jspreadsheet('redo')">
+                        <i class="layui-icon layui-icon-refresh-3"></i>恢复
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" onclick="$('#spreadsheet').jspreadsheet('insertRow')">
+                        <i class="layui-icon layui-icon-add-1"></i>增行
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" onclick="$('#spreadsheet').jspreadsheet('deleteRow')">
+                        <i class="layui-icon layui-icon-delete"></i>删行
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" onclick="$('#spreadsheet').jspreadsheet('download')">
+                        <i class="layui-icon layui-icon-export"></i>导出
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" onclick="save()">
+                        <i class="layui-icon layui-icon-upload-drag"></i>上报系统
+                    </button>
+                </div>
+            </div>
+            <div id="spreadsheet"></div>
+        </div>
+    </div>
+</div>
+{include file='common/footer' /}
+<script src="__LIB__/jexcel/jexcel.js"></script>
+<script src="__LIB__/jexcel/jsuites.js"></script>
+
+<script src="__SFDP__/sfdp.7.0.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.config.js?v=7.0.1"></script>
+<script src="__SFDP__/sfdp.plug.js?v=7.0.1"></script>
+<script src="/static/common.js?v=7.0.1"></script>
+<script src="/static/custom.js?v=3.1.4"></script>
+<!--加载全局变量函数-->
+{$config.g_js|raw}
+{$config.load_file.js|raw}
+<script>
+    $("head").append(sfdp.ui.ui_css);
+</script>
+<!--动态加载用户自定义脚本-->
+{$config.fun|raw}
+<!--脚本结束-->
+<script>
+    jspreadsheet(document.getElementById('spreadsheet'), {
+        data:[[]],
+        tableHeight: document.documentElement.clientHeight+'px',
+        csvFileName: 'aaaa',
+        tableOverflow: true,
+        columns: {$List|raw},
+        contextMenu: function(obj, x, y, e) {
+            var items = []
+            if (y == null) {
+            }else{
+                if (obj.options.allowInsertRow == true) {
+                    items.push({
+                        title: '在此前插入行',
+                        onclick: function() {
+                            obj.insertRow(1, parseInt(y), 1)
+                        }
+                    })
+                    items.push({
+                        title: '在此后插入行',
+                        onclick: function() {
+                            obj.insertRow(1, parseInt(y))
+                        }
+                    })
+                }
+                if (obj.options.allowDeleteRow == true) {
+                    items.push({
+                        title: '删除选中行',
+                        onclick: function() {
+                            obj.deleteRow(obj.getSelectedRows().length ? undefined : parseInt(y))
+                        }
+                    })
+                }
+            }
+            items.push({ type: 'line' })
+            if (obj.options.about) {
+                items.push({
+                    title: '关于',
+                    onclick: function() {
+                        alert(`感谢开源软件：Jspreadsheet \n版权归属：Jspreadsheet`)
+                    }
+                })
+            }
+            return items
+        },
+    });
+</script>
+<script>
+    var g_bill_id = '{$id ?? ""}';
+    var showtype = '{$showtype}';
+    var s_type = '{$config["s_type"]}';
+    var is_wf = '{$is_wf}';
+    var uploadurl = '{:url($config["upload_file"])}';
+    try{
+        load_satr_fun(showtype);//后置函数
+    }catch(e){
+        if(Debug){
+            console.log('page no load star fun ~');
+        }
+    }
+
+    $(document).ready(function(){
+        try{
+            load_end_fun(showtype);//后置函数
+        }catch(e){
+            if(Debug){
+                console.log('page no load end fun ~');
+            }
+        }
+    });
+    document.onkeydown = function(ev){
+        var ev = ev || window.event;
+        switch(ev.keyCode){
+            case 40:
+            $('#spreadsheet').jspreadsheet('insertRow')
+            break;
+        }
+    }
+    function save(){
+        var mast = {$fieldmast|raw};
+        var data = $('#spreadsheet').jspreadsheet('getJson');
+        $.each(data,function(index,value){
+            $.each(value,function(ii,v){
+                if(mast[ii] == 0 && v ==''){
+                    var msg  = `您好，第${index+1}行第${ii*1+1*1}列未填写`;
+                    g_toast(msg);throw msg;
+                }
+            });
+        });
+        $.ajax({
+            url: `{:url('saveAll')}?sid=${g_sid}`,
+            data: {sid:g_sid,data:data},
+            type: 'post',
+            cache: true,
+            dataType: 'json',
+            success: function (ret) {
+                sfdp.common_return(ret);
+            },
+            error: function () {
+                layer.alert('请求出错！', {title: "错误信息", icon: 2});
+            }
+        });
+    }
+</script>
+</body>
+</html>
